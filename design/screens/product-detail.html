@@ -1,0 +1,530 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BazaarGrid | Heritage Product Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Shared Style Logic -->
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        .grain-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4f4f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ddc0bb;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a03f30;
+        }
+    </style>
+<!-- Tailwind Config Injection -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#9b6f01",
+                    "on-secondary-container": "#4c6952",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#faf9f5",
+                    "surface-container": "#efeeea",
+                    "surface-container-high": "#e9e8e4",
+                    "background": "#faf9f5",
+                    "secondary-fixed-dim": "#aecfb3",
+                    "surface-variant": "#e3e2df",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdea7",
+                    "on-primary-fixed-variant": "#80281b",
+                    "on-tertiary-container": "#080400",
+                    "secondary-fixed": "#caebce",
+                    "on-surface-variant": "#56423e",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#ffb4a7",
+                    "surface-tint": "#a03f30",
+                    "primary-fixed-dim": "#ffb4a7",
+                    "outline": "#89726d",
+                    "on-secondary-fixed": "#04210f",
+                    "tertiary-fixed-dim": "#f4be55",
+                    "surface": "#faf9f5",
+                    "on-tertiary-fixed-variant": "#5e4200",
+                    "surface-container-low": "#f4f4f0",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f2f1ed",
+                    "tertiary": "#7c5800",
+                    "primary-container": "#bd5444",
+                    "primary": "#9d3d2e",
+                    "on-primary-fixed": "#400200",
+                    "on-primary-container": "#fffbff",
+                    "on-surface": "#1b1c1a",
+                    "primary-fixed": "#ffdad4",
+                    "surface-container-highest": "#e3e2df",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1b1c1a",
+                    "inverse-surface": "#2f312e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#48654e",
+                    "outline-variant": "#ddc0bb",
+                    "on-secondary-fixed-variant": "#304d38",
+                    "on-tertiary-fixed": "#271900",
+                    "secondary-container": "#c7e8cb",
+                    "surface-dim": "#dbdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "48px",
+                    "md": "24px",
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "sm": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Work Sans"],
+                    "label-md": ["Work Sans"],
+                    "body-lg": ["Work Sans"],
+                    "headline-lg": ["Newsreader"],
+                    "headline-md": ["Newsreader"],
+                    "headline-lg-mobile": ["Newsreader"],
+                    "label-sm": ["Work Sans"],
+                    "display-lg": ["Newsreader"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<div class="fixed inset-0 grain-texture z-[9999]"></div>
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="flex items-center gap-xl">
+<a class="text-headline-md font-headline-md font-bold text-primary" href="/">BazaarGrid</a>
+<nav class="hidden md:flex gap-md items-center">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="#">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Become a Producer</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-label-md focus:outline-none focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search heritage products..." type="text">
+</div>
+<button class="material-symbols-outlined text-on-surface p-2 hover:bg-surface-container rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface p-2 hover:bg-surface-container rounded-full transition-colors">shopping_basket</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional close-up studio portrait of a customer for a profile avatar. The person has a warm, friendly expression, set against a soft cream-colored backdrop. The lighting is diffused and elegant, matching a high-end corporate modern aesthetic with soft shadows and organic tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwhnv2o-vy8WBWrb4X8zJ-oeOTSu2SpvXBdTEinX8CsThjsrD5Uut9sd-Juc4V1Pav13ddPWLnvi3FgPP88ajL5E3WPVoa22zPVwIUs2Pu-8leBwn1whnEFbbZPNUqcuO4IkIfMl9zFeSzJSyiJMTz2gWp0tcEHQt526ea6ks0GrqfHfuS2pzz4A4DsgXJaLVAUsponKzHc0rZDzucCfFa-1Be49307zXDefO1ZB6hjre2ZaGzppP8KrQ_4KyNCVw38wqVFk-IpxOq">
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-container-margin py-xl">
+<!-- Breadcrumbs -->
+<nav class="mb-md flex items-center gap-xs text-label-sm text-on-surface-variant">
+<a class="hover:text-primary" href="#">Shop</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="hover:text-primary" href="#">Staples</a>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Hand-Pressed Cold Olive Oil</span>
+</nav>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Left: Image Gallery -->
+<div class="lg:col-span-7 space-y-md">
+<div class="aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-high relative group border border-outline-variant">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end, premium product photograph of a glass bottle of artisanal olive oil. The bottle is minimalist with a textured paper label. It sits on a weathered oak surface with soft morning light streaming from a window, highlighting the rich golden-green hue of the oil. The aesthetic is modern agrarian, grounded and authentic." id="main-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgvIyGuClzad8FAWiFe_ux5qYZFcHSasQ3wsNtWYVSD8w36dSB5BEo_jj_eqnWP0hBci7HgZFjfUpXKAEVUS29whA34QCmAMD9kWF7GcpLstOU64S8boKr9H3fsNfFoOw1liQo6eS-80dXo7BFCRqJk6pLOwFEkPWwplufs5YXT-9GZK_8nd4icnVWcP9bceKKfrauBUni92zWxQkYseHRrJbOiCMJSX6VTLCNUqOGNYrXbXg2wkFRV98ZS2rXXwo0a1eLbnVBCZVM">
+<div class="absolute top-4 right-4">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined filled-icon text-[16px]">verified</span> Verified Producer
+                        </span>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-base">
+<button class="aspect-square rounded-lg border-2 border-primary overflow-hidden" onclick="updateImage(0)">
+<img class="w-full h-full object-cover" data-alt="Close up detail of the artisanal olive oil texture, showing viscous golden drops clinging to a wooden spoon. Macro photography with soft lighting on a cream background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLwc1S9TxqC-QGuQlo-CmSOfdZh64UYVQLhPFGnA9E5mxPAigOWh9gmvl1F37f2um3yDItQ3BpKsFao9rxXHXYBCKCF5Xs5N270WZTC0q2ev1kE8ykSapyZqIioV_nELq3WML0JHnShc2hjSzFMUuqfgia9HUs_XIyDV5WBoiwwjCFDEmyJL_y3lfUT-iufTtVWPnPirklgkpUs04ehGQ_9nqRqQYuAoRRVU3K3hQ2jHUHx3GZrAKGBf9PPsRyFuHWFGLig6DFr_MS">
+</button>
+<button class="aspect-square rounded-lg border border-outline-variant overflow-hidden opacity-70 hover:opacity-100 transition-opacity" onclick="updateImage(1)">
+<img class="w-full h-full object-cover" data-alt="A wide shot of a traditional sun-drenched olive grove in a Mediterranean village. The trees are gnarled and ancient, with hills in the distance. Warm golden hour lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN2X3UEta5a_yUKlCXwCdWMAh7hWqo1DDqmegFLNlq8_kxtb_UTZAgdDJFwBYzAsEjMJQwV7YlpeUixbCvswWRkcsMq9Xxyuu5qiDCstRPu3YNxf10fS2vkTBmgkK-cVlgvmdd0Fb7TKnI8pEd2kH4TzKU9qQF1qzo2qq0b4pLla3qWGhh6zRbax9agjdXufnQGjSOYtUzk-E1n9q1LnDQ0Xtov3bStEkWfVVlfKsiCR1OiAxwR7s02m_J6sNSZMlGMP5fSiH9xI4i">
+</button>
+<button class="aspect-square rounded-lg border border-outline-variant overflow-hidden opacity-70 hover:opacity-100 transition-opacity" onclick="updateImage(2)">
+<img class="w-full h-full object-cover" data-alt="The producer, an elderly man with weathered hands, pouring oil into glass bottles. The scene captures heritage craftsmanship and a sense of deep-rooted trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEHTnEJNHdicR-sTECuQIvCoV_8C1JhTCjDCkI5vmTZwHENmIt2dAaR0TdNTMwA81zICA1hW0KiPIHnWfBVY7pIa1r28xShD1Li_1eZOu8UIpfNsXVIYN9z1daSHvli9L6VALtB927D9lgpMQwGz-_mDTu3T3rp9cDyW_BM5XknGqS46NWjpcl5-exS3VOmpFqd-3DbAOsi8lB1zG37fQ-M_OV3Mtn7a_7AH4SzGL7TrKX1DD3SdQZzD7kF7FaJG2utoHk57pURSjA">
+</button>
+<button class="aspect-square rounded-lg border border-outline-variant overflow-hidden opacity-70 hover:opacity-100 transition-opacity" onclick="updateImage(3)">
+<img class="w-full h-full object-cover" data-alt="Infographic style shot of the olive oil bottle next to fresh ingredients like rosemary and sourdough bread. Clean, minimalist composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGSvu1_zFRBG_ZlymVrDWIf0Qy9g65lvE8qMSLhmj8s956gyg_05wpPI8m2rh4xs5rSv71JH2fS6scEwYSethvkQrIBiPgJPo6sTF4iNt0W9ARtkuBOZ7sjs7d0-GXjmJnqxs18-4xLMHT3Pyqn1FN-VT2uiNv2OKow9JaXJlD8eoPhma82uG9dsiYPnvTAAVAVN2tqnyJCqfm2ucZrveCswo1ixEVbB98kYyFY3swPSqgGd3h6An3h_z2gRV8g2ung_PUUwy5YWaC">
+</button>
+</div>
+</div>
+<!-- Right: Product Info -->
+<div class="lg:col-span-5 space-y-lg">
+<section>
+<div class="flex items-center gap-sm mb-base">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-bold uppercase tracking-wider">Organic</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed px-3 py-1 rounded-full text-label-sm font-bold uppercase tracking-wider">Limited Batch</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Hand-Pressed Cold Olive Oil</h1>
+<div class="flex items-center gap-base mb-md">
+<div class="flex text-tertiary">
+<span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+<span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+<span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+<span class="material-symbols-outlined filled-icon text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star_half</span>
+</div>
+<span class="text-label-md text-on-surface-variant">4.8 (124 reviews)</span>
+</div>
+<p class="font-headline-md text-headline-md text-primary">$42.00 <span class="text-label-md text-on-surface-variant font-body-md">/ 500ml</span></p>
+</section>
+<!-- Producer & Village Chips -->
+<div class="flex flex-wrap gap-sm">
+<a href="{{DATA:SCREEN:SCREEN_16}}" class="flex items-center gap-base bg-surface-container-low border border-outline-variant p-2 pr-4 rounded-full hover:bg-surface-container transition-colors">
+<div class="w-8 h-8 rounded-full bg-secondary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of an artisanal oil producer, a middle-aged woman with a kind smile, wearing traditional work clothes. High-end portraiture with organic tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzPbkPq9Lwa9Waav4uguAaoXIE5Vhw258cyaY_uY5l5GUhZT_RTrCWdD5PXDNlhjWu5XsJ-Hol0ZCF4_DV5oA0UUTAFf2I3s57VEX5NNRF5iadhuw_PkmHY9-K26nIw545bMDbn5ZoDi_hcApK3YOMW2CnjgwwACatxMfbLe8qGCbL-UvJ0K5NppzGcVqSIX1ze1OFj8Lrq8hEldbhTRcLIeXgXi05yaW6C-qGLVbKDh6I0V4aGLgdcsZJhG-GF4Wm99MASOkLE2Mw">
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant leading-none">Producer</p>
+<p class="text-label-md font-bold">Elena Rossi</p>
+</div>
+</a>
+<a href="{{DATA:SCREEN:SCREEN_6}}" class="flex items-center gap-base bg-surface-container-low border border-outline-variant p-2 pr-4 rounded-full hover:bg-surface-container transition-colors">
+<div class="w-8 h-8 rounded-full bg-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]">location_on</span>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant leading-none">Village</p>
+<p class="text-label-md font-bold">Valle Verde</p>
+</div>
+</a>
+</div>
+<!-- Purchase Controls -->
+<div class="space-y-md pt-md border-t border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="flex items-center border border-outline rounded-lg bg-surface">
+<button class="p-3 hover:text-primary transition-colors" onclick="adjustQty(-1)"><span class="material-symbols-outlined text-[20px]">remove</span></button>
+<input class="w-12 text-center bg-transparent border-none focus:ring-0 font-bold" id="qty" min="1" type="number" value="1">
+<button class="p-3 hover:text-primary transition-colors" onclick="adjustQty(1)"><span class="material-symbols-outlined text-[20px]">add</span></button>
+</div>
+<button class="flex-1 bg-primary text-on-primary font-bold py-4 rounded-lg hover:bg-primary-container transition-all active:scale-95 flex justify-center items-center gap-base">
+<span class="material-symbols-outlined">shopping_cart</span>
+                            Add to Cart
+                        </button>
+</div>
+<div class="flex items-center gap-base text-label-sm text-on-secondary-container bg-secondary-container/30 p-3 rounded-lg border border-secondary-container">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+<span class="">Free express shipping on heritage staples over $100.</span>
+</div>
+</div>
+<!-- Origin Info Card -->
+<div class="bg-surface-container-low rounded-xl p-md border border-outline-variant relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-[80px]">qr_code_2</span>
+</div>
+<h3 class="font-label-md text-label-md text-on-surface mb-md flex items-center gap-base">
+<span class="material-symbols-outlined text-primary text-[20px]">history_edu</span>
+                        ORIGIN TRACEABILITY
+                    </h3>
+<div class="grid grid-cols-2 gap-md relative z-10">
+<div>
+<p class="text-label-sm text-on-surface-variant">Harvest Batch</p>
+<p class="text-body-md font-bold">#VV-2023-OCT</p>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Packing Date</p>
+<p class="text-body-md font-bold">Nov 12, 2023</p>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Altitude</p>
+<p class="text-body-md font-bold">450m AMSL</p>
+</div>
+<div>
+<p class="text-label-sm text-on-surface-variant">Acidity</p>
+<p class="text-body-md font-bold">0.18% (Extra Virgin)</p>
+</div>
+</div>
+<a class="mt-md inline-flex items-center gap-xs text-primary font-bold text-label-md hover:underline group" href="{{DATA:SCREEN:SCREEN_17}}">
+                        View Full Traceability Report
+                        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Detailed Description -->
+<section class="mt-xl grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<div class="lg:col-span-7">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-md">Heritage &amp; Purity</h2>
+<div class="space-y-md text-body-lg leading-relaxed text-on-surface-variant">
+<p class="">
+                        This isn't just olive oil; it's a liquid legacy. Sourced exclusively from the century-old groves of Valle Verde, each olive is hand-plucked at the dawn of peak ripeness to ensure a profile that is both robust and elegantly nuanced.
+                    </p>
+<p class="">
+                        Our cold-pressing technique follows a ancestral heritage method, where the fruit is crushed between granite stones within four hours of harvest. This prevents oxidation and preserves the volatile aromatic compounds that give our oil its signature peppery finish and notes of freshly cut grass and green almond.
+                    </p>
+</div>
+<div class="mt-lg grid grid-cols-1 sm:grid-cols-3 gap-md">
+<div class="text-center p-md border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary text-[32px] mb-base">eco</span>
+<p class="font-bold text-label-md">100% Organic</p>
+<p class="text-label-sm text-on-surface-variant">No synthetic pesticides</p>
+</div>
+<div class="text-center p-md border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary text-[32px] mb-base">handyman</span>
+<p class="font-bold text-label-md">Hand Picked</p>
+<p class="text-label-sm text-on-surface-variant">Protects tree health</p>
+</div>
+<div class="text-center p-md border border-outline-variant rounded-xl">
+<span class="material-symbols-outlined text-primary text-[32px] mb-base">precision_manufacturing</span>
+<p class="font-bold text-label-md">Single Origin</p>
+<p class="text-label-sm text-on-surface-variant">Valle Verde exclusive</p>
+</div>
+</div>
+</div>
+<!-- Side Card for Reviews Preview -->
+<div class="lg:col-span-5 bg-surface-container-highest/50 rounded-2xl p-lg border border-outline-variant self-start">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-md text-headline-md">Reviews</h3>
+<button class="text-primary font-bold text-label-md hover:underline">Write a Review</button>
+</div>
+<div class="space-y-md">
+<div class="border-b border-outline-variant pb-md">
+<div class="flex justify-between items-start mb-xs">
+<p class="font-bold">Julian M.</p>
+<div class="flex text-tertiary text-[14px]">
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant italic">"The clarity of flavor is unmatched. You can truly taste the volcanic soil of the valley."</p>
+</div>
+<div class="pb-md">
+<div class="flex justify-between items-start mb-xs">
+<p class="font-bold">Sarah T.</p>
+<div class="flex text-tertiary text-[14px]">
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined filled-icon">star</span>
+<span class="material-symbols-outlined">star</span>
+</div>
+</div>
+<p class="text-body-md text-on-surface-variant italic">"Beautiful packaging, makes for an incredible gift. The traceability report is a great touch."</p>
+</div>
+<button class="w-full py-3 border border-primary text-primary font-bold rounded-lg hover:bg-primary-container/10 transition-colors">
+                        View All 124 Reviews
+                    </button>
+</div>
+</div>
+</section>
+<!-- Carousel: From the Same Village -->
+<section class="mt-xl">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">From the Same Village</h2>
+<p class="text-on-surface-variant font-body-md">Discover other crafts from Valle Verde</p>
+</div>
+<div class="flex gap-base">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] rounded-xl overflow-hidden mb-sm border border-outline-variant relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A beautiful ceramic honey pot with a wooden drizzler. The pottery has a rustic, matte cream glaze with subtle earthy speckles. Soft cinematic lighting in a modern agrarian style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDRtWCtiGGUGTtJAllly4PgTGMQEHQobb9bd6cMYe9LUmiwsIpmDXPjBMzSw135dqryEkt9kDuXj9HH3el4Ag77mU0U7vtabOn7_SJ8-OKrJyZTXAKBN1VFdMo2hfBYLbslhmVvYVt8QJtLmfIDSIajRFjZPpT9ZpHJ35YN3G1QDYfV-5UspZwxPgjtZkHLxzVKpULowVoqA8ZIBmOA6FDkoS7XTvHV4p2oNDQMsnt-cyyoquCwo-3hh0NSrjHpPXIiZdBYTXyO0yp">
+<button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 text-primary shadow-lg opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex items-center justify-center">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs">Wildflower Honey</p>
+<h4 class="font-bold text-body-lg group-hover:text-primary transition-colors">Heritage Meadow Honey</h4>
+<p class="text-primary font-bold">$28.00</p>
+</div>
+<!-- Product Card 2 -->
+<div class="group cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] rounded-xl overflow-hidden mb-sm border border-outline-variant relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A bundle of dried heritage herbs tied with a jute twine, resting on a textured linen cloth. The herbs are vibrant and earthy. Warm, sophisticated lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuznqy-19_DALERKKP8twEoZvd5T-NuOPgeCnQowoxhMIjY8VR72EVXUr5DMbyzMThU8LI6lKnQRC5qA-khU2br6n9MczlQWvlG7YN8gixOS7-s7aNr8sGoN9HdSHHT_s0_u74qlHWif3H98AnN9IsbwEyCR8Np6XQdecqUF_hMrDv2e_3OY0IYHD6SXhi3hFMoXedRLlYooxePTISD8Ub9wZHnAKBBrbvTb0NmzLexiuUgLLX_qiTaNL63twr1abPZEWbWTxUAcSC">
+<button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 text-primary shadow-lg opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex items-center justify-center">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs">Dried Herbs</p>
+<h4 class="font-bold text-body-lg group-hover:text-primary transition-colors">Mountain Sage Bundle</h4>
+<p class="text-primary font-bold">$12.00</p>
+</div>
+<!-- Product Card 3 -->
+<div class="group cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] rounded-xl overflow-hidden mb-sm border border-outline-variant relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A stack of hand-woven linen kitchen towels in muted shades of sage and terracotta. The fabric texture is rich and tactile. High-end product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCO_bLk0G6LCXPb_6xsH6bskMvhwwEIqIiC-N3uRfRr-fStjWCgdAR7kMETScupLgc1aqA33I08ozpjuPKXCgdNoGjGUH6rhFjRds5pE3XUiCImHAms8shaVxJ7J4Jv2mfyJxGjTxhgmleUt_3sCW4lDPOQaK43nzKIa7IOjQu7eEV9I7lzF2C8Y6U-1UtgCgjlpJaVjd9wrM0DWYM9tQ3_xlNoHTyNe2tvwao17BVz519BzTC2-wVn7mUbOTIOG1x0-5EPE7amH8vA">
+<button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 text-primary shadow-lg opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex items-center justify-center">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs">Textiles</p>
+<h4 class="font-bold text-body-lg group-hover:text-primary transition-colors">Hand-Loomed Tea Towels</h4>
+<p class="text-primary font-bold">$34.00</p>
+</div>
+<!-- Product Card 4 -->
+<div class="group cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] rounded-xl overflow-hidden mb-sm border border-outline-variant relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Small artisanal goat cheese wheel wrapped in a grape leaf, sitting on a slate board with a few fresh figs. Deep green and cream tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPPqzNHefLs7nCjHpbPrI3WmQOTZ7iNeNqkJOicZudAca6qxpJIdxjoHeRg_lrMUaSThsy1Pjc7A38q_HSV9VjQyGC982DYeRaTMeR-ytoJy88xq1Joo2jDSQMBbQEgSZGLjuAEx6qFhfP3A1vJ4aZTnbmyi4x9S_uP-N7HfJ8cOvwU2_RZ1m1aFNX8s4CmEUmWpUz05pByrO1SbvMkqCYUAJ2LLIzFlMDv3vaAKCGecLMbEQ0DstsfK8idFd2SR8vZ4d1koMTIGNK">
+<button class="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/90 text-primary shadow-lg opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex items-center justify-center">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<p class="text-label-sm text-on-surface-variant uppercase tracking-widest mb-xs">Dairy</p>
+<h4 class="font-bold text-body-lg group-hover:text-primary transition-colors">Aged Valle Verde Goat Cheese</h4>
+<p class="text-primary font-bold">$19.50</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full py-xl px-container-margin mt-xl">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="md:col-span-2">
+<a class="font-headline-md text-headline-md text-primary font-bold mb-md block" href="#">BazaarGrid</a>
+<p class="text-on-surface-variant text-body-md mb-md max-w-sm">Connecting heritage craftsmanship with modern precision. Every product tells a story of origin, purity, and the hands that made it.</p>
+<div class="flex gap-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">eco</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">diversity_3</span></a>
+</div>
+</div>
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Shop</h5>
+<ul class="space-y-base text-label-sm text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">All Products</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">By Village</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">By Producer</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">New Arrivals</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Company</h5>
+<ul class="space-y-base text-label-sm text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">About BazaarGrid</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Sustainability Report</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Partner Portals</a></li>
+</ul>
+</div>
+<div class="md:col-span-2">
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Join our Harvest Updates</h5>
+<p class="text-label-sm text-on-surface-variant mb-md">Get notified about limited seasonal batches and stories from our villages.</p>
+<div class="flex gap-xs">
+<input class="flex-1 bg-surface-container border border-outline-variant px-md py-base rounded-lg text-label-md focus:outline-none focus:ring-2 focus:ring-primary/20" placeholder="email@address.com" type="email">
+<button class="bg-primary text-on-primary px-md py-base rounded-lg font-bold hover:bg-primary-container transition-colors">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-xl pt-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-label-sm text-on-surface-variant">© 2024 BazaarGrid. Connecting heritage craftsmanship with modern precision.</p>
+<div class="flex gap-md text-label-sm text-on-surface-variant">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<!-- Bottom Nav (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md shadow-[0_-4px_12px_rgba(72,101,78,0.08)] border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined filled-icon">storefront</span>
+<span class="text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        function adjustQty(delta) {
+            const input = document.getElementById('qty');
+            let val = parseInt(input.value) + delta;
+            if (val < 1) val = 1;
+            input.value = val;
+        }
+
+        function updateImage(index) {
+            // Logic to swap main image (placeholder implementation)
+            const mainImg = document.getElementById('main-image');
+            const thumbs = document.querySelectorAll('.grid.grid-cols-4 button');
+            
+            thumbs.forEach((btn, i) => {
+                if (i === index) {
+                    btn.classList.add('border-primary');
+                    btn.classList.remove('border-outline-variant', 'opacity-70');
+                } else {
+                    btn.classList.remove('border-primary');
+                    btn.classList.add('border-outline-variant', 'opacity-70');
+                }
+            });
+
+            // Transition effect
+            mainImg.style.opacity = '0.5';
+            setTimeout(() => {
+                mainImg.style.opacity = '1';
+            }, 200);
+        }
+
+        // Micro-interaction for Add to Cart
+        document.querySelector('button.bg-primary').addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="material-symbols-outlined animate-bounce">check_circle</span> Added!';
+            this.classList.replace('bg-primary', 'bg-secondary');
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.classList.replace('bg-secondary', 'bg-primary');
+            }, 2000);
+        });
+    </script>
+
+
+</body></html>

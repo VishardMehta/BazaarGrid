@@ -1,0 +1,84 @@
+[
+  {
+    "productId": "prod_forest_honey",
+    "batchId": "BG-2024-AFH-082",
+    "verifiedAuthentic": true,
+    "timeline": [
+      {
+        "label": "Harvested",
+        "date": "2024-07-15",
+        "description": "Hand-extracted from wild hives in the Oakridge Forest perimeter.",
+        "done": true
+      },
+      {
+        "label": "Processed",
+        "date": "2024-07-18",
+        "description": "Cold-filtered to preserve active enzymes and floral notes.",
+        "done": true
+      },
+      {
+        "label": "Packed",
+        "date": "2024-07-22",
+        "description": "Sealed in amber glass with a zero-closure seal.",
+        "done": true
+      },
+      {
+        "label": "Quality Verified",
+        "date": "2024-07-25",
+        "description": "Quality-verified by the Northern Highlands Apicultural Guild.",
+        "done": true
+      },
+      {
+        "label": "Shipped",
+        "date": "2024-08-02",
+        "description": "Registered to BazaarGrid grid logistics for distribution.",
+        "done": true
+      }
+    ],
+    "specs": {
+      "Weight": "500g net",
+      "Altitude": "1,720m",
+      "Floral Source": "Wild meadow",
+      "Expiration": "Oct 2026"
+    },
+    "reportUrl": "#"
+  },
+  {
+    "productId": "prod_olive_oil",
+    "batchId": "BG-2024-OO-191",
+    "verifiedAuthentic": true,
+    "timeline": [
+      {
+        "label": "Harvested",
+        "date": "2024-09-01",
+        "description": "Olives hand-picked from heritage groves at first ripeness.",
+        "done": true
+      },
+      {
+        "label": "Pressed",
+        "date": "2024-09-01",
+        "description": "Cold-pressed within four hours under the heritage hammer.",
+        "done": true
+      },
+      {
+        "label": "Bottled",
+        "date": "2024-09-05",
+        "description": "Decanted into UV-tinted glass to protect polyphenols.",
+        "done": true
+      },
+      {
+        "label": "Shipped",
+        "date": "2024-09-10",
+        "description": "Dispatched through the regional logistics hub.",
+        "done": true
+      }
+    ],
+    "specs": {
+      "Volume": "750ml",
+      "Acidity": "0.3%",
+      "Grove": "Val di Sole heritage terraces",
+      "Expiration": "Sep 2025"
+    },
+    "reportUrl": "#"
+  }
+]

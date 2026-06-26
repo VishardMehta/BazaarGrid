@@ -1,0 +1,33 @@
+[
+  {
+    "id": "rwd_producer_tour",
+    "title": "Heritage Producer Tour",
+    "description": "A guided day with a village producer of your choice — meet the makers and walk the land your food comes from.",
+    "costTokens": 1500,
+    "featured": true
+  },
+  {
+    "id": "rwd_basket_discount",
+    "title": "15% Off Your Next Basket",
+    "description": "Applicable to any single full-price basket order.",
+    "costTokens": 300
+  },
+  {
+    "id": "rwd_prime_shipping",
+    "title": "Free Priority Shipping",
+    "description": "Priority delivery on your next five orders.",
+    "costTokens": 500
+  },
+  {
+    "id": "rwd_masterclass",
+    "title": "Artisan Masterclass",
+    "description": "Join a live virtual workshop with a maker — pottery, weaving or preserving.",
+    "costTokens": 800
+  },
+  {
+    "id": "rwd_heritage_credit",
+    "title": "$20 Heritage Credit",
+    "description": "A reusable credit applied to any producer profile across the grid.",
+    "costTokens": 1000
+  }
+]

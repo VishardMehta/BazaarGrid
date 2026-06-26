@@ -1,0 +1,410 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BazaarGrid | Harvest Rewards</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#9b6f01",
+                    "on-secondary-container": "#4c6952",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#faf9f5",
+                    "surface-container": "#efeeea",
+                    "surface-container-high": "#e9e8e4",
+                    "background": "#faf9f5",
+                    "secondary-fixed-dim": "#aecfb3",
+                    "surface-variant": "#e3e2df",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdea7",
+                    "on-primary-fixed-variant": "#80281b",
+                    "on-tertiary-container": "#080400",
+                    "secondary-fixed": "#caebce",
+                    "on-surface-variant": "#56423e",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#ffb4a7",
+                    "surface-tint": "#a03f30",
+                    "primary-fixed-dim": "#ffb4a7",
+                    "outline": "#89726d",
+                    "on-secondary-fixed": "#04210f",
+                    "tertiary-fixed-dim": "#f4be55",
+                    "surface": "#faf9f5",
+                    "on-tertiary-fixed-variant": "#5e4200",
+                    "surface-container-low": "#f4f4f0",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f2f1ed",
+                    "tertiary": "#7c5800",
+                    "primary-container": "#bd5444",
+                    "primary": "#9d3d2e",
+                    "on-primary-fixed": "#400200",
+                    "on-primary-container": "#fffbff",
+                    "on-surface": "#1b1c1a",
+                    "primary-fixed": "#ffdad4",
+                    "surface-container-highest": "#e3e2df",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1b1c1a",
+                    "inverse-surface": "#2f312e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#48654e",
+                    "outline-variant": "#ddc0bb",
+                    "on-secondary-fixed-variant": "#304d38",
+                    "on-tertiary-fixed": "#271900",
+                    "secondary-container": "#c7e8cb",
+                    "surface-dim": "#dbdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "48px",
+                    "md": "24px",
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "sm": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Work Sans"],
+                    "label-md": ["Work Sans"],
+                    "body-lg": ["Work Sans"],
+                    "headline-lg": ["Newsreader"],
+                    "headline-md": ["Newsreader"],
+                    "headline-lg-mobile": ["Newsreader"],
+                    "label-sm": ["Work Sans"],
+                    "display-lg": ["Newsreader"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .token-glow {
+            filter: drop-shadow(0 0 12px rgba(157, 61, 46, 0.2));
+        }
+        .hero-pattern {
+            background-color: #faf9f5;
+            background-image: radial-gradient(#e3e2df 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-base">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed-dim">BazaarGrid</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Become a Producer</a>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex relative">
+<input class="bg-surface-container border-none rounded-full px-md py-xs text-body-md w-64 focus:ring-2 focus:ring-primary" placeholder="Search heritage..." type="text">
+</div>
+<button class="material-symbols-outlined text-primary" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-primary" data-icon="shopping_basket">shopping_basket</button>
+<div class="w-10 h-10 rounded-full bg-primary-fixed border border-primary/20 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a friendly artisanal producer with weathered hands and a warm smile, wearing a traditional woven apron. The background shows a sun-drenched rustic farm workshop with soft, natural lighting. The color palette is dominated by warm terracotta tones and deep greens, consistent with the Modern Agrarian aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs0gl6o6C7c6RBkiHWmp7GQwQTC5QYsDM56a77bEFUJjkeIDsrrQt2XwPu4AP2OQy7jJhKm_uZUfm45F-Blyr-msOfKxFkLzPUz2rQLJdF3Po_m0kAbFwMVxhf7nNmbf3Np9pXzC5zogAyeXOv2TfNs9-6jkeYrTDwhdP0NBPFcSWWh-qBy7xRW1ps_Ds_QJ0TLQizwQiXfRLDa-PmV51lZUREquj-Ic5zrj3SA8JgIFAwuHVLewZk5BzJMI07d1fmFOasB7oGydUK">
+</div>
+</div>
+</nav>
+<main class="max-w-[1280px] mx-auto px-container-margin py-lg space-y-xl">
+<!-- Hero: Points Balance -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-low border border-outline-variant p-lg md:p-xl flex flex-col md:flex-row items-center justify-between gap-lg hero-pattern">
+<div class="z-10 flex flex-col items-center md:items-start text-center md:text-left space-y-base">
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest">Harvest Rewards Program</span>
+<h1 class="font-display-lg text-display-lg text-on-surface leading-tight">Your Seasonal <br>Yield is Flourishing.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">Every purchase supports local artisans and earns you Harvest Tokens. Use them to unlock exclusive community benefits.</p>
+<div class="pt-md flex flex-wrap gap-md justify-center md:justify-start">
+<a href="{{DATA:SCREEN:SCREEN_9}}" class="bg-primary text-on-primary font-label-md text-label-md px-lg py-md rounded-lg shadow-sm hover:bg-primary-container transition-all active:scale-95 flex items-center justify-center">Redeem Now</a>
+<button class="border-2 border-secondary text-secondary font-label-md text-label-md px-lg py-md rounded-lg hover:bg-secondary-container/20 transition-all">How it Works</button>
+</div>
+</div>
+<!-- Harvest Token Badge -->
+<div class="relative group">
+<div class="absolute inset-0 bg-primary/10 blur-3xl rounded-full scale-150 animate-pulse"></div>
+<div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full bg-surface border-4 border-primary flex flex-col items-center justify-center shadow-xl token-glow transform transition-transform duration-500 group-hover:scale-105">
+<span class="material-symbols-outlined text-primary text-[64px] md:text-[80px]" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<div class="text-center mt-base">
+<span class="block font-display-lg text-[48px] md:text-[64px] text-on-surface leading-none">2,480</span>
+<span class="font-label-md text-label-md text-secondary tracking-widest uppercase">Harvest Tokens</span>
+</div>
+</div>
+<!-- Mini orbiting badges for flair -->
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-sm" data-icon="eco">eco</span>
+</div>
+<div class="absolute bottom-4 -left-4 w-14 h-14 bg-tertiary-fixed text-on-tertiary-fixed rounded-full flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined" data-icon="local_shipping">local_shipping</span>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left: Redeemable Rewards Grid (Bento Style) -->
+<div class="lg:col-span-8 space-y-md">
+<div class="flex items-center justify-between pb-base border-b border-outline-variant">
+<h2 class="font-headline-md text-headline-md text-on-surface">Available Rewards</h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">View All Opportunities</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Featured Reward: Special Village Access -->
+<div class="md:col-span-2 group relative overflow-hidden rounded-xl border border-outline-variant bg-surface aspect-[21/9] flex items-center">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="Panoramic aerial view of a terraced Mediterranean hillside village during the golden hour, with stone houses, narrow winding paths, and lush olive groves. The light is warm and honey-colored, creating long soft shadows and a high-end travel aesthetic. Earthy tones of ochre, terracotta, and deep cypress green define the visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7_DOStxbHDh8c7HE6mOB_X0bpICex_VYJtJk9NVpbOuYHqv8PYLw9h7TdxA5rqV_lMbXUWmfqW-X5W1IvigScHMzhhBpouupJb6yxbVgtaRCXYx6FTECLtt-ga-MQ_r77_7jd-VGmrcJj3WZJdYzza7EDQM8juPBf5xDa2woik0TvOFenJ-_BpkyH2cVsRUs_2Vi8_pC3Y3Uqxv9TX6L3jWX2eA0IN4LlY_4hz0ErB_lDZo13wwBq5D9rWf30d_ScG7QEPz8y4Qly">
+<div class="absolute inset-0 bg-gradient-to-r from-on-surface/80 to-transparent"></div>
+</div>
+<div class="relative z-10 p-lg max-w-sm space-y-base text-white">
+<span class="bg-tertiary text-on-tertiary text-[10px] px-2 py-0.5 rounded-full font-label-md">EXCLUSIVE ACCESS</span>
+<h3 class="font-headline-lg text-headline-lg">Tuscany Producer Tour</h3>
+<p class="font-body-md text-sm opacity-90">Unlock a private digital experience and early harvest booking for the Val d'Orcia collective.</p>
+<div class="flex items-center gap-md pt-base">
+<span class="font-label-md flex items-center gap-xs"><span class="material-symbols-outlined text-base" data-icon="stars">stars</span> 1,500 Tokens</span>
+<a href="{{DATA:SCREEN:SCREEN_16}}" class="bg-white text-on-surface px-md py-xs rounded-lg font-label-md text-sm hover:bg-surface-container-high transition-colors flex items-center justify-center">Redeem</a>
+</div>
+</div>
+</div>
+<!-- Reward Card 1 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md space-y-md flex flex-col justify-between hover:border-primary transition-colors">
+<div class="space-y-base">
+<div class="w-12 h-12 rounded-lg bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="confirmation_number">confirmation_number</span>
+</div>
+<h3 class="font-headline-md text-headline-md">15% Off Your Next Basket</h3>
+<p class="font-body-md text-on-surface-variant">Applicable to all artisanal dairy and cured meat selections from verified producers.</p>
+</div>
+<div class="flex items-center justify-between pt-md">
+<span class="font-label-md text-secondary">500 Tokens</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="border border-outline text-on-surface px-md py-base rounded-lg font-label-md text-sm hover:bg-surface-container-low flex items-center justify-center">Redeem</a>
+</div>
+</div>
+<!-- Reward Card 2 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md space-y-md flex flex-col justify-between hover:border-primary transition-colors">
+<div class="space-y-base">
+<div class="w-12 h-12 rounded-lg bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="local_shipping">local_shipping</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Free Prime Shipping</h3>
+<p class="font-body-md text-on-surface-variant">Enjoy free carbon-neutral shipping on any order over $50 for the next 30 days.</p>
+</div>
+<div class="flex items-center justify-between pt-md">
+<span class="font-label-md text-secondary">800 Tokens</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="border border-outline text-on-surface px-md py-base rounded-lg font-label-md text-sm hover:bg-surface-container-low flex items-center justify-center">Redeem</a>
+</div>
+</div>
+<!-- Reward Card 3 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md space-y-md flex flex-col justify-between hover:border-primary transition-colors">
+<div class="space-y-base">
+<div class="w-12 h-12 rounded-lg bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-fixed" data-icon="brush">brush</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Artisan Masterclass</h3>
+<p class="font-body-md text-on-surface-variant">Join a live virtual workshop with master weaver Elena Rossi on traditional loom techniques.</p>
+</div>
+<div class="flex items-center justify-between pt-md">
+<span class="font-label-md text-secondary">1,200 Tokens</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="border border-outline text-on-surface px-md py-base rounded-lg font-label-md text-sm hover:bg-surface-container-low flex items-center justify-center">Redeem</a>
+</div>
+</div>
+<!-- Reward Card 4 -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md space-y-md flex flex-col justify-between hover:border-primary transition-colors">
+<div class="space-y-base">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="redeem">redeem</span>
+</div>
+<h3 class="font-headline-md text-headline-md">$20 Heritage Credit</h3>
+<p class="font-body-md text-on-surface-variant">A versatile credit that can be applied to any producer profile across the grid.</p>
+</div>
+<div class="flex items-center justify-between pt-md">
+<span class="font-label-md text-secondary">1,000 Tokens</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="border border-outline text-on-surface px-md py-base rounded-lg font-label-md text-sm hover:bg-surface-container-low flex items-center justify-center">Redeem</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: History & Info -->
+<aside class="lg:col-span-4 space-y-gutter">
+<!-- Rules/Expiry Info Card -->
+<div class="bg-primary-container text-on-primary-container p-md rounded-xl space-y-md shadow-lg">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+<h3 class="font-label-md text-label-md uppercase tracking-wider">Harvest Protocol</h3>
+</div>
+<div class="space-y-base">
+<div class="flex justify-between items-start gap-md">
+<div class="w-2 h-2 rounded-full bg-on-primary-container mt-2 flex-shrink-0"></div>
+<p class="font-body-md text-sm">Tokens earned this season expire at the end of the Autumn Solstice (Dec 21st).</p>
+</div>
+<div class="flex justify-between items-start gap-md">
+<div class="w-2 h-2 rounded-full bg-on-primary-container mt-2 flex-shrink-0"></div>
+<p class="font-body-md text-sm">A "Verified Producer" purchase grants a 1.5x Token multiplier.</p>
+</div>
+</div>
+<div class="pt-base">
+<div class="bg-white/20 rounded-lg p-base">
+<div class="flex justify-between text-xs font-label-md mb-1">
+<span class="">SEASONAL PROGRESS</span>
+<span class="">65%</span>
+</div>
+<div class="h-1.5 w-full bg-white/30 rounded-full overflow-hidden">
+<div class="h-full bg-white w-[65%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Earning History List -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-md">
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Earning History</h3>
+<div class="space-y-md">
+<!-- History Item 1 -->
+<div class="flex items-center justify-between group"><a href="{{DATA:SCREEN:SCREEN_11}}" class="flex items-center justify-between w-full hover:opacity-80 transition-opacity">$0</a></div>
+<!-- History Item 2 -->
+<div class="flex items-center justify-between group"><a href="{{DATA:SCREEN:SCREEN_11}}" class="flex items-center justify-between w-full hover:opacity-80 transition-opacity">$0</a></div>
+<!-- History Item 3 -->
+<div class="flex items-center justify-between group"><a href="{{DATA:SCREEN:SCREEN_11}}" class="flex items-center justify-between w-full hover:opacity-80 transition-opacity">$0</a></div>
+<!-- History Item 4 -->
+<div class="flex items-center justify-between group opacity-60"><a href="{{DATA:SCREEN:SCREEN_11}}" class="flex items-center justify-between w-full hover:opacity-80 transition-opacity">$0</a></div>
+</div>
+<button class="w-full mt-lg py-xs border-t border-outline-variant font-label-md text-sm text-secondary hover:text-primary transition-colors">See Full Statement</button>
+</div>
+<!-- Trust Badge Widget -->
+<div class="flex items-center gap-md bg-surface p-base rounded-xl border border-outline-variant/50">
+<div class="w-12 h-12 flex-shrink-0">
+<span class="material-symbols-outlined text-secondary text-4xl" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div>
+<p class="font-label-md text-xs text-on-surface">Verified Legacy Status</p>
+<p class="font-body-md text-[10px] text-on-surface-variant">You are among the top 5% of patrons supporting heritage craftsmanship this season.</p>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline py-xl px-container-margin mt-xl">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="lg:col-span-2 space-y-md">
+<span class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim">BazaarGrid</span>
+<p class="font-body-md text-sm text-on-surface-variant">Connecting heritage craftsmanship with modern precision. Our platform empowers local producers through transparent, traceable commerce.</p>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-md">Marketplace</h4>
+<ul class="space-y-base text-sm font-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Shop All</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Featured Villages</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">New Arrivals</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Producer Map</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-md">Resources</h4>
+<ul class="space-y-base text-sm font-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">About BazaarGrid</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Partner Portals</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Sustainability Report</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Help Center</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-md">Legal</h4>
+<ul class="space-y-base text-sm font-body-md text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Shipping Policy</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-md">
+<h4 class="font-label-md text-on-surface">Stay Rooted</h4>
+<div class="flex">
+<input class="bg-surface border border-outline-variant rounded-l-lg px-base py-1 text-xs w-full focus:ring-1 focus:ring-primary" placeholder="Email" type="email">
+<button class="bg-primary text-on-primary px-base py-1 rounded-r-lg text-xs font-label-md transition-opacity hover:opacity-90">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto mt-xl pt-lg border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 BazaarGrid. Connecting heritage craftsmanship with modern precision.</p>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="public">public</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="share">share</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors" data-icon="mail">mail</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 md:hidden bg-surface/98 backdrop-blur-md shadow-[0_-4px_12px_rgba(72,101,78,0.08)] border-t border-outline-variant rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="location_city">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-label-sm text-label-sm">Rewards</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for point counter
+        document.addEventListener('DOMContentLoaded', () => {
+            const counter = document.querySelector('.group .text-[48px]');
+            if (counter) {
+                let startValue = 0;
+                const endValue = 2480;
+                const duration = 2000;
+                const startTime = performance.now();
+
+                function updateCounter(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const currentValue = Math.floor(progress * endValue);
+                    counter.textContent = currentValue.toLocaleString();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    }
+                }
+                requestAnimationFrame(updateCounter);
+            }
+        });
+    </script>
+
+
+</body></html>

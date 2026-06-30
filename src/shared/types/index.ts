@@ -206,7 +206,8 @@ export type SortOption =
   | "POPULARITY"
   | "PRICE_ASC"
   | "PRICE_DESC"
-  | "NEWEST";
+  | "NEWEST"
+  | "RATING";
 
 export interface SearchFilters {
   query?: string;

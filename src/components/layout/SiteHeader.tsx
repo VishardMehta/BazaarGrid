@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/ui";
 import { Logo } from "./Logo";
 import { useCart } from "@/features/cart/CartContext";
 import { currentBuyer } from "@/shared/mocks";
 import { Avatar } from "@/components/ui";
+import { SearchBar } from "@/features/search/components/SearchBar";
 
 const NAV = [
   { to: "/shop", label: "Shop" },
@@ -16,14 +17,7 @@ const NAV = [
 /** Public marketplace header — logo, nav, search, cart, account. */
 export function SiteHeader() {
   const { count } = useCart();
-  const navigate = useNavigate();
-  const [q, setQ] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  function submitSearch(e: React.FormEvent) {
-    e.preventDefault();
-    navigate(`/search?q=${encodeURIComponent(q)}`);
-  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-surface-highest bg-surface/85 backdrop-blur-md">
@@ -49,22 +43,7 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <form onSubmit={submitSearch} className="ml-auto hidden max-w-xs flex-1 md:block">
-          <div className="relative">
-            <Icon
-              name="search"
-              size={20}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-outline"
-            />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search heritage goods…"
-              aria-label="Search products"
-              className="h-10 w-full rounded-full border border-outline-variant bg-surface-lowest pl-10 pr-4 text-body-md placeholder:text-outline focus:border-primary focus:outline-none"
-            />
-          </div>
-        </form>
+        <SearchBar className="ml-auto hidden max-w-xs flex-1 md:block" />
 
         <div className="flex items-center gap-1 md:ml-0">
           <Link

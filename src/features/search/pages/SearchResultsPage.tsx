@@ -1,176 +1,346 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Card, Chip, Icon, Select } from "@/components/ui";
-import { ProductCard, EmptyState } from "@/components/shared";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { Chip, Icon, Select } from "@/components/ui";
+import { EmptyState, ProductCard, Reveal, RevealItem } from "@/components/shared";
 import { useCart } from "@/features/cart/CartContext";
-import { products, sellers, getSellerById } from "@/shared/mocks";
-import type { ProductCategory, SortOption } from "@/shared/types";
-
-const CATEGORIES: { value: ProductCategory; label: string }[] = [
-  { value: "HONEY", label: "Honey" },
-  { value: "OILS", label: "Oils" },
-  { value: "POTTERY", label: "Pottery" },
-  { value: "TEXTILES", label: "Textiles" },
-  { value: "DAIRY", label: "Dairy" },
-  { value: "GRAINS", label: "Grains" },
-];
+import { sellers } from "@/shared/mocks";
+import type { ProductFacet, SortOption } from "@/shared/types";
+import { SearchBar } from "../components/SearchBar";
+import { SearchFilters } from "../components/SearchFilters";
+import { ActiveFilters } from "../components/ActiveFilters";
+import { useSearch } from "../hooks/useSearch";
 
 const SORTS: { value: SortOption; label: string }[] = [
-  { value: "RELEVANCE", label: "Relevance" },
-  { value: "POPULARITY", label: "Popularity" },
-  { value: "PRICE_ASC", label: "Price: Low to High" },
-  { value: "PRICE_DESC", label: "Price: High to Low" },
-  { value: "NEWEST", label: "Newest" },
+  { value: "RELEVANCE",  label: "Relevance (AI)" },
+  { value: "POPULARITY", label: "Most Popular" },
+  { value: "RATING",     label: "Top Rated" },
+  { value: "PRICE_ASC",  label: "Price: Low → High" },
+  { value: "PRICE_DESC", label: "Price: High → Low" },
+  { value: "NEWEST",     label: "Newest First" },
 ];
 
-const VILLAGES = Array.from(new Set(sellers.map((s) => s.village)));
+const FACETS: { value: ProductFacet; label: string; icon: string }[] = [
+  { value: "PRODUCTS",  label: "Products",  icon: "inventory_2" },
+  { value: "VILLAGES",  label: "Villages",  icon: "cottage" },
+  { value: "PRODUCERS", label: "Producers", icon: "person" },
+];
 
 export function SearchResultsPage() {
-  const [params] = useSearchParams();
-  const query = params.get("q") ?? "";
   const { add } = useCart();
+  const {
+    query, setQuery,
+    hits, sort, setSort,
+    filters, updateFilter, resetFilters,
+    activeFilterCount,
+  } = useSearch();
+  const [facet, setFacet] = useState<ProductFacet>("PRODUCTS");
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const [cats, setCats] = useState<ProductCategory[]>([]);
-  const [villages, setVillages] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState(50);
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-  const [sort, setSort] = useState<SortOption>("RELEVANCE");
+  const q = query.toLowerCase();
+  const matchedSellers = q
+    ? sellers.filter(
+        (s) =>
+          s.name.toLowerCase().includes(q) ||
+          s.village.toLowerCase().includes(q) ||
+          s.tagline?.toLowerCase().includes(q),
+      )
+    : sellers;
 
-  const toggle = <T,>(arr: T[], v: T, set: (n: T[]) => void) =>
-    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  const villageHits = matchedSellers.filter((s) => s.type === "VILLAGE_PRODUCER");
+  const producerHits = matchedSellers;
 
-  const results = useMemo(() => {
-    let list = products.filter((p) => p.status === "LIVE");
-    if (query) {
-      const q = query.toLowerCase();
-      list = list.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.tags?.some((t) => t.toLowerCase().includes(q)) ||
-          getSellerById(p.sellerId)?.name.toLowerCase().includes(q),
-      );
-    }
-    if (cats.length) list = list.filter((p) => cats.includes(p.category));
-    if (villages.length)
-      list = list.filter((p) => villages.includes(getSellerById(p.sellerId)?.village ?? ""));
-    list = list.filter((p) => p.price <= maxPrice);
-    if (verifiedOnly) list = list.filter((p) => getSellerById(p.sellerId)?.verified);
-
-    switch (sort) {
-      case "PRICE_ASC": list = [...list].sort((a, b) => a.price - b.price); break;
-      case "PRICE_DESC": list = [...list].sort((a, b) => b.price - a.price); break;
-      case "POPULARITY": list = [...list].sort((a, b) => (b.reviewCount ?? 0) - (a.reviewCount ?? 0)); break;
-      case "NEWEST": list = [...list].sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? "")); break;
-    }
-    return list;
-  }, [query, cats, villages, maxPrice, verifiedOnly, sort]);
+  const facetCount = {
+    PRODUCTS: hits.length,
+    VILLAGES: villageHits.length,
+    PRODUCERS: producerHits.length,
+  };
 
   return (
     <div className="container-page py-token-md">
+      {/* Large search bar */}
+      <SearchBar
+        key={query}
+        defaultValue={query}
+        size="lg"
+        placeholder="Search by product, village, origin, or ingredient…"
+        onSearch={setQuery}
+        className="mb-3"
+      />
+
+      {/* Active filter pills */}
+      <ActiveFilters
+        query={query}
+        filters={filters}
+        onChange={updateFilter}
+        onClearQuery={() => setQuery("")}
+      />
+
+      {/* Header */}
       <header className="mb-token-md">
-        <p className="text-label-md uppercase tracking-[0.1em] text-primary">Results</p>
+        <p className="text-label-md uppercase tracking-[0.1em] text-primary">
+          {sort === "RELEVANCE" && query ? "AI-Scored Results" : "Results"}
+        </p>
         <h1 className="mt-1 font-serif text-headline-lg font-medium text-on-surface">
-          {query ? `“${query}”` : "All heritage goods"}
+          {query ? `"${query}"` : "All heritage goods"}
         </h1>
         <p className="mt-1 text-body-md text-on-surface-variant">
-          Showing {results.length} of {products.length} items across {VILLAGES.length} villages
+          {facet === "PRODUCTS" &&
+            `${hits.length} product${hits.length !== 1 ? "s" : ""}${
+              query
+                ? ` · scored across name, tags, village & story`
+                : ""
+            }`}
+          {facet === "VILLAGES" && `${villageHits.length} village${villageHits.length !== 1 ? "s" : ""}`}
+          {facet === "PRODUCERS" && `${producerHits.length} producer${producerHits.length !== 1 ? "s" : ""}`}
         </p>
       </header>
 
-      <div className="grid gap-token-md lg:grid-cols-[260px_1fr]">
-        {/* Filters */}
-        <aside className="space-y-token-md">
-          <Card padding="md">
-            <h2 className="mb-3 text-label-md font-semibold uppercase tracking-[0.05em] text-secondary">
-              Category
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {CATEGORIES.map((c) => (
-                <Chip key={c.value} selected={cats.includes(c.value)} onClick={() => toggle(cats, c.value, setCats)}>
-                  {c.label}
-                </Chip>
-              ))}
-            </div>
-          </Card>
-
-          <Card padding="md">
-            <h2 className="mb-3 text-label-md font-semibold uppercase tracking-[0.05em] text-secondary">
-              Max price
-            </h2>
-            <input
-              type="range"
-              min={10}
-              max={50}
-              step={1}
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className="w-full accent-primary"
-              aria-label="Maximum price"
-            />
-            <p className="mt-1 text-body-md text-on-surface">Up to ${maxPrice}.00</p>
-          </Card>
-
-          <Card padding="md">
-            <h2 className="mb-3 text-label-md font-semibold uppercase tracking-[0.05em] text-secondary">
-              Origin village
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {VILLAGES.map((v) => (
-                <Chip key={v} selected={villages.includes(v)} onClick={() => toggle(villages, v, setVillages)}>
-                  {v}
-                </Chip>
-              ))}
-            </div>
-          </Card>
-
-          <label className="flex cursor-pointer items-center gap-3 rounded-lg bg-secondary-container p-token-sm text-secondary-on-container">
-            <input
-              type="checkbox"
-              checked={verifiedOnly}
-              onChange={(e) => setVerifiedOnly(e.target.checked)}
-              className="h-4 w-4 accent-secondary"
-            />
-            <span className="flex items-center gap-1 text-label-md font-semibold">
-              <Icon name="verified" size={16} filled /> Verified producers only
+      <div className="grid gap-token-md lg:grid-cols-[264px_1fr]">
+        {/* ── Filter sidebar ── */}
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2.5 text-label-md font-semibold text-on-surface-variant transition-colors hover:border-primary lg:hidden"
+        >
+          <Icon name="tune" size={18} />
+          Filters
+          {activeFilterCount > 0 && (
+            <span className="ml-auto grid h-5 w-5 place-items-center rounded-full bg-primary text-[11px] font-bold text-primary-on">
+              {activeFilterCount}
             </span>
-          </label>
+          )}
+        </button>
+
+        {/* Mobile drawer */}
+        <AnimatePresence>
+          {drawerOpen && (
+            <>
+              <motion.div
+                key="overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+                onClick={() => setDrawerOpen(false)}
+              />
+              <motion.aside
+                key="drawer"
+                initial={{ x: "-100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "-100%" }}
+                transition={{ type: "spring", damping: 32, stiffness: 320 }}
+                className="fixed inset-y-0 left-0 z-50 w-80 overflow-y-auto bg-surface p-token-md shadow-tinted-lg lg:hidden"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="font-serif text-headline-md font-medium text-on-surface">Filters</span>
+                  <button
+                    onClick={() => setDrawerOpen(false)}
+                    className="rounded-full p-1 text-on-surface-variant hover:bg-surface-low"
+                  >
+                    <Icon name="close" size={22} />
+                  </button>
+                </div>
+                <SearchFilters
+                  filters={filters}
+                  onChange={updateFilter}
+                  onReset={resetFilters}
+                  activeCount={activeFilterCount}
+                />
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-20">
+            <SearchFilters
+              filters={filters}
+              onChange={updateFilter}
+              onReset={resetFilters}
+              activeCount={activeFilterCount}
+            />
+          </div>
         </aside>
 
-        {/* Results */}
+        {/* ── Results panel ── */}
         <div>
-          <div className="mb-token-sm flex items-center justify-between gap-3">
+          {/* Facet tabs + sort */}
+          <div className="mb-token-sm flex flex-wrap items-center gap-3">
             <div className="flex gap-2">
-              <Chip selected icon="grid_view">Products ({results.length})</Chip>
-              <Chip icon="cottage">Villages ({VILLAGES.length})</Chip>
-              <Chip icon="person">Producers ({sellers.length})</Chip>
-            </div>
-            <Select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortOption)}
-              aria-label="Sort results"
-              className="w-48"
-            >
-              {SORTS.map((s) => (
-                <option key={s.value} value={s.value}>Sort: {s.label}</option>
+              {FACETS.map((f) => (
+                <Chip
+                  key={f.value}
+                  selected={facet === f.value}
+                  icon={f.icon}
+                  onClick={() => setFacet(f.value)}
+                >
+                  {f.label} ({facetCount[f.value]})
+                </Chip>
               ))}
-            </Select>
+            </div>
+            {facet === "PRODUCTS" && (
+              <Select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortOption)}
+                aria-label="Sort results"
+                className="ml-auto w-52"
+              >
+                {SORTS.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </Select>
+            )}
           </div>
 
-          {results.length === 0 ? (
-            <EmptyState
-              icon="search_off"
-              title="No matches yet"
-              message="Try removing a filter or widening your price range."
-            />
-          ) : (
-            <div className="grid grid-cols-2 gap-token-md xl:grid-cols-3">
-              {results.map((p) => (
-                <ProductCard key={p.id} product={p} onAdd={add} />
-              ))}
-            </div>
+          {/* Products grid */}
+          {facet === "PRODUCTS" && (
+            hits.length === 0 ? (
+              <EmptyState
+                icon="search_off"
+                title={query ? `No results for "${query}"` : "No products match your filters"}
+                message={
+                  query
+                    ? "Try a synonym — 'ghee' for dairy, 'oil' for cold-pressed, 'bowl' for pottery."
+                    : "Widen the price range or uncheck a filter."
+                }
+              />
+            ) : (
+              <Reveal
+                as="div"
+                stagger={0.04}
+                className="grid grid-cols-2 gap-token-md xl:grid-cols-3"
+              >
+                {hits.map(({ product, score, matchedFields }) => (
+                  <RevealItem key={product.id}>
+                    <div className="relative">
+                      <ProductCard product={product} onAdd={add} />
+                      {query && sort === "RELEVANCE" && (
+                        <RelevanceBadge
+                          score={score}
+                          matchedFields={matchedFields}
+                        />
+                      )}
+                    </div>
+                  </RevealItem>
+                ))}
+              </Reveal>
+            )
+          )}
+
+          {/* Villages grid */}
+          {facet === "VILLAGES" && (
+            villageHits.length === 0 ? (
+              <EmptyState icon="cottage" title="No villages match" message="Clear your search to browse all." />
+            ) : (
+              <div className="grid gap-token-md sm:grid-cols-2 xl:grid-cols-3">
+                {villageHits.map((s) => (
+                  <Link
+                    key={s.id}
+                    to={`/seller/${s.id}`}
+                    className="group flex flex-col gap-3 rounded-xl border border-surface-highest bg-surface-lowest p-token-md transition-all hover:border-primary hover:shadow-tinted"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-11 w-11 place-items-center rounded-full bg-secondary-container text-secondary-on-container">
+                        <Icon name="cottage" size={22} />
+                      </span>
+                      <div>
+                        <p className="font-serif text-body-lg font-medium text-on-surface group-hover:text-primary">
+                          {s.village}
+                        </p>
+                        <p className="text-label-sm text-on-surface-variant">{s.name}</p>
+                      </div>
+                      {s.verified && (
+                        <Icon name="verified" size={18} className="ml-auto text-secondary" filled />
+                      )}
+                    </div>
+                    {s.tagline && (
+                      <p className="line-clamp-2 text-body-md text-on-surface-variant">{s.tagline}</p>
+                    )}
+                    <span className="mt-auto inline-flex items-center gap-1 text-label-md font-semibold text-secondary">
+                      Visit storefront <Icon name="arrow_forward" size={14} />
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )
+          )}
+
+          {/* Producers grid */}
+          {facet === "PRODUCERS" && (
+            producerHits.length === 0 ? (
+              <EmptyState icon="person_off" title="No producers match" message="Try clearing your search." />
+            ) : (
+              <div className="grid gap-token-md sm:grid-cols-2 xl:grid-cols-3">
+                {producerHits.map((s) => (
+                  <Link
+                    key={s.id}
+                    to={`/seller/${s.id}`}
+                    className="group flex flex-col gap-3 rounded-xl border border-surface-highest bg-surface-lowest p-token-md transition-all hover:border-primary hover:shadow-tinted"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-11 w-11 place-items-center rounded-full bg-primary-fixed text-primary-tint">
+                        <Icon name="storefront" size={22} />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-serif text-body-lg font-medium text-on-surface group-hover:text-primary">
+                          {s.name}
+                        </p>
+                        <p className="text-label-sm text-on-surface-variant">
+                          {s.village} ·{" "}
+                          {s.type === "VILLAGE_PRODUCER" ? "Village Producer" : "Kirana Store"}
+                        </p>
+                      </div>
+                      {s.verified && (
+                        <Icon name="verified" size={18} className="ml-auto shrink-0 text-secondary" filled />
+                      )}
+                    </div>
+                    {s.tagline && (
+                      <p className="line-clamp-2 text-body-md text-on-surface-variant">{s.tagline}</p>
+                    )}
+                    {s.traceabilityScore != null && (
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-high">
+                          <div
+                            className="h-full rounded-full bg-secondary"
+                            style={{ width: `${s.traceabilityScore}%` }}
+                          />
+                        </div>
+                        <span className="text-label-sm text-secondary">{s.traceabilityScore}% traceable</span>
+                      </div>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )
           )}
         </div>
       </div>
     </div>
+  );
+}
+
+/* Subtle relevance badge overlaid on the product card */
+function RelevanceBadge({ score, matchedFields }: { score: number; matchedFields: string[] }) {
+  // Score expected range: ~0.5 (weak) → ~8+ (strong)
+  const pct = Math.min(100, Math.round((score / 8) * 100));
+  if (pct < 25 || matchedFields.length === 0) return null;
+
+  const label = pct >= 75 ? "Top match" : pct >= 50 ? "Good match" : "Match";
+  const bg =
+    pct >= 75
+      ? "bg-secondary text-secondary-on"
+      : "bg-surface-high text-on-surface-variant";
+
+  return (
+    <span
+      className={`pointer-events-none absolute left-2 top-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide backdrop-blur-sm ${bg}`}
+    >
+      <Icon name="auto_awesome" size={10} />
+      {label}
+    </span>
   );
 }

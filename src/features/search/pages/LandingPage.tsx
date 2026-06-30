@@ -11,6 +11,7 @@ import {
 import { gradientFor } from "@/lib/placeholder";
 import { sellers, getLiveProducts } from "@/shared/mocks";
 import { useCart } from "@/features/cart/CartContext";
+import { SearchBar } from "@/features/search/components/SearchBar";
 
 const TRUST_STEPS = [
   { icon: "agriculture", title: "Sourced", text: "Grown or made by a verified village producer." },
@@ -46,7 +47,12 @@ export function LandingPage() {
             producers and trusted local kirana stores — with origin you can trace,
             scan and trust.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <SearchBar
+            size="lg"
+            placeholder="Try 'forest honey', 'cold-pressed oil', 'handmade pottery'…"
+            className="mt-6 max-w-md"
+          />
+          <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink to="/shop" size="lg" icon="storefront">
               Shop the grid
             </ButtonLink>

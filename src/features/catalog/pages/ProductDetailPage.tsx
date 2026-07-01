@@ -12,37 +12,55 @@ import {
 } from "@/components/shared";
 import { formatPrice } from "@/lib/format";
 import { categoryIcon, gradientFor } from "@/lib/placeholder";
-import { getProductById, getSellerById, getProductsBySeller, getPassport } from "@/shared/mocks";
 import { useCart } from "@/features/cart/CartContext";
 import { whatsappProductLink } from "@/features/whatsapp/whatsapp";
 import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
+import { useProduct, useProducts } from "@/lib/hooks/useProducts";
+import { useSeller } from "@/lib/hooks/useSellers";
+import { mapProduct, mapSeller } from "@/lib/mappers";
 
 const TRUST_ROW = [
-  { icon: "verified", label: "Verified Producer" },
-  { icon: "qr_code_2", label: "QR-Traceable" },
-  { icon: "local_shipping", label: "Carbon-Neutral" },
+  { icon: "verified",        label: "Verified Producer" },
+  { icon: "qr_code_2",      label: "QR-Traceable" },
+  { icon: "local_shipping",  label: "Carbon-Neutral" },
 ];
 
 export function ProductDetailPage() {
   const { productId } = useParams();
-  const product = productId ? getProductById(productId) : undefined;
-  const { add } = useCart();
+  const { data: dbProduct, isLoading, error } = useProduct(productId);
+  const { data: dbSeller } = useSeller(dbProduct?.seller_id ?? undefined);
+  const { data: dbRelated = [] } = useProducts({ sellerId: dbProduct?.seller_id });
+  const { add, lines } = useCart();
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
+  const inCart = !dbProduct ? 0 : (lines.find((l) => l.product.id === dbProduct.id)?.quantity ?? 0);
 
-  if (!product) return <NotFoundPage />;
-  const seller = getSellerById(product.sellerId);
-  const passport = getPassport(product.id);
-  const related = getProductsBySeller(product.sellerId).filter((p) => p.id !== product.id).slice(0, 4);
-  const gallery = product.images.length ? product.images : [undefined, undefined, undefined, undefined];
+  if (isLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <span className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!dbProduct || error) return <NotFoundPage />;
+
+  const product = mapProduct(dbProduct);
+  const seller  = dbSeller ? mapSeller(dbSeller) : undefined;
+  const related = dbRelated
+    .filter((p) => p.id !== product.id)
+    .slice(0, 4)
+    .map(mapProduct);
+  const gallery = product.images.length
+    ? product.images
+    : [undefined, undefined, undefined, undefined];
 
   function handleAdd() {
-    if (!product) return;
     add(product, qty);
     setAdded(true);
-    setTimeout(() => setAdded(false), 1800);
+    setTimeout(() => setAdded(false), 1000);
   }
 
   return (
@@ -51,7 +69,7 @@ export function ProductDetailPage() {
         className="mb-token-md"
         items={[
           { label: "Shop", to: "/shop" },
-          { label: seller?.village ?? "Village", to: seller ? `/seller/${seller.id}` : undefined },
+          { label: seller?.village ?? "Village", to: seller ? `/producer/${seller.id}` : undefined },
           { label: product.name },
         ]}
       />
@@ -133,7 +151,11 @@ export function ProductDetailPage() {
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <QuantityStepper value={qty} onChange={setQty} max={product.stock ?? 99} />
             <Button onClick={handleAdd} size="lg" icon={added ? "check" : "add_shopping_cart"} className="flex-1">
-              {added ? "Added to basket" : "Add to basket"}
+              {added
+                ? `Added! · ${inCart} in basket`
+                : inCart > 0
+                  ? `Add more · ${inCart} in basket`
+                  : "Add to basket"}
             </Button>
           </div>
 
@@ -156,15 +178,15 @@ export function ProductDetailPage() {
             ))}
           </div>
 
-          {product.traceable && passport && (
+          {product.traceable && (
             <ButtonLink to={`/product/${product.id}/passport`} variant="ghost" className="mt-3" icon="qr_code_2">
-              View product passport · {product.batchId}
+              View product passport{product.batchId ? ` · ${product.batchId}` : ""}
             </ButtonLink>
           )}
         </div>
       </div>
 
-      {/* Heritage & purity story */}
+      {/* Heritage story */}
       {product.story && (
         <section className="mt-token-lg grid gap-token-md rounded-xl bg-surface-low p-token-md md:grid-cols-[1fr_1.4fr] md:p-8">
           <div>
@@ -179,9 +201,9 @@ export function ProductDetailPage() {
       {related.length > 0 && (
         <section className="mt-token-lg">
           <SectionHeading
-            eyebrow="From the same village"
+            eyebrow="From the same producer"
             title={`More from ${seller?.name ?? "this producer"}`}
-            action={seller ? { label: "Visit storefront", to: `/seller/${seller.id}` } : undefined}
+            action={seller ? { label: "Visit storefront", to: `/producer/${seller.id}` } : undefined}
           />
           <div className="mt-token-md grid grid-cols-2 gap-token-md md:grid-cols-4">
             {related.map((p) => (

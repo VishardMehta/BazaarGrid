@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
@@ -5,22 +6,28 @@ import { formatPrice } from "@/lib/format";
 import { Icon, Rating } from "@/components/ui";
 import { TrustBadge } from "./TrustBadge";
 import { ProductThumb } from "./ProductThumb";
-import { getSellerById } from "@/shared/mocks";
+import { FavoriteButton } from "./FavoriteButton";
 import type { Product } from "@/shared/types";
 
 interface ProductCardProps {
   product: Product;
+  /** Optional seller name shown below the product card */
+  sellerName?: string;
   onAdd?: (product: Product) => void;
   className?: string;
 }
 
-/**
- * The catalog/search workhorse: image, trust badge, name, producer, rating,
- * price + add-to-cart. 16px radius, stroke → terracotta on hover with a
- * tinted ambient lift (DESIGN.md).
- */
-export function ProductCard({ product, onAdd, className }: ProductCardProps) {
-  const seller = getSellerById(product.sellerId);
+export function ProductCard({ product, sellerName, onAdd, className }: ProductCardProps) {
+  const [justAdded, setJustAdded] = useState(false);
+
+  function handleAdd(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    onAdd?.(product);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 700);
+  }
+
   return (
     <motion.article
       whileHover={{ y: -4 }}
@@ -36,13 +43,13 @@ export function ProductCard({ product, onAdd, className }: ProductCardProps) {
           {product.organic && <TrustBadge kind="organic" compact />}
           {product.traceable && <TrustBadge kind="traceable" compact />}
         </div>
+        <FavoriteButton productId={product.id} className="absolute left-2.5 top-2.5" />
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-token-sm">
-        {seller && (
+        {sellerName && (
           <span className="flex items-center gap-1 text-label-sm text-on-surface-variant">
-            {seller.verified && <Icon name="verified" size={13} filled className="text-secondary" />}
-            {seller.name}
+            {sellerName}
           </span>
         )}
         <Link to={`/product/${product.id}`} className="block">
@@ -57,14 +64,21 @@ export function ProductCard({ product, onAdd, className }: ProductCardProps) {
             {formatPrice(product.price, product.currency)}
           </span>
           {onAdd && (
-            <button
+            <motion.button
               type="button"
-              onClick={() => onAdd(product)}
+              onClick={handleAdd}
               aria-label={`Add ${product.name} to basket`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-on transition-transform duration-150 hover:scale-105 active:scale-95"
+              animate={justAdded ? { scale: [1, 1.28, 1] } : {}}
+              transition={{ duration: 0.22 }}
+              className={cn(
+                "inline-flex h-10 w-10 items-center justify-center rounded-full transition-colors duration-150",
+                justAdded
+                  ? "bg-primary text-primary-on"
+                  : "bg-secondary text-secondary-on hover:scale-105 active:scale-95",
+              )}
             >
-              <Icon name="add_shopping_cart" size={18} />
-            </button>
+              <Icon name={justAdded ? "check" : "add_shopping_cart"} size={18} />
+            </motion.button>
           )}
         </div>
         <span className="text-label-sm text-outline">per {product.unit}</span>

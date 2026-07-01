@@ -3,7 +3,10 @@
     "id": "ORD-8401",
     "buyerId": "buy_elena_vance",
     "channel": "APP",
-    "status": "IN_TRANSIT",
+    "status": "FULFILLED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_green_valley",
     "items": [
       {
         "productId": "prod_forest_honey",
@@ -12,7 +15,8 @@
         "unit": "500g jar",
         "quantity": 2,
         "price": 12.5,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-AFH-082"
       },
       {
         "productId": "prod_olive_oil",
@@ -21,7 +25,8 @@
         "unit": "750ml bottle",
         "quantity": 1,
         "price": 24.0,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-OO-191"
       }
     ],
     "subtotal": 49.0,
@@ -38,13 +43,22 @@
     },
     "payment": "CARD",
     "placedAt": "2024-10-24",
-    "primarySellerId": "sel_green_valley"
+    "primarySellerId": "sel_green_valley",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-24T04:30:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-24T08:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-10-25T06:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2024-10-26T10:00:00.000Z" }
+    ]
   },
   {
     "id": "ORD-8392",
     "buyerId": "buy_elena_vance",
     "channel": "APP",
-    "status": "DELIVERED",
+    "status": "COMPLETED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_green_valley",
     "items": [
       {
         "productId": "prod_heritage_ghee",
@@ -53,7 +67,8 @@
         "unit": "250g jar",
         "quantity": 2,
         "price": 18.0,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-GHE-061"
       },
       {
         "productId": "prod_arabica_beans",
@@ -62,7 +77,8 @@
         "unit": "340g bag",
         "quantity": 1,
         "price": 16.5,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-AC-099"
       }
     ],
     "subtotal": 52.5,
@@ -72,13 +88,23 @@
     "fulfillment": "DELIVERY",
     "payment": "DIGITAL_WALLET",
     "placedAt": "2024-09-18",
-    "primarySellerId": "sel_green_valley"
+    "primarySellerId": "sel_green_valley",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-09-18T04:30:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-09-18T08:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-09-19T06:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2024-09-20T10:00:00.000Z" },
+      { "status": "COMPLETED", "at": "2024-09-22T14:00:00.000Z" }
+    ]
   },
   {
     "id": "ORD-8377",
     "buyerId": "buy_marco_valente",
     "channel": "WHATSAPP",
     "status": "CONFIRMED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
     "items": [
       {
         "productId": "prod_swirl_bowl",
@@ -87,22 +113,30 @@
         "unit": "each",
         "quantity": 1,
         "price": 32.0,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-OSB-044"
       }
     ],
     "subtotal": 32.0,
     "deliveryFee": 0,
     "total": 32.0,
-    "fulfillment": "VILLAGE_PICKUP",
+    "fulfillment": "PICKUP",
     "payment": "COD",
     "placedAt": "2024-10-20",
-    "primarySellerId": "sel_coast_artisans"
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-20T09:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-20T10:30:00.000Z" }
+    ]
   },
   {
     "id": "ORD-8350",
     "buyerId": "buy_marco_valente",
     "channel": "WHATSAPP",
     "status": "PLACED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
     "items": [
       {
         "productId": "prod_linen_set",
@@ -111,7 +145,8 @@
         "unit": "set of 2",
         "quantity": 1,
         "price": 38.0,
-        "traceable": true
+        "traceable": true,
+        "batchId": "BG-2024-LIN-077"
       },
       {
         "productId": "prod_earth_cups",
@@ -120,7 +155,8 @@
         "unit": "set of 4",
         "quantity": 1,
         "price": 28.0,
-        "traceable": false
+        "traceable": false,
+        "batchId": "batch-prod_earth_cups"
       }
     ],
     "subtotal": 66.0,
@@ -129,13 +165,19 @@
     "fulfillment": "DELIVERY",
     "payment": "COD",
     "placedAt": "2024-08-30",
-    "primarySellerId": "sel_coast_artisans"
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-08-30T05:00:00.000Z" }
+    ]
   },
   {
     "id": "ORD-8311",
     "buyerId": "buy_elena_vance",
     "channel": "APP",
     "status": "PACKED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
     "items": [
       {
         "productId": "prod_charcoal_vase",
@@ -144,16 +186,22 @@
         "unit": "each",
         "quantity": 1,
         "price": 45.0,
-        "traceable": false
+        "traceable": false,
+        "batchId": "batch-prod_charcoal_vase"
       }
     ],
     "subtotal": 45.0,
     "deliveryFee": 0,
     "rewardsDiscount": 5.0,
     "total": 40.0,
-    "fulfillment": "VILLAGE_PICKUP",
+    "fulfillment": "PICKUP",
     "payment": "CARD",
     "placedAt": "2024-10-22",
-    "primarySellerId": "sel_coast_artisans"
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-22T04:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-22T07:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-10-23T08:00:00.000Z" }
+    ]
   }
 ]

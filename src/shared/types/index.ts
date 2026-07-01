@@ -123,11 +123,11 @@ export type OrderStatus =
   | "PLACED"
   | "CONFIRMED"
   | "PACKED"
-  | "IN_TRANSIT"
-  | "DELIVERED"
+  | "FULFILLED"   // shipped / on its way (was IN_TRANSIT)
+  | "COMPLETED"   // received (was DELIVERED)
   | "CANCELLED";
 
-export type FulfillmentMethod = "DELIVERY" | "VILLAGE_PICKUP";
+export type FulfillmentMethod = "DELIVERY" | "PICKUP";
 
 export type PaymentMethod = "CARD" | "DIGITAL_WALLET" | "COD";
 
@@ -141,6 +141,8 @@ export interface OrderItem {
   /** Unit price at time of order. */
   price: number;
   traceable?: boolean;
+  /** Traceability batch identifier (required by backend). */
+  batchId?: string;
 }
 
 export interface Address {
@@ -153,6 +155,15 @@ export interface Address {
   postalCode?: string;
   country?: string;
   isDefault?: boolean;
+}
+
+/** Backend order classifications (mirrors backend order.constants.js). */
+export type BackendOrderType = "CUSTOMER_ORDER" | "RESTOCK_ORDER";
+export type BackendSellerType = "PRODUCER" | "LOCAL_STORE";
+
+export interface StatusHistoryEntry {
+  status: OrderStatus;
+  at: string; // ISO
 }
 
 export interface Order {
@@ -172,6 +183,13 @@ export interface Order {
   placedAt: string; // ISO
   /** Primary seller for single-village orders (convenience). */
   primarySellerId?: string;
+  /* ---- Backend fields (present on orders fetched from the API) ---- */
+  orderType?: BackendOrderType;
+  sellerType?: BackendSellerType;
+  fulfillingSellerId?: string;
+  hasQualityIssue?: boolean;
+  updatedAt?: string;
+  statusHistory?: StatusHistoryEntry[];
 }
 
 /* ------------------------------------------------------------------ *

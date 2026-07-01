@@ -10,9 +10,11 @@ import {
   RevealItem,
 } from "@/components/shared";
 import { gradientFor } from "@/lib/placeholder";
-import { getSellerById, getProductsBySeller } from "@/shared/mocks";
 import { useCart } from "@/features/cart/CartContext";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
+import { useSeller } from "@/lib/hooks/useSellers";
+import { useProducts } from "@/lib/hooks/useProducts";
+import { mapProduct, mapSeller } from "@/lib/mappers";
 
 const REVIEWS = [
   { name: "Priya N.", text: "The honey tastes like the meadow it came from. Scanning the passport sealed my trust.", rating: 5 },
@@ -22,11 +24,19 @@ const REVIEWS = [
 
 export function StorefrontPage() {
   const { sellerId } = useParams();
-  const seller = sellerId ? getSellerById(sellerId) : undefined;
+  const { data: dbSeller, isLoading } = useSeller(sellerId);
+  const { data: dbProducts = [] } = useProducts({ sellerId });
   const { add } = useCart();
 
-  if (!seller) return <NotFoundPage />;
-  const products = getProductsBySeller(seller.id).filter((p) => p.status === "LIVE");
+  if (isLoading) return (
+    <div className="flex h-96 items-center justify-center">
+      <span className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
+    </div>
+  );
+  if (!dbSeller) return <NotFoundPage />;
+
+  const seller   = mapSeller(dbSeller);
+  const products = dbProducts.map(mapProduct);
   const isKirana = seller.type === "KIRANA_STORE";
 
   return (
@@ -37,7 +47,8 @@ export function StorefrontPage() {
         style={{ backgroundImage: gradientFor(seller.id + "banner") }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-on-surface/60 to-transparent" />
-        <div className="container-page relative flex h-full flex-col justify-end pb-token-md">
+        {/* pb clears the stats card that overlaps below so the tagline is never clipped */}
+        <div className="container-page relative flex h-full flex-col justify-end pb-16">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-surface/90 px-3 py-1 text-label-md font-semibold text-on-surface backdrop-blur">
               {isKirana ? "Kirana Store" : "Heritage Village"}
@@ -52,7 +63,7 @@ export function StorefrontPage() {
       </section>
 
       {/* Stats + actions */}
-      <section className="container-page -mt-8 relative">
+      <section className="container-page relative -mt-6">
         <Card padding="md" className="flex flex-wrap items-center justify-between gap-token-md shadow-tinted">
           <div className="flex flex-wrap gap-token-lg">
             {[

@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react";
 import type { Product } from "@/shared/types";
-import { getProductById } from "@/shared/mocks";
 
 export interface CartLine {
   product: Product;
@@ -59,23 +58,8 @@ interface CartContextValue {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-/** Seed with a couple of items so the cart/checkout screen looks alive on first load. */
-function init(): CartState {
-  const seeds: [string, number][] = [
-    ["prod_heritage_ghee", 1],
-    ["prod_forest_honey", 2],
-  ];
-  const lines = seeds
-    .map(([id, quantity]) => {
-      const product = getProductById(id);
-      return product ? { product, quantity } : null;
-    })
-    .filter((l): l is CartLine => l !== null);
-  return { lines };
-}
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, undefined, init);
+  const [state, dispatch] = useReducer(reducer, { lines: [] });
 
   const value = useMemo<CartContextValue>(() => {
     const count = state.lines.reduce((n, l) => n + l.quantity, 0);

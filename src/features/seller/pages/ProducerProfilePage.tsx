@@ -9,11 +9,13 @@ import {
 } from "@/components/shared";
 import { gradientFor } from "@/lib/placeholder";
 import { formatMonthYear } from "@/lib/format";
-import { getSellerById, getProductsBySeller } from "@/shared/mocks";
 import { useCart } from "@/features/cart/CartContext";
 import { whatsappOrderLink } from "@/features/whatsapp/whatsapp";
 import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
+import { useSeller } from "@/lib/hooks/useSellers";
+import { useProducts } from "@/lib/hooks/useProducts";
+import { mapProduct, mapSeller } from "@/lib/mappers";
 
 const VALUES = [
   { icon: "verified", label: "Verified Producer" },
@@ -24,24 +26,32 @@ const VALUES = [
 
 export function ProducerProfilePage() {
   const { sellerId } = useParams();
-  const seller = sellerId ? getSellerById(sellerId) : undefined;
+  const { data: dbSeller, isLoading } = useSeller(sellerId);
+  const { data: dbProducts = [] }     = useProducts({ sellerId });
   const { add } = useCart();
 
-  if (!seller) return <NotFoundPage />;
-  const products = getProductsBySeller(seller.id).filter((p) => p.status === "LIVE");
+  if (isLoading) return (
+    <div className="flex h-96 items-center justify-center">
+      <span className="h-8 w-8 animate-spin rounded-full border-4 border-secondary border-t-transparent" />
+    </div>
+  );
+  if (!dbSeller) return <NotFoundPage />;
+
+  const seller   = mapSeller(dbSeller);
+  const products = dbProducts.map(mapProduct);
 
   return (
     <div className="pb-token-lg">
-      {/* Editorial hero */}
+      {/* Editorial hero — plain banner; identity sits in the row below it */}
       <section
-        className="relative h-56"
+        className="relative h-52 overflow-hidden md:h-60"
         style={{ backgroundImage: gradientFor(seller.id + "profile") }}
       >
-        <div className="absolute inset-0 bg-on-surface/30" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-on-surface/10 to-on-surface/50" />
       </section>
 
       <div className="container-page">
-        <div className="-mt-16 flex flex-col items-start gap-token-md md:flex-row md:items-end md:justify-between">
+        <div className="-mt-14 relative z-10 flex flex-col items-start gap-token-md md:flex-row md:items-end md:justify-between">
           <div className="flex items-end gap-4">
             <Avatar name={seller.name} src={seller.avatarUrl} size="xl" className="ring-4 ring-surface" />
             <div className="pb-1">

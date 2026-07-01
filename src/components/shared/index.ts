@@ -3,6 +3,7 @@ export { TrustBadge } from "./TrustBadge";
 export type { TrustKind } from "./TrustBadge";
 export { ProductThumb } from "./ProductThumb";
 export { ProductCard } from "./ProductCard";
+export { FavoriteButton } from "./FavoriteButton";
 export { SellerBadge } from "./SellerBadge";
 export { TraceabilityScore } from "./TraceabilityScore";
 export { OrderTimeline, ORDER_FLOW } from "./OrderTimeline";

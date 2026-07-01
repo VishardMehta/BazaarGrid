@@ -4,11 +4,11 @@ import type { OrderStatus } from "@/shared/types";
 
 /** Ordered fulfilment flow for APP/WhatsApp orders. */
 export const ORDER_FLOW: { status: OrderStatus; label: string; icon: string }[] = [
-  { status: "PLACED", label: "Placed", icon: "receipt_long" },
-  { status: "CONFIRMED", label: "Confirmed", icon: "task_alt" },
-  { status: "PACKED", label: "Packed", icon: "inventory_2" },
-  { status: "IN_TRANSIT", label: "In Transit", icon: "local_shipping" },
-  { status: "DELIVERED", label: "Delivered", icon: "home" },
+  { status: "PLACED",    label: "Placed",     icon: "receipt_long" },
+  { status: "CONFIRMED", label: "Confirmed",  icon: "task_alt" },
+  { status: "PACKED",    label: "Packed",     icon: "inventory_2" },
+  { status: "FULFILLED", label: "In Transit", icon: "local_shipping" },
+  { status: "COMPLETED", label: "Delivered",  icon: "home" },
 ];
 
 interface OrderTimelineProps {

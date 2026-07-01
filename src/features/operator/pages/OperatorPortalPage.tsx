@@ -1,38 +1,37 @@
 import { useState } from "react";
 import { Button, Card, Chip, Icon, Input, Select } from "@/components/ui";
-import { StatCard } from "@/components/shared";
-import { PortalLayout, type PortalNavItem } from "@/components/layout";
-import { gradientFor } from "@/lib/placeholder";
-import { products, sellers, getSellerById } from "@/shared/mocks";
 import { CsvUpload } from "@/features/catalog/components/CsvUpload";
-
-const OPERATOR_NAV: PortalNavItem[] = [
-  { to: "/operator", label: "Dashboard", icon: "dashboard", end: true },
-  { to: "/operator", label: "Villages", icon: "cottage" },
-  { to: "/operator", label: "Producers", icon: "groups" },
-  { to: "/operator", label: "Inventory", icon: "inventory_2" },
-  { to: "/operator", label: "Analytics", icon: "insights" },
-];
+import { StatCard } from "@/components/shared";
+import { PortalLayout } from "@/components/layout";
+import { gradientFor } from "@/lib/placeholder";
+import { OPERATOR_NAV } from "@/features/seller/sellerNav";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useAllSellers } from "@/lib/hooks/useSellers";
+import { useVillages } from "@/lib/hooks/useVillages";
+import { useProducts } from "@/lib/hooks/useProducts";
 
 const CRAFTS = ["Textiles", "Ceramics", "Culinary", "Woodworking"];
 
-const RECENT = [
-  { name: "Marco Valente", craft: "Olive Wood Artisan" },
-  { name: "Sana Khan", craft: "Master Weaver" },
-  { name: "Borgo San Leo", craft: "New Village Hub" },
-];
-
 export function OperatorPortalPage() {
+  const { profile } = useAuth();
+  const { data: villages  = [] } = useVillages();
+  const { data: allSellers= [] } = useAllSellers();
+  const { data: allProducts=[]} = useProducts({ status: "LIVE" });
   const [crafts, setCrafts] = useState<string[]>(["Textiles"]);
   const toggle = (c: string) =>
     setCrafts((cur) => (cur.includes(c) ? cur.filter((x) => x !== c) : [...cur, c]));
+
+  const activeVillages  = villages.filter((v) => v.status === "ACTIVE").length;
+  const avgTraceability = allSellers.length
+    ? Math.round(allSellers.reduce((s, x) => s + x.traceability_score, 0) / allSellers.length)
+    : 0;
 
   return (
     <PortalLayout
       portalName="Local Operator Portal"
       items={OPERATOR_NAV}
-      user={{ name: "Julia Doe", meta: "Operator · North Region" }}
-      action={{ label: "Onboard Village", to: "/operator", icon: "add_location_alt" }}
+      user={{ name: profile?.name ?? "Operator", meta: "Operator Portal" }}
+      action={{ label: "Onboard Village", to: "/operator/villages", icon: "add_location_alt" }}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -45,10 +44,10 @@ export function OperatorPortalPage() {
       </div>
 
       <div className="mt-token-md grid gap-token-md sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Verified Villages" value="14" icon="cottage" delta="+2 this quarter" deltaTone="up" />
-        <StatCard label="Producers" value={sellers.length} icon="groups" />
-        <StatCard label="Live SKUs" value={products.length} icon="inventory_2" />
-        <StatCard label="Compliance Queue" value="3" icon="rule" delta="Awaiting docs" deltaTone="down" />
+        <StatCard label="Verified Villages"  value={activeVillages}    icon="cottage"     delta="+2 this quarter" deltaTone="up" />
+        <StatCard label="Producers"          value={allSellers.length} icon="groups" />
+        <StatCard label="Live SKUs"          value={allProducts.length}icon="inventory_2" />
+        <StatCard label="Avg Traceability"   value={`${avgTraceability}%`} icon="qr_code_2" />
       </div>
 
       <div className="mt-token-md grid gap-token-md lg:grid-cols-[1.5fr_1fr]">
@@ -61,8 +60,8 @@ export function OperatorPortalPage() {
             <Input label="Full name / artisan identity" placeholder="e.g. Elena Rossi" required />
             <Select label="Village association" defaultValue="">
               <option value="">Select a village</option>
-              {sellers.map((s) => (
-                <option key={s.id}>{s.village}</option>
+              {villages.map((v) => (
+                <option key={v.id}>{v.name}</option>
               ))}
             </Select>
             <div className="sm:col-span-2">
@@ -95,8 +94,8 @@ export function OperatorPortalPage() {
         <div className="grid gap-token-md">
           <Card padding="md" className="bg-secondary text-secondary-on">
             <p className="text-label-md uppercase tracking-wide text-secondary-on/80">Active network</p>
-            <p className="mt-1 font-serif text-display-lg text-[2.5rem] font-semibold leading-none">14</p>
-            <p className="text-label-md text-secondary-on/85">Verified local villages</p>
+            <p className="mt-1 font-serif text-display-lg text-[2.5rem] font-semibold leading-none">{activeVillages}</p>
+            <p className="text-label-md text-secondary-on/85">Active local villages</p>
           </Card>
           <Card padding="md">
             <div className="flex items-center justify-between">
@@ -104,16 +103,17 @@ export function OperatorPortalPage() {
               <Icon name="schedule" size={18} className="text-on-surface-variant" />
             </div>
             <ul className="mt-2 space-y-3">
-              {RECENT.map((r) => (
-                <li key={r.name} className="flex items-center gap-3">
-                  <span className="h-9 w-9 rounded-full ring-2 ring-surface-lowest" style={{ backgroundImage: gradientFor(r.name) }} />
+              {allSellers.slice(0, 4).map((s) => (
+                <li key={s.id} className="flex items-center gap-3">
+                  <span className="h-9 w-9 rounded-full ring-2 ring-surface-lowest" style={{ backgroundImage: gradientFor(s.id) }} />
                   <span className="flex-1">
-                    <span className="block text-body-md font-medium text-on-surface">{r.name}</span>
-                    <span className="block text-label-sm text-on-surface-variant">{r.craft}</span>
+                    <span className="block text-body-md font-medium text-on-surface">{s.name}</span>
+                    <span className="block text-label-sm text-on-surface-variant">{s.village}</span>
                   </span>
                   <span className="h-2.5 w-2.5 rounded-full bg-secondary" />
                 </li>
               ))}
+              {allSellers.length === 0 && <li className="text-label-sm text-on-surface-variant">No sellers yet.</li>}
             </ul>
           </Card>
         </div>
@@ -136,19 +136,19 @@ export function OperatorPortalPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-highest">
-              {products.slice(0, 6).map((p) => {
-                const seller = getSellerById(p.sellerId);
+              {allProducts.slice(0, 8).map((p) => {
+                const seller = allSellers.find((s) => s.id === p.seller_id);
                 return (
                   <tr key={p.id} className="hover:bg-surface-low">
                     <td className="px-token-md py-3 font-medium text-on-surface">{p.name}</td>
-                    <td className="px-token-md py-3 text-on-surface-variant">{seller?.village}</td>
-                    <td className="px-token-md py-3 text-on-surface-variant">{seller?.name}</td>
+                    <td className="px-token-md py-3 text-on-surface-variant">{seller?.village ?? "—"}</td>
+                    <td className="px-token-md py-3 text-on-surface-variant">{seller?.name ?? "—"}</td>
                     <td className="px-token-md py-3">
-                      <span className={`inline-flex items-center gap-1 ${(p.stock ?? 0) < 20 ? "text-primary" : "text-secondary"}`}>
-                        <Icon name="circle" size={8} filled /> {p.stock ?? 0} units
+                      <span className={`inline-flex items-center gap-1 ${p.stock < 20 ? "text-primary" : "text-secondary"}`}>
+                        <Icon name="circle" size={8} filled /> {p.stock} units
                       </span>
                     </td>
-                    <td className="px-token-md py-3 text-right font-semibold text-on-surface">${p.price.toFixed(2)}</td>
+                    <td className="px-token-md py-3 text-right font-semibold text-on-surface">₹{p.price.toFixed(2)}</td>
                   </tr>
                 );
               })}

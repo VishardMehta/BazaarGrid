@@ -1,116 +1,145 @@
 # BazaarGrid
 
-> Village-branded agri-commerce + local kirana network. Buyers discover and order
-> packaged farm goods from **village producers** and **local kirana stores**, with
-> trust and origin traceability at the core.
+Village-branded agri-commerce platform. Buyers discover and order packaged farm goods from village producers and kirana stores, with origin traceability at the core.
 
-A team project built in **React + TypeScript**, with an **AI/ML discovery engine**
-for search. Sellers come in two flavours — village producers and kirana stores —
-and everything is built around that single umbrella concept.
+**Stack:** React + TypeScript + Vite · Supabase (auth + DB) · React Query · Framer Motion · Tailwind CSS
 
 ---
 
-## Quick start
+## Setup
+
+### 1. Install dependencies
 
 ```bash
-# clone, then:
 npm install
+```
+
+### 2. Configure environment
+
+Create `.env.local` in the repo root (never commit this file):
+
+```env
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-key>
+```
+
+Get these from **Supabase → Project Settings → API**.
+
+### 3. Set up the database
+
+Run the SQL files in order in the **Supabase SQL Editor**:
+
+```
+supabase/schema.sql   ← tables, enums, RLS policies, triggers
+supabase/seed.sql     ← initial data (villages, sample products)
+supabase/fixes.sql    ← additional policies, fixes, backfills (re-runnable)
+```
+
+`fixes.sql` is safe to re-run at any time. It adds:
+- `favorites` table + RLS
+- `promo_codes` table with seed codes (`BAZAAR10`, `HARVEST15`, `VILLAGE20`)
+- `payment_method`, `promo_code`, `pickup_location` columns on `orders`
+- Auto-create seller row when a producer is approved
+- Village Admin write policy on `sellers` table
+- Profile row backfill for any users missing a `profiles` row
+
+### 4. Enable Google OAuth (optional)
+
+In **Supabase → Auth → Providers → Google**, enable it and add your OAuth credentials. Set the redirect URL to `http://localhost:5173/auth/callback`.
+
+### 5. Run the dev server
+
+```bash
 npm run dev
 ```
 
-Open http://localhost:5173.
+Open [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## The one rule that keeps our code mergeable
+## Roles
 
-We are four people building five features that all touch the same objects
-(Seller, Product, Order). To avoid integration hell:
+| Role | Description |
+|------|-------------|
+| `BUYER` | Default on signup. Browses shop, places orders, saves favorites. |
+| `PRODUCER` | Starts as `PENDING`, approved by Village Admin. Manages products and orders via Producer Portal. |
+| `VILLAGE_ADMIN` | Manages producers, storefront, and village campaigns. |
+| `OPERATOR` | Platform-wide admin. Sees all analytics, inventory, villages. |
 
-1. **`src/shared/types` is the single source of truth.** Import `Seller`,
-   `Product`, `Order` from there. **Never redefine them locally.**
-2. **Build against mocks first** (`src/shared/mocks/`). Don't wait on anyone's
-   backend — load the JSON, build your feature, swap to the real API later.
-3. **Seller is the umbrella.** A seller is `VILLAGE_PRODUCER` **or**
-   `KIRANA_STORE`. Branch on `seller.type` where behaviour differs.
-   Never assume one type.
-4. **One Order model, two channels.** App and WhatsApp orders are the *same*
-   `Order`, distinguished by `channel: "APP" | "WHATSAPP"`.
-5. **`DESIGN.md` is the design source of truth.** Colours, typography and spacing
-   live there. Build UI to match it so every screen looks like one app.
-6. **Each feature lives in `src/features/<name>/`** so our code doesn't collide.
+Role is set during onboarding. Producers require manual approval in the Village Admin portal.
 
 ---
 
 ## Project structure
 
 ```
-bazaargrid/
-├── DESIGN.md                  # design system (exported from Stitch) — read first
-├── CLAUDE.md                  # rules Claude Code auto-loads each session
-├── src/
-│   ├── shared/
-│   │   ├── types/index.ts     # Seller, Product, Order, Buyer, Search... (SSOT)
-│   │   └── mocks/             # sellers, products, orders, buyers, CSV sample
-│   ├── features/
-│   │   ├── seller/            # Task 1 — Vishard
-│   │   ├── catalog/           # Task 2 — Vishard
-│   │   ├── orders/            # Task 3 — Sameer (Ashmit supports)
-│   │   ├── search/            # Task 4 — Navya
-│   │   └── whatsapp/          # Task 5 — Sameer (Ashmit supports)
-│   ├── components/            # shared UI: Button, Card, Badge, Input...
-│   ├── styles/                # design tokens
-│   └── App.tsx
-└── package.json
+src/
+├── features/
+│   ├── auth/          # Login, signup, onboarding, protected routes
+│   ├── catalog/       # Shop, product detail, traceability passport
+│   ├── cart/          # Cart context + checkout
+│   ├── orders/        # Cart page, my orders
+│   ├── search/        # Search results, BM25 engine
+│   ├── seller/        # Producer portal, Village Admin portal
+│   ├── operator/      # Operator portal
+│   ├── account/       # Profile, favorites, rewards
+│   └── whatsapp/      # WhatsApp order flow
+├── components/        # Shared UI (Button, Card, Badge, Icon, etc.)
+├── lib/
+│   ├── hooks/         # React Query hooks (useProducts, useOrders, etc.)
+│   ├── supabase.ts    # Supabase client + types
+│   ├── mappers.ts     # DB row → frontend type
+│   └── format.ts      # formatPrice (INR default)
+├── shared/
+│   ├── types/         # All shared TypeScript types
+│   └── mocks/         # Static JSON used by search + legacy code
+backend/               # Node.js order management REST API (standalone)
+supabase/              # SQL migrations
 ```
 
 ---
 
-## Tasks & ownership
+## Backend (Node.js API)
 
-| Task | Feature | Owner | Support |
-|------|---------|-------|---------|
-| 1 | Seller Profile & Store Setup | **Vishard** | — |
-| 2 | Product Catalog + CSV Upload | **Vishard** | — |
-| 3 | Order Management | **Sameer** | Ashmit |
-| 4 | Customer Discovery & Search (AI/ML) | **Navya** | — |
-| 5 | WhatsApp Order Flow | **Sameer** | Ashmit |
-
-**Build order:** Vishard's seller + product features are upstream — build first.
-Then Navya (search) and Sameer (orders) in parallel against mocks. WhatsApp plugs
-into the same order model. Integrate by swapping mocks for real endpoints, sellers
-& products first.
-
----
-
-## Design system (Stitch → code)
-
-The visual design is generated in **Google Stitch** and captured in **`DESIGN.md`**
-at the repo root. This is the portable design system — colours, type scale, spacing,
-component patterns.
-
-**Everyone (zero setup):** Claude Code and any agent auto-load `DESIGN.md` as
-context, so generated UI stays on-brand. Just keep `DESIGN.md` updated when the
-design changes.
-
-**Optional — pull exact Stitch screens via MCP (per-developer):**
-If you want Claude Code to fetch a specific Stitch screen's layout directly:
+The `backend/` directory is a standalone Express API for order management with a WhatsApp order flow. It runs separately from the Vite frontend.
 
 ```bash
-# in the repo root
-npx @_davideast/stitch-mcp init     # wizard: auth + MCP config
-# or the simple path: set STITCH_API_KEY env var to skip OAuth
-claude mcp list                     # verify "stitch" is connected
+cd backend
+npm install
+npm start        # runs on http://localhost:3000
 ```
 
-This exposes `build_site`, `get_screen_code`, `get_screen_image` to Claude Code.
-**Note:** Stitch outputs *static layout* only — interactivity, validation and state
-are built in code. Not pixel-perfect; treat the output as a first draft.
+It currently uses a local JSON file as a datastore (`backend/src/data/orders.json`). Not yet connected to Supabase.
 
-> For a student project, `DESIGN.md` alone is enough. Only add the MCP on your own
-> machine if you want screen-level pulls — don't make the whole team set up gcloud.
+---
 
-Brand tokens (also in `DESIGN.md`):
+## Pending work
+
+### High priority
+
+- **Search on live data** — `src/features/search/hooks/useSearch.ts` still imports from `@/shared/mocks`. Needs to query `supabase.from("products")` and feed results into the existing BM25 engine (or replace with Supabase full-text search).
+
+- **Traceability page on live data** — `src/features/catalog/pages/TraceabilityPage.tsx` reads from `@/shared/mocks`. Needs a `product_passports` table in Supabase and a query hook.
+
+- **Real QR codes** — The product passport page shows a Material icon (`qr_code_2`), not a real scannable QR code. Needs `npm install qrcode` and encoding `https://bazaargrid.com/product/:id/passport`.
+
+- **Backend → Supabase** — `backend/` uses a local JSON file. Should be migrated to read/write the `orders` table in Supabase.
+
+### Lower priority
+
+- **Semantic search** — The search engine (`src/features/search/engine.ts`) uses a hardcoded synonym table and Levenshtein fuzzy matching. There is a marked swap-point for a Python embedding service (`/api/search?q=...`) — not yet built.
+
+- **Producer analytics** — Monthly revenue chart in `ProducerAnalyticsPage` uses hardcoded mock data. Needs aggregation query on `orders` grouped by month.
+
+- **ProducerSettingsPage** — Form exists but save is not wired to Supabase.
+
+- **Operator portal** — Analytics and inventory pages render static/mock data. Need real queries.
+
+---
+
+## Design system
+
+Brand tokens:
 
 | Token | Value |
 |-------|-------|
@@ -122,49 +151,4 @@ Brand tokens (also in `DESIGN.md`):
 | Heading font | Literata (serif) |
 | Body / UI font | Work Sans (sans) |
 
----
-
-## Using the shared data
-
-```ts
-import type { Seller, Product, Order } from "@/shared/types";
-import sellers from "@/shared/mocks/sellers.json";
-import products from "@/shared/mocks/products.json";
-
-const liveProducts = (products as Product[]).filter(p => p.status === "LIVE");
-const kiranas = (sellers as Seller[]).filter(s => s.type === "KIRANA_STORE");
-```
-
-Mock files: `sellers.json` (3 village producers + 3 kiranas), `products.json`
-(10 products), `orders.json` (both channels, varied statuses), `buyers.json`,
-`products_upload_sample.csv` (CSV bulk-upload format for Task 2).
-
----
-
-## WhatsApp flow (Task 5) — light approach
-
-An "Order on WhatsApp" action opens a pre-filled chat to the seller's `phone`, and
-creates a real `Order` with `channel: "WHATSAPP"`. No WhatsApp Business API needed
-for v1:
-
-```
-https://wa.me/<seller.phone>?text=<url-encoded order summary>
-```
-
----
-
-## Conventions
-
-- **Branches:** `feat/seller-setup`, `feat/catalog`, `feat/order-mgmt`,
-  `feat/search`, `feat/whatsapp-flow`. Small, frequent PRs. No direct pushes to `main`.
-- **Imports:** core types only from `src/shared/types`.
-- **Styling:** tokens from `DESIGN.md` / `src/styles`, shared components from
-  `src/components`.
-- **Integrate early and often.** Don't let branches drift.
-
----
-
-## Team
-
-Lead: **Vishard** · Coordinator: **Sameer** · Members: **Ashmit, Navya** ·
-Mentors: Anil, Mayank
+Design tokens live in `src/styles/`. Component library is in `src/components/ui/` and `src/components/shared/`.

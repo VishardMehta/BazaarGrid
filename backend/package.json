@@ -1,0 +1,26 @@
+{
+  "name": "bazaargrid-order-management",
+  "version": "1.0.0",
+  "description": "BazaarGrid Task 3: Order Management - Clean Architecture, JSON-backed, Mongo-migration-ready",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": [
+    "orders",
+    "clean-architecture"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "uuid": "^9.0.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.3"
+  }
+}

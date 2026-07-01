@@ -119,11 +119,9 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 
 - **Search on live data** — `src/features/search/hooks/useSearch.ts` still imports from `@/shared/mocks`. Needs to query `supabase.from("products")` and feed results into the existing BM25 engine (or replace with Supabase full-text search).
 
-- **Traceability page on live data** — `src/features/catalog/pages/TraceabilityPage.tsx` reads from `@/shared/mocks`. Needs a `product_passports` table in Supabase and a query hook.
+- **Real QR codes** — The product passport page shows a styled placeholder. Needs `npm install qrcode` to generate a real scannable QR encoding `https://bazaargrid.com/product/:id/passport`.
 
-- **Real QR codes** — The product passport page shows a Material icon (`qr_code_2`), not a real scannable QR code. Needs `npm install qrcode` and encoding `https://bazaargrid.com/product/:id/passport`.
-
-- **Backend → Supabase** — `backend/` uses a local JSON file. Should be migrated to read/write the `orders` table in Supabase.
+- **Backend → Supabase** — `backend/` uses a local JSON file (`backend/src/data/orders.json`). Should be migrated to read/write the `orders` table in Supabase.
 
 ### Lower priority
 
@@ -134,6 +132,10 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 - **ProducerSettingsPage** — Form exists but save is not wired to Supabase.
 
 - **Operator portal** — Analytics and inventory pages render static/mock data. Need real queries.
+
+### Done
+
+- ✅ **Traceability / Product Passport page** — fully on live Supabase data. Pulls product + seller + village from DB. Shows "Meet the Producer" deck, origin village card with stats, 5-step journey timeline synthesised from `created_at`, batch specs, and QR placeholder. Works for any product with `traceable: true`.
 
 ---
 

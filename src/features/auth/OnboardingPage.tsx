@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Icon } from "@/components/ui";
+import { Button, Icon, Select } from "@/components/ui";
+import { supabase, type UserRole } from "@/lib/supabase";
+import { useVillages } from "@/lib/hooks/useVillages";
 import { useAuth } from "./AuthContext";
-import type { UserRole } from "@/lib/supabase";
 
 const ROLES: {
   role: UserRole;
@@ -33,16 +34,56 @@ const ROLES: {
 export function OnboardingPage() {
   const { updateRole, profile } = useAuth();
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<UserRole | null>(null);
-  const [busy,     setBusy]     = useState(false);
-  const [error,    setError]    = useState<string | null>(null);
+  const { data: villages = [] } = useVillages();
+
+  const [selected, setSelected]   = useState<UserRole | null>(null);
+  const [region, setRegion]       = useState("");
+  const [villageId, setVillageId] = useState("");
+  const [busy,     setBusy]       = useState(false);
+  const [error,    setError]      = useState<string | null>(null);
+
+  const needsVillage = selected === "PRODUCER" || selected === "VILLAGE_ADMIN";
+
+  const regions = useMemo(
+    () => [...new Set(villages.map((v) => v.region).filter(Boolean))].sort() as string[],
+    [villages],
+  );
+  const regionVillages = useMemo(
+    () => villages.filter((v) => v.region === region),
+    [villages, region],
+  );
+  const village = villages.find((v) => v.id === villageId);
 
   async function handleContinue() {
     if (!selected) return;
+    if (needsVillage && !villageId) {
+      setError("Please select your state and village to continue.");
+      return;
+    }
     setBusy(true);
-    const { error: err } = await updateRole(selected);
+    setError(null);
+
+    const { error: err } = await updateRole(selected, needsVillage ? villageId : undefined);
+    if (err) { setBusy(false); setError(err); return; }
+
+    // Producers get a PENDING seller row right away so the Village Admin
+    // sees them in the approval queue.
+    if (selected === "PRODUCER" && profile) {
+      await supabase.from("sellers").insert({
+        profile_id: profile.id,
+        village_id: villageId || null,
+        type:       "VILLAGE_PRODUCER",
+        name:       profile.name ?? "New Producer",
+        tagline:    "Heritage goods, direct from the source.",
+        village:    village?.name ?? null,
+        region:     village?.region ?? null,
+        status:     "PENDING",
+        traceability_score: 60,
+      });
+      // Duplicate/policy errors are non-fatal: the DB backfill covers this.
+    }
+
     setBusy(false);
-    if (err) { setError(err); return; }
     if (selected === "BUYER") navigate("/", { replace: true });
     else navigate("/pending-approval", { replace: true });
   }
@@ -88,10 +129,50 @@ export function OnboardingPage() {
           ))}
         </div>
 
+        {needsVillage && (
+          <div className="mt-4 rounded-xl border border-outline-variant bg-surface p-5">
+            <p className="flex items-center gap-2 font-semibold text-on-surface">
+              <Icon name="cottage" size={18} className="text-secondary" />
+              {selected === "PRODUCER" ? "Which village are you producing from?" : "Which village do you manage?"}
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <Select
+                label="State / region"
+                value={region}
+                onChange={(e) => { setRegion(e.target.value); setVillageId(""); }}
+              >
+                <option value="">Select state…</option>
+                {regions.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </Select>
+              <Select
+                label="Village"
+                value={villageId}
+                onChange={(e) => setVillageId(e.target.value)}
+                disabled={!region}
+              >
+                <option value="">{region ? "Select village…" : "Pick a state first"}</option>
+                {regionVillages.map((v) => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </Select>
+            </div>
+            {village && (
+              <p className="mt-3 flex items-start gap-1.5 text-label-sm text-on-surface-variant">
+                <Icon name="info" size={14} className="mt-0.5 shrink-0" />
+                {village.description ?? `${village.name}, ${village.region}`}
+              </p>
+            )}
+          </div>
+        )}
+
         {selected && selected !== "BUYER" && (
           <div className="mt-4 flex items-start gap-2 rounded-lg bg-surface-high px-4 py-3 text-label-sm text-on-surface-variant">
             <Icon name="info" size={16} className="mt-0.5 shrink-0" />
-            Your account will be reviewed by an Operator before you can access the portal. You'll be notified once approved.
+            {selected === "PRODUCER"
+              ? "Your account will be reviewed by your Village Admin before you can access the portal. You'll be notified once approved."
+              : "Your account will be reviewed by an Operator before you can access the portal. You'll be notified once approved."}
           </div>
         )}
 
@@ -104,7 +185,7 @@ export function OnboardingPage() {
         <Button
           className="mt-6 w-full"
           onClick={handleContinue}
-          disabled={!selected || busy}
+          disabled={!selected || busy || (needsVillage && !villageId)}
           icon={busy ? undefined : "arrow_forward"}
         >
           {busy ? "Saving…" : "Continue"}

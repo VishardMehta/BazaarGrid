@@ -23,6 +23,7 @@ export interface DbProfile {
   name:       string | null;
   phone:      string | null;
   avatar_url: string | null;
+  village_id: string | null;
   created_at: string;
   updated_at: string;
 }

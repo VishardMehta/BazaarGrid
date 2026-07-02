@@ -74,6 +74,29 @@ export function useUpdateSeller() {
   });
 }
 
+/** Approve a producer — activates the seller row AND the linked profile (SECURITY DEFINER RPC) */
+export function useApproveProducer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (sellerId: string) => {
+      const { error } = await supabase.rpc("approve_producer", { p_seller_id: sellerId });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sellers"] }),
+  });
+}
+
+export function useRejectProducer() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (sellerId: string) => {
+      const { error } = await supabase.rpc("reject_producer", { p_seller_id: sellerId });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["sellers"] }),
+  });
+}
+
 export function useAddSeller() {
   const qc = useQueryClient();
   return useMutation({

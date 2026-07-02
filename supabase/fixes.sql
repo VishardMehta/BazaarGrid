@@ -84,3 +84,86 @@ SELECT
 FROM auth.users u
 WHERE NOT EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = u.id)
 ON CONFLICT (id) DO NOTHING;
+
+-- ════════════════════════════════════════════════════════════
+--  Village membership + producer approval flow
+-- ════════════════════════════════════════════════════════════
+
+-- Profiles: which village a producer / village admin belongs to
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS village_id UUID REFERENCES villages(id);
+
+-- Producers create their own (PENDING) seller row during onboarding
+DROP POLICY IF EXISTS sellers_own_insert ON sellers;
+CREATE POLICY sellers_own_insert ON sellers FOR INSERT TO authenticated
+  WITH CHECK (profile_id = auth.uid());
+
+-- Village admins can approve/reject producer products (set LIVE / DRAFT)
+DROP POLICY IF EXISTS vadmin_products_update ON products;
+CREATE POLICY vadmin_products_update ON products FOR UPDATE TO authenticated
+  USING (public.get_my_role() IN ('VILLAGE_ADMIN','OPERATOR'))
+  WITH CHECK (public.get_my_role() IN ('VILLAGE_ADMIN','OPERATOR'));
+
+-- Approve a producer: activates BOTH the seller row and the linked profile.
+-- SECURITY DEFINER because village admins can't update other users' profiles.
+CREATE OR REPLACE FUNCTION public.approve_producer(p_seller_id UUID)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE v_profile UUID;
+BEGIN
+  IF public.get_my_role() NOT IN ('VILLAGE_ADMIN','OPERATOR') THEN
+    RAISE EXCEPTION 'Not authorized';
+  END IF;
+  UPDATE public.sellers SET status = 'ACTIVE' WHERE id = p_seller_id
+    RETURNING profile_id INTO v_profile;
+  IF v_profile IS NOT NULL THEN
+    UPDATE public.profiles SET status = 'ACTIVE', updated_at = NOW() WHERE id = v_profile;
+  END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.reject_producer(p_seller_id UUID)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE v_profile UUID;
+BEGIN
+  IF public.get_my_role() NOT IN ('VILLAGE_ADMIN','OPERATOR') THEN
+    RAISE EXCEPTION 'Not authorized';
+  END IF;
+  UPDATE public.sellers SET status = 'SUSPENDED' WHERE id = p_seller_id
+    RETURNING profile_id INTO v_profile;
+  IF v_profile IS NOT NULL THEN
+    UPDATE public.profiles SET status = 'SUSPENDED', updated_at = NOW() WHERE id = v_profile;
+  END IF;
+END;
+$$;
+
+-- Producer-approval trigger now carries the chosen village onto the seller row
+CREATE OR REPLACE FUNCTION public.ensure_seller_for_producer()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF NEW.role = 'PRODUCER' AND NEW.status = 'ACTIVE'
+     AND NOT EXISTS (SELECT 1 FROM public.sellers WHERE profile_id = NEW.id) THEN
+    INSERT INTO public.sellers (profile_id, village_id, type, name, tagline, village, region, status, verified, traceability_score, member_since)
+    SELECT NEW.id, NEW.village_id, 'VILLAGE_PRODUCER', COALESCE(NEW.name, 'New Producer'),
+           'Heritage goods, direct from the source.', v.name, v.region, 'ACTIVE', false, 60, CURRENT_DATE
+    FROM (SELECT 1) one
+    LEFT JOIN public.villages v ON v.id = NEW.village_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+-- Backfill: pending producers who never got a seller row (so they show up
+-- in the Village Admin pending-approvals list)
+INSERT INTO public.sellers (profile_id, village_id, type, name, tagline, village, region, status, traceability_score, member_since)
+SELECT p.id, p.village_id, 'VILLAGE_PRODUCER', COALESCE(p.name, 'New Producer'),
+       'Heritage goods, direct from the source.', v.name, v.region, 'PENDING', 60, CURRENT_DATE
+FROM public.profiles p
+LEFT JOIN public.villages v ON v.id = p.village_id
+WHERE p.role = 'PRODUCER' AND p.status = 'PENDING'
+  AND NOT EXISTS (SELECT 1 FROM public.sellers s WHERE s.profile_id = p.id);
+
+-- Backfill: give existing traceable products a batch id if missing
+UPDATE public.products
+SET batch_id = 'BG-' || to_char(created_at, 'YYYY') || '-' ||
+               upper(substr(regexp_replace(name, '[^a-zA-Z]', '', 'g'), 1, 3)) || '-' ||
+               upper(substr(md5(id::text), 1, 4))
+WHERE traceable = true AND batch_id IS NULL;

@@ -21,8 +21,8 @@ interface AuthContextValue {
   /** Email + password sign-up — sends verification email automatically */
   signUp: (name: string, email: string, password: string) => Promise<{ error: string | null; needsVerification: boolean }>;
   signOut: () => Promise<void>;
-  /** Update profile role (used in Onboarding) */
-  updateRole: (role: UserRole) => Promise<{ error: string | null }>;
+  /** Update profile role (used in Onboarding); villageId links producers/admins to their village */
+  updateRole: (role: UserRole, villageId?: string | null) => Promise<{ error: string | null }>;
   /** Refresh profile from DB */
   refreshProfile: () => Promise<void>;
 }
@@ -149,13 +149,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
   };
 
-  const updateRole = async (role: UserRole) => {
+  const updateRole = async (role: UserRole, villageId?: string | null) => {
     if (!session?.user) return { error: "Not authenticated" };
     const status = role === "BUYER" ? "ACTIVE" : "PENDING";
-    const { error } = await supabase
+    const patch: Record<string, unknown> = { role, status, updated_at: new Date().toISOString() };
+    if (villageId !== undefined) patch.village_id = villageId;
+    let { error } = await supabase
       .from("profiles")
-      .update({ role, status, updated_at: new Date().toISOString() })
+      .update(patch)
       .eq("id", session.user.id);
+    if (error && villageId !== undefined && error.message?.includes("village_id")) {
+      // fixes.sql not run yet — retry without the village column
+      delete patch.village_id;
+      ({ error } = await supabase.from("profiles").update(patch).eq("id", session.user.id));
+    }
     if (!error) await fetchProfile(session.user.id);
     return { error: error?.message ?? null };
   };

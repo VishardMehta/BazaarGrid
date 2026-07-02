@@ -37,17 +37,34 @@ export function ProducerInventoryPage() {
     const form = e.target as HTMLFormElement;
     const data = new FormData(form);
     const isDraft = (e.nativeEvent as SubmitEvent).submitter?.getAttribute("data-action") === "draft";
+
+    const name      = data.get("name") as string;
+    const traceable = data.get("traceable") === "on";
+    const tags      = ((data.get("tags") as string) ?? "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    // Auto-assign a batch id for traceable products, e.g. BG-2026-HPO-4F2A
+    const initials = name.split(/\s+/).map((w) => w[0]).join("").replace(/[^a-zA-Z]/g, "").slice(0, 3).toUpperCase();
+    const batchId  = traceable
+      ? `BG-${new Date().getFullYear()}-${initials || "PRD"}-${Math.random().toString(16).slice(2, 6).toUpperCase()}`
+      : null;
+
     setSubmitting(true);
     await addProduct.mutateAsync({
       seller_id:   seller.id,
-      name:        data.get("name") as string,
+      name,
       description: data.get("description") as string,
+      story:       ((data.get("story") as string) || "").trim() || null,
+      tags,
+      batch_id:    batchId,
       price:       parseFloat(data.get("price") as string),
       unit:        data.get("unit") as string,
       category:    (data.get("category") as ProductCategory) ?? "OTHER",
       stock:       parseInt(data.get("stock") as string) || 0,
       organic:     data.get("organic") === "on",
-      traceable:   data.get("traceable") === "on",
+      traceable,
       status:      isDraft ? "DRAFT" : "PENDING_APPROVAL",
     });
     setSubmitting(false);
@@ -203,7 +220,9 @@ export function ProducerInventoryPage() {
               <Input name="price" label="Price (₹)"       type="number" step="0.01" placeholder="250" required />
               <Input name="unit"  label="Unit"             placeholder="500g jar" required />
               <Input name="stock" label="Stock quantity"   type="number" placeholder="100" />
-              <Textarea name="description" className="md:col-span-2" label="Description" placeholder="Tell the heritage story…" rows={3} />
+              <Input name="tags"  label="Tags (comma-separated)" placeholder="Organic, Raw, Small Batch" />
+              <Textarea name="description" className="md:col-span-2" label="Description" placeholder="What is this product? Short and sweet — shown on the product card." rows={2} required />
+              <Textarea name="story" className="md:col-span-2" label="Heritage story" placeholder="The story behind this product — where it comes from, how it's made. Shown on the product page and passport." rows={3} />
               <div className="md:col-span-2 flex flex-wrap items-center gap-3">
                 <label className="flex items-center gap-2 text-label-md text-on-surface-variant">
                   <input type="checkbox" name="organic"   defaultChecked className="h-4 w-4 accent-secondary" /> Organic certified
@@ -211,6 +230,7 @@ export function ProducerInventoryPage() {
                 <label className="flex items-center gap-2 text-label-md text-on-surface-variant">
                   <input type="checkbox" name="traceable" defaultChecked className="h-4 w-4 accent-secondary" /> Enable QR traceability
                 </label>
+                <span className="text-label-sm text-outline">A batch ID is assigned automatically for traceable products.</span>
               </div>
               {submitted && (
                 <div className="md:col-span-2 flex items-center gap-2 rounded-lg bg-secondary-container/40 px-3 py-2 text-label-sm text-secondary-on-container">

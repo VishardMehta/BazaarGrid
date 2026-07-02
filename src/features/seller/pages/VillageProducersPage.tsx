@@ -3,20 +3,37 @@ import { Button, Card, Icon, Input, Select } from "@/components/ui";
 import { SellerBadge } from "@/components/shared";
 import { PortalLayout } from "@/components/layout";
 import { VILLAGE_ADMIN_NAV } from "../sellerNav";
-import { useAllSellers, useAddSeller, useUpdateSeller } from "@/lib/hooks/useSellers";
+import { useAuth } from "@/features/auth/AuthContext";
+import { useAllSellers, useAddSeller, useApproveProducer, useRejectProducer } from "@/lib/hooks/useSellers";
+import { useVillage } from "@/lib/hooks/useVillages";
 import { mapSeller } from "@/lib/mappers";
 
 export function VillageProducersPage() {
+  const { profile } = useAuth();
+  const { data: village } = useVillage(profile?.village_id ?? undefined);
   const { data: allSellers = [] } = useAllSellers();
-  const addSeller    = useAddSeller();
-  const updateSeller = useUpdateSeller();
-  const producers        = allSellers.filter((s) => s.status === "ACTIVE");
-  const pendingProducers = allSellers.filter((s) => s.status === "PENDING");
-  const villageName = "Your Village";
+  const addSeller = useAddSeller();
+  const approve   = useApproveProducer();
+  const reject    = useRejectProducer();
+
+  const villageId   = profile?.village_id ?? null;
+  const villageName = village?.name ?? "Your Village";
+
+  // Scope to this admin's village; unassigned pending producers are shown to
+  // every admin so nobody gets stuck invisible.
+  const inScope = (s: (typeof allSellers)[number]) =>
+    !villageId || s.village_id === villageId || !s.village_id;
+  const producers        = allSellers.filter((s) => s.status === "ACTIVE"  && (!villageId || s.village_id === villageId));
+  const pendingProducers = allSellers.filter((s) => s.status === "PENDING" && inScope(s));
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const shownProducers = search.trim()
+    ? producers.filter((p) => p.name.toLowerCase().includes(search.trim().toLowerCase()))
+    : producers;
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -26,12 +43,14 @@ export function VillageProducersPage() {
     const status = (data.get("status") as string) ?? "PENDING";
     try {
       await addSeller.mutateAsync({
-        name:    (data.get("name") as string)?.trim() || "New Producer",
-        phone:   (data.get("phone") as string) || null,
-        email:   (data.get("email") as string) || null,
-        village: (data.get("village") as string) || villageName,
-        tagline: "Heritage goods, direct from the source.",
-        status:  status === "ACTIVE" ? "ACTIVE" : "PENDING",
+        name:       (data.get("name") as string)?.trim() || "New Producer",
+        phone:      (data.get("phone") as string) || null,
+        email:      (data.get("email") as string) || null,
+        village:    villageName,
+        village_id: villageId,
+        region:     village?.region ?? null,
+        tagline:    "Heritage goods, direct from the source.",
+        status:     status === "ACTIVE" ? "ACTIVE" : "PENDING",
         traceability_score: 60,
       });
       setSaved(true);
@@ -42,9 +61,7 @@ export function VillageProducersPage() {
     }
   }
 
-  function setStatus(id: string, status: "ACTIVE" | "SUSPENDED") {
-    updateSeller.mutate({ id, status });
-  }
+  const mutating = approve.isPending || reject.isPending;
 
   return (
     <PortalLayout
@@ -57,7 +74,7 @@ export function VillageProducersPage() {
         <div>
           <h1 className="font-serif text-headline-lg font-semibold text-on-surface">Producers</h1>
           <p className="mt-1 text-body-md text-on-surface-variant">
-            {producers.length} active · {pendingProducers.length} pending approval
+            {villageName}{village?.region ? `, ${village.region}` : ""} · {producers.length} active · {pendingProducers.length} pending approval
           </p>
         </div>
         <Button icon="person_add" onClick={() => setShowAddForm((v) => !v)}>
@@ -83,7 +100,7 @@ export function VillageProducersPage() {
               <option value="POTTERY">Pottery & Ceramics</option>
               <option value="CRAFTS">Handicrafts</option>
             </Select>
-            <Input name="village" label="Village / hamlet" defaultValue={villageName} />
+            <Input label="Village" value={villageName} disabled readOnly />
             <Select name="status" label="Account status" defaultValue="PENDING">
               <option value="PENDING">Pending review</option>
               <option value="ACTIVE">Active</option>
@@ -97,6 +114,12 @@ export function VillageProducersPage() {
             </div>
           </form>
         </Card>
+      )}
+
+      {(approve.error || reject.error) && (
+        <p className="mt-token-sm rounded-lg bg-error-container px-3 py-2 text-label-md text-error">
+          {(approve.error ?? reject.error)?.message ?? "Action failed. Make sure supabase/fixes.sql has been run."}
+        </p>
       )}
 
       {/* Pending approvals */}
@@ -113,15 +136,17 @@ export function VillageProducersPage() {
               <li key={p.id} className="flex items-center justify-between gap-3 px-token-md py-3">
                 <div>
                   <p className="font-medium text-on-surface">{p.name}</p>
-                  <p className="text-label-sm text-on-surface-variant">{p.region} · Pending approval</p>
+                  <p className="text-label-sm text-on-surface-variant">
+                    {p.village ?? "No village assigned"}{p.region ? ` · ${p.region}` : ""} · Pending approval
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <Button size="sm" variant="secondary" icon="close"
-                    disabled={updateSeller.isPending}
-                    onClick={() => setStatus(p.id, "SUSPENDED")}>Reject</Button>
+                    disabled={mutating}
+                    onClick={() => reject.mutate(p.id)}>Reject</Button>
                   <Button size="sm" icon="check"
-                    disabled={updateSeller.isPending}
-                    onClick={() => setStatus(p.id, "ACTIVE")}>Approve</Button>
+                    disabled={mutating}
+                    onClick={() => approve.mutate(p.id)}>Approve</Button>
                 </div>
               </li>
             ))}
@@ -134,7 +159,13 @@ export function VillageProducersPage() {
         <div className="flex items-center justify-between border-b border-surface-highest px-token-md py-3">
           <h2 className="font-serif text-headline-md font-medium text-on-surface">Active producers</h2>
           <div className="w-48">
-            <Input placeholder="Search producers…" className="[&_input]:py-1.5 [&_input]:text-label-sm" aria-label="Search" />
+            <Input
+              placeholder="Search producers…"
+              className="[&_input]:py-1.5 [&_input]:text-label-sm"
+              aria-label="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -149,10 +180,10 @@ export function VillageProducersPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-highest">
-              {producers.map((p) => (
+              {shownProducers.map((p) => (
                 <tr key={p.id} className="hover:bg-surface-low">
                   <td className="px-token-md py-3"><SellerBadge seller={mapSeller(p)} link={false} /></td>
-                  <td className="px-token-md py-3 text-on-surface-variant">—</td>
+                  <td className="px-token-md py-3 text-on-surface-variant">{p.product_count ?? 0}</td>
                   <td className="px-token-md py-3">
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-20 overflow-hidden rounded-full bg-surface-highest">
@@ -167,17 +198,21 @@ export function VillageProducersPage() {
                     </span>
                   </td>
                   <td className="px-token-md py-3 text-right">
-                    <div className="flex justify-end gap-1.5">
-                      <button className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-high">
-                        <Icon name="visibility" size={16} />
-                      </button>
-                      <button className="inline-flex h-8 w-8 items-center justify-center rounded-md text-on-surface-variant hover:bg-surface-high">
-                        <Icon name="edit" size={16} />
-                      </button>
-                    </div>
+                    <Button size="sm" variant="secondary" icon="block"
+                      disabled={mutating}
+                      onClick={() => reject.mutate(p.id)}>
+                      Suspend
+                    </Button>
                   </td>
                 </tr>
               ))}
+              {shownProducers.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-token-md py-8 text-center text-on-surface-variant">
+                    No active producers{search ? " match your search" : " in this village yet"}.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

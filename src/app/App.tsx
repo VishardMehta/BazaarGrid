@@ -19,6 +19,7 @@ import { SearchResultsPage }  from "@/features/search/pages/SearchResultsPage";
 import { CatalogPage }        from "@/features/catalog/pages/CatalogPage";
 import { ProductDetailPage }  from "@/features/catalog/pages/ProductDetailPage";
 import { TraceabilityPage }   from "@/features/catalog/pages/TraceabilityPage";
+import { TraceBatchPage }     from "@/features/catalog/pages/TraceBatchPage";
 import { StorefrontPage }     from "@/features/seller/pages/StorefrontPage";
 import { ProducerProfilePage }from "@/features/seller/pages/ProducerProfilePage";
 import { VillagesPage }       from "@/features/seller/pages/VillagesPage";
@@ -73,6 +74,7 @@ export default function App() {
             <Route path="/shop"                         element={<CatalogPage />} />
             <Route path="/product/:productId"           element={<ProductDetailPage />} />
             <Route path="/product/:productId/passport"  element={<TraceabilityPage />} />
+            <Route path="/trace/:batchId"               element={<TraceBatchPage />} />
             <Route path="/seller/:sellerId"             element={<StorefrontPage />} />
             <Route path="/producer/:sellerId"           element={<ProducerProfilePage />} />
             <Route path="/villages"                     element={<VillagesPage />} />

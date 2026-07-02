@@ -145,6 +145,7 @@ export function CartPage() {
           price:      l.product.price,
           subtotal:   Math.round(l.product.price * l.quantity * 100) / 100,
           traceable:  l.product.traceable ?? false,
+          batch_id:   l.product.batchId ?? null,
           image_url:  l.product.images?.[0] ?? null,
         }));
         const { error: iErr } = await supabase.from("order_items").insert(items);

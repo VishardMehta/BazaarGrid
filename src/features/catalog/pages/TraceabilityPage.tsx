@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Button, Icon, Rating, Avatar } from "@/components/ui";
+import { Icon, Rating, Avatar } from "@/components/ui";
 import {
   Breadcrumbs,
   Reveal,
@@ -404,25 +404,30 @@ export function TraceabilityPage() {
           </dl>
         </motion.div>
 
-        {/* QR Passport */}
+        {/* Heritage & craft */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, delay: 0.38 }}
-          className="flex w-full flex-col items-center justify-center gap-4 rounded-2xl border border-surface-highest bg-surface-low p-token-md text-center md:w-64"
+          className="flex w-full flex-col gap-3 rounded-2xl bg-secondary p-token-md text-secondary-on md:w-80"
         >
-          <div className="grid h-36 w-36 place-items-center rounded-xl border-2 border-dashed border-primary/30 bg-surface-lowest">
-            <Icon name="qr_code_2" size={88} className="text-primary/70" />
-          </div>
-          <div>
-            <p className="font-serif text-body-lg font-medium text-on-surface">Scan to verify</p>
-            <p className="mt-1 text-label-sm text-on-surface-variant">
-              Scan this QR code to confirm authenticity and view the full provenance record.
+          <p className="text-label-sm uppercase tracking-[0.12em] text-secondary-on/75">
+            Heritage &amp; Purity
+          </p>
+          <p className="text-body-md leading-relaxed text-secondary-on/90">
+            {product.story ??
+              product.description ??
+              "Crafted in small batches using traditional methods passed down through generations."}
+          </p>
+          <div className="mt-auto border-t border-secondary-on/20 pt-3">
+            <p className="inline-flex items-center gap-1.5 text-label-md text-secondary-on/85">
+              <Icon name="qr_code_2" size={16} />
+              The QR on your product label opens this passport
+            </p>
+            <p className="mt-1 text-label-sm text-secondary-on/70">
+              Batch {batchId} · verified on the trust ledger
             </p>
           </div>
-          <Button variant="secondary" icon="share" className="w-full">
-            Share passport
-          </Button>
         </motion.div>
       </div>
 

@@ -53,12 +53,33 @@ export function useProduct(id: string | undefined) {
   });
 }
 
+/** Products awaiting approval, with seller info — for the Village Admin queue.
+ *  Pass villageId to scope to one village; null/undefined returns all pending. */
+export function usePendingProducts(villageId?: string | null) {
+  return useQuery({
+    queryKey: ["products", "pending", villageId ?? "all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*, sellers(name, village, village_id)")
+        .eq("status", "PENDING_APPROVAL")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const rows = (data ?? []) as (DbProduct & { sellers: { name: string; village: string | null; village_id: string | null } | null })[];
+      return villageId ? rows.filter((r) => r.sellers?.village_id === villageId || !r.sellers?.village_id) : rows;
+    },
+  });
+}
+
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
 interface AddProductInput {
   seller_id:   string;
   name:        string;
   description: string;
+  story?:      string | null;
+  tags?:       string[];
+  batch_id?:   string | null;
   price:       number;
   unit:        string;
   category:    ProductCategory;

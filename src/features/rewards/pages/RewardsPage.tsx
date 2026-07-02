@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button, Card, Icon } from "@/components/ui";
 import { SectionHeading, Reveal, RevealItem } from "@/components/shared";
-import { compact } from "@/lib/format";
+import { compact, formatDate } from "@/lib/format";
 import { gradientFor } from "@/lib/placeholder";
 import { rewards } from "@/shared/mocks";
 import { useAuth } from "@/features/auth/AuthContext";
-import { useRewardBalance, useRedeemReward } from "@/lib/hooks/useRewards";
+import { useRewardBalance, useRedeemReward, useRewardTransactions } from "@/lib/hooks/useRewards";
 
 /**
  * Harvest Rewards maths
@@ -27,14 +27,6 @@ const TIER_CONFIG = [
   { name: "PLATINUM", min: 10000, max: Infinity, color: "bg-secondary",          icon: "diamond" },
 ] as const;
 
-const EARN_HISTORY = [
-  { label: "Order BG-8401 (₹1,200 spend)",  tokens: "+120", date: "2 days ago" },
-  { label: "Verified producer review",       tokens: "+50",  date: "5 days ago" },
-  { label: "Referred a friend",              tokens: "+200", date: "1 week ago" },
-  { label: "Order BG-7890 (₹3,000 spend)",  tokens: "+300", date: "2 weeks ago" },
-  { label: "First QR scan (onboarding)",     tokens: "+100", date: "1 month ago" },
-];
-
 function tierForBalance(balance: number) {
   return TIER_CONFIG.find((t) => balance >= t.min && balance <= t.max) ?? TIER_CONFIG[0];
 }
@@ -55,6 +47,7 @@ function progressToNextTier(balance: number): { pct: number; next: string; neede
 export function RewardsPage() {
   const { profile } = useAuth();
   const { data: liveBalance = 0 } = useRewardBalance(profile?.id ?? null);
+  const { data: transactions = [] } = useRewardTransactions(profile?.id ?? null);
   const redeemMutation = useRedeemReward();
 
   // Optimistic local balance for instant feedback
@@ -361,18 +354,28 @@ export function RewardsPage() {
           </Card>
 
           <Card padding="md">
-            <h3 className="font-serif text-headline-md font-medium text-on-surface">Earning history</h3>
-            <ul className="mt-2 divide-y divide-surface-highest">
-              {EARN_HISTORY.map((e) => (
-                <li key={e.label} className="flex items-center justify-between py-2.5">
-                  <div>
-                    <p className="text-body-md text-on-surface-variant">{e.label}</p>
-                    <p className="text-label-sm text-outline">{e.date}</p>
-                  </div>
-                  <span className="font-semibold text-secondary">{e.tokens}</span>
-                </li>
-              ))}
-            </ul>
+            <h3 className="font-serif text-headline-md font-medium text-on-surface">Token history</h3>
+            {transactions.length === 0 ? (
+              <p className="mt-3 text-body-md text-on-surface-variant">
+                No activity yet — place an order to start earning tokens.
+              </p>
+            ) : (
+              <ul className="mt-2 divide-y divide-surface-highest">
+                {transactions.slice(0, 8).map((t) => (
+                  <li key={t.id} className="flex items-center justify-between gap-3 py-2.5">
+                    <div className="min-w-0">
+                      <p className="truncate text-body-md text-on-surface-variant">
+                        {t.description ?? (t.type === "EARN" ? "Tokens earned" : "Tokens redeemed")}
+                      </p>
+                      <p className="text-label-sm text-outline">{formatDate(t.created_at)}</p>
+                    </div>
+                    <span className={`shrink-0 font-semibold ${t.type === "EARN" ? "text-secondary" : "text-primary"}`}>
+                      {t.type === "EARN" ? "+" : "−"}{t.points}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Card>
         </aside>
       </div>

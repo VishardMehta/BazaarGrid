@@ -127,8 +127,6 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 
 - **Semantic search** — The search engine (`src/features/search/engine.ts`) uses a hardcoded synonym table and Levenshtein fuzzy matching. There is a marked swap-point for a Python embedding service (`/api/search?q=...`) — not yet built.
 
-- **Producer analytics** — Monthly revenue chart in `ProducerAnalyticsPage` uses hardcoded mock data. Needs aggregation query on `orders` grouped by month.
-
 - **ProducerSettingsPage** — Form exists but save is not wired to Supabase.
 
 - **Operator portal** — Analytics and inventory pages render static/mock data. Need real queries.

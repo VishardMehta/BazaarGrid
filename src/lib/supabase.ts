@@ -158,6 +158,16 @@ export interface DbRewardTransaction {
   created_at:  string;
 }
 
+export interface DbProductReview {
+  id:         string;
+  product_id: string;
+  order_id:   string | null;
+  buyer_id:   string;
+  rating:     number;
+  review:     string | null;
+  created_at: string;
+}
+
 export interface DbCampaign {
   id:          string;
   village_id:  string | null;

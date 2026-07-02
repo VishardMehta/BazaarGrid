@@ -167,3 +167,218 @@ SET batch_id = 'BG-' || to_char(created_at, 'YYYY') || '-' ||
                upper(substr(regexp_replace(name, '[^a-zA-Z]', '', 'g'), 1, 3)) || '-' ||
                upper(substr(md5(id::text), 1, 4))
 WHERE traceable = true AND batch_id IS NULL;
+
+-- ════════════════════════════════════════════════════════════
+--  Harvest Tokens: earn on purchase (1 token per ₹10 spent)
+-- ════════════════════════════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.earn_tokens_on_order()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE pts INT;
+BEGIN
+  pts := floor(NEW.total / 10);
+  IF pts > 0 AND NEW.buyer_id IS NOT NULL THEN
+    INSERT INTO public.reward_transactions (profile_id, type, points, description, order_id)
+    VALUES (NEW.buyer_id, 'EARN', pts,
+            'Order ' || NEW.id || ' (₹' || round(NEW.total) || ' spend)', NEW.id);
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_order_earn_tokens ON orders;
+CREATE TRIGGER on_order_earn_tokens
+  AFTER INSERT ON orders
+  FOR EACH ROW EXECUTE FUNCTION public.earn_tokens_on_order();
+
+-- ════════════════════════════════════════════════════════════
+--  Stock: decrement on purchase, restore on cancellation
+-- ════════════════════════════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.decrement_stock_on_item()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF NEW.product_id IS NOT NULL THEN
+    UPDATE public.products
+    SET stock = GREATEST(stock - NEW.quantity, 0), updated_at = NOW()
+    WHERE id = NEW.product_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_order_item_decrement_stock ON order_items;
+CREATE TRIGGER on_order_item_decrement_stock
+  AFTER INSERT ON order_items
+  FOR EACH ROW EXECUTE FUNCTION public.decrement_stock_on_item();
+
+CREATE OR REPLACE FUNCTION public.restore_stock_on_cancel()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF NEW.status = 'CANCELLED' AND OLD.status <> 'CANCELLED' THEN
+    UPDATE public.products p
+    SET stock = p.stock + oi.quantity, updated_at = NOW()
+    FROM public.order_items oi
+    WHERE oi.order_id = NEW.id AND oi.product_id = p.id;
+
+    -- Claw back the tokens earned on this order
+    IF NEW.buyer_id IS NOT NULL AND floor(NEW.total / 10) > 0 THEN
+      INSERT INTO public.reward_transactions (profile_id, type, points, description, order_id)
+      VALUES (NEW.buyer_id, 'REDEEM', floor(NEW.total / 10)::int,
+              'Order ' || NEW.id || ' cancelled — earned tokens reversed', NEW.id);
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+-- Buyers may cancel their own order while it is still just PLACED
+DROP POLICY IF EXISTS orders_buyer_cancel ON orders;
+CREATE POLICY orders_buyer_cancel ON orders FOR UPDATE TO authenticated
+  USING (buyer_id = auth.uid() AND status = 'PLACED')
+  WITH CHECK (buyer_id = auth.uid());
+
+DROP TRIGGER IF EXISTS on_order_cancel_restore_stock ON orders;
+CREATE TRIGGER on_order_cancel_restore_stock
+  AFTER UPDATE OF status ON orders
+  FOR EACH ROW EXECUTE FUNCTION public.restore_stock_on_cancel();
+
+-- ════════════════════════════════════════════════════════════
+--  Product reviews (rate-this-order) + live rating aggregation
+-- ════════════════════════════════════════════════════════════
+
+CREATE TABLE IF NOT EXISTS product_reviews (
+  id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  order_id   TEXT REFERENCES orders(id) ON DELETE SET NULL,
+  buyer_id   UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  rating     INT  NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  review     TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (product_id, order_id, buyer_id)
+);
+
+ALTER TABLE product_reviews ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS reviews_public_read ON product_reviews;
+CREATE POLICY reviews_public_read ON product_reviews FOR SELECT TO anon, authenticated USING (true);
+-- Buyers may only review items from their own COMPLETED orders
+DROP POLICY IF EXISTS reviews_buyer_insert ON product_reviews;
+CREATE POLICY reviews_buyer_insert ON product_reviews FOR INSERT TO authenticated
+  WITH CHECK (
+    buyer_id = auth.uid()
+    AND order_id IN (SELECT id FROM orders WHERE buyer_id = auth.uid() AND status = 'COMPLETED')
+  );
+
+-- Keep products.rating / review_count live (incremental average, preserves seed baseline)
+CREATE OR REPLACE FUNCTION public.apply_review_to_product()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  UPDATE public.products
+  SET rating = round(((rating * review_count) + NEW.rating)::numeric / (review_count + 1), 2),
+      review_count = review_count + 1,
+      updated_at = NOW()
+  WHERE id = NEW.product_id;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_review_update_product ON product_reviews;
+CREATE TRIGGER on_review_update_product
+  AFTER INSERT ON product_reviews
+  FOR EACH ROW EXECUTE FUNCTION public.apply_review_to_product();
+
+-- ════════════════════════════════════════════════════════════
+--  Traceability score: computed, not random
+--  seller score = 30 base
+--               + 50 × (traceable live products / live products)
+--               + 10 × (organic live products / live products)
+--               + 10 if verified                      (capped 100)
+--  village score = avg of its active sellers' scores
+-- ════════════════════════════════════════════════════════════
+
+CREATE OR REPLACE FUNCTION public.recompute_seller_stats(p_seller_id UUID)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE
+  n_total INT; n_trace INT; n_organic INT; v_verified BOOLEAN; v_score INT;
+BEGIN
+  SELECT count(*) FILTER (WHERE status = 'LIVE'),
+         count(*) FILTER (WHERE status = 'LIVE' AND traceable),
+         count(*) FILTER (WHERE status = 'LIVE' AND organic)
+  INTO n_total, n_trace, n_organic
+  FROM public.products WHERE seller_id = p_seller_id;
+
+  SELECT verified INTO v_verified FROM public.sellers WHERE id = p_seller_id;
+
+  IF n_total = 0 THEN
+    v_score := 30 + (CASE WHEN v_verified THEN 10 ELSE 0 END);
+  ELSE
+    v_score := LEAST(100, 30
+      + round(50.0 * n_trace   / n_total)
+      + round(10.0 * n_organic / n_total)
+      + (CASE WHEN v_verified THEN 10 ELSE 0 END));
+  END IF;
+
+  UPDATE public.sellers
+  SET product_count = n_total, traceability_score = v_score
+  WHERE id = p_seller_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.on_product_change_recompute()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+  IF TG_OP = 'DELETE' THEN
+    PERFORM public.recompute_seller_stats(OLD.seller_id);
+    RETURN OLD;
+  END IF;
+  PERFORM public.recompute_seller_stats(NEW.seller_id);
+  IF TG_OP = 'UPDATE' AND OLD.seller_id IS DISTINCT FROM NEW.seller_id THEN
+    PERFORM public.recompute_seller_stats(OLD.seller_id);
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_product_change_stats ON products;
+CREATE TRIGGER on_product_change_stats
+  AFTER INSERT OR UPDATE OF status, traceable, organic, seller_id OR DELETE ON products
+  FOR EACH ROW EXECUTE FUNCTION public.on_product_change_recompute();
+
+-- Roll seller stats up to the village
+CREATE OR REPLACE FUNCTION public.on_seller_change_recompute_village()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+DECLARE vid UUID;
+BEGIN
+  vid := COALESCE(NEW.village_id, OLD.village_id);
+  IF vid IS NOT NULL THEN
+    UPDATE public.villages v
+    SET producer_count     = s.n,
+        product_count      = s.products,
+        traceability_score = COALESCE(s.score, 0)
+    FROM (
+      SELECT count(*) AS n,
+             COALESCE(sum(product_count), 0) AS products,
+             round(avg(traceability_score)) AS score
+      FROM public.sellers
+      WHERE village_id = vid AND status = 'ACTIVE'
+    ) s
+    WHERE v.id = vid;
+  END IF;
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+DROP TRIGGER IF EXISTS on_seller_change_village_stats ON sellers;
+CREATE TRIGGER on_seller_change_village_stats
+  AFTER INSERT OR UPDATE OF status, village_id, product_count, traceability_score OR DELETE ON sellers
+  FOR EACH ROW EXECUTE FUNCTION public.on_seller_change_recompute_village();
+
+-- One-time recompute for all existing sellers (also cascades to villages)
+DO $$
+DECLARE s RECORD;
+BEGIN
+  FOR s IN SELECT id FROM public.sellers LOOP
+    PERFORM public.recompute_seller_stats(s.id);
+  END LOOP;
+END;
+$$;

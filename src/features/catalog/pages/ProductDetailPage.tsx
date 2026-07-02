@@ -10,7 +10,7 @@ import {
   TrustBadge,
   QuantityStepper,
 } from "@/components/shared";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, formatDate } from "@/lib/format";
 import { categoryIcon, gradientFor } from "@/lib/placeholder";
 import { useCart } from "@/features/cart/CartContext";
 import { whatsappProductLink } from "@/features/whatsapp/whatsapp";
@@ -18,6 +18,7 @@ import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
 import { useProduct, useProducts } from "@/lib/hooks/useProducts";
 import { useSeller } from "@/lib/hooks/useSellers";
+import { useProductReviews } from "@/lib/hooks/useReviews";
 import { mapProduct, mapSeller } from "@/lib/mappers";
 
 const TRUST_ROW = [
@@ -31,6 +32,7 @@ export function ProductDetailPage() {
   const { data: dbProduct, isLoading, error } = useProduct(productId);
   const { data: dbSeller } = useSeller(dbProduct?.seller_id ?? undefined);
   const { data: dbRelated = [] } = useProducts({ sellerId: dbProduct?.seller_id });
+  const { data: reviews = [] } = useProductReviews(productId);
   const { add, lines } = useCart();
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
@@ -148,16 +150,27 @@ export function ProductDetailPage() {
           )}
 
           {/* Buy box */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <QuantityStepper value={qty} onChange={setQty} max={product.stock ?? 99} />
-            <Button onClick={handleAdd} size="lg" icon={added ? "check" : "add_shopping_cart"} className="flex-1">
-              {added
-                ? `Added! · ${inCart} in basket`
-                : inCart > 0
-                  ? `Add more · ${inCart} in basket`
-                  : "Add to basket"}
-            </Button>
-          </div>
+          {(product.stock ?? 1) <= 0 ? (
+            <div className="mt-5 flex items-center gap-2 rounded-lg bg-surface-high px-4 py-3 text-body-md font-medium text-on-surface-variant">
+              <Icon name="production_quantity_limits" size={20} /> Out of stock — check back soon
+            </div>
+          ) : (
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <QuantityStepper value={qty} onChange={setQty} max={product.stock ?? 99} />
+              <Button onClick={handleAdd} size="lg" icon={added ? "check" : "add_shopping_cart"} className="flex-1">
+                {added
+                  ? `Added! · ${inCart} in basket`
+                  : inCart > 0
+                    ? `Add more · ${inCart} in basket`
+                    : "Add to basket"}
+              </Button>
+            </div>
+          )}
+          {(product.stock ?? 0) > 0 && (product.stock ?? 0) <= 10 && (
+            <p className="mt-2 text-label-sm font-semibold text-primary">
+              Only {product.stock} left in stock
+            </p>
+          )}
 
           {seller && (
             <WhatsAppButton
@@ -194,6 +207,29 @@ export function ProductDetailPage() {
             <h2 className="mt-2 font-serif text-headline-lg font-medium text-on-surface">The story in every batch</h2>
           </div>
           <p className="text-body-lg leading-relaxed text-on-surface-variant">{product.story}</p>
+        </section>
+      )}
+
+      {/* Reviews */}
+      {reviews.length > 0 && (
+        <section className="mt-token-lg">
+          <SectionHeading eyebrow="From verified buyers" title="What buyers say" />
+          <div className="mt-token-md grid gap-token-md md:grid-cols-2 lg:grid-cols-3">
+            {reviews.map((r) => (
+              <div key={r.id} className="rounded-xl border border-surface-highest bg-surface-lowest p-token-sm">
+                <div className="flex items-center justify-between">
+                  <Rating value={r.rating} size={15} />
+                  <span className="text-label-sm text-on-surface-variant">{formatDate(r.created_at)}</span>
+                </div>
+                {r.review && (
+                  <p className="mt-2 text-body-md leading-relaxed text-on-surface-variant">{r.review}</p>
+                )}
+                <p className="mt-2 inline-flex items-center gap-1 text-label-sm text-outline">
+                  <Icon name="verified_user" size={13} /> Verified purchase
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 

@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Badge, Button, Card, Icon } from "@/components/ui";
+import { Badge, Button, Card, Icon, Textarea } from "@/components/ui";
 import { OrderTimeline, EmptyState } from "@/components/shared";
 import { formatPrice, formatDate } from "@/lib/format";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useMyOrders, useAdvanceOrderStatus } from "@/lib/hooks/useOrders";
+import { useMyReviews, useAddReview } from "@/lib/hooks/useReviews";
 import type { DbOrder, DbOrderItem } from "@/lib/supabase";
 import type { OrderStatus } from "@/shared/types";
 
@@ -17,6 +19,89 @@ const STATUS_LABEL: Record<string, string> = {
   PLACED: "Placed", CONFIRMED: "Confirmed", PACKED: "Packed",
   FULFILLED: "In Transit", COMPLETED: "Delivered", CANCELLED: "Cancelled",
 };
+
+/** Star picker + review textarea for a delivered order item */
+function RateItem({ item, orderId }: { item: DbOrderItem; orderId: string }) {
+  const { user } = useAuth();
+  const { data: myReviews = [] } = useMyReviews(user?.id ?? null);
+  const addReview = useAddReview();
+  const [open,  setOpen]  = useState(false);
+  const [stars, setStars] = useState(0);
+  const [text,  setText]  = useState("");
+
+  if (!item.product_id || !user) return null;
+
+  const existing = myReviews.find(
+    (r) => r.product_id === item.product_id && r.order_id === orderId,
+  );
+  if (existing) {
+    return (
+      <span className="inline-flex items-center gap-1 text-label-sm font-semibold text-on-surface-variant">
+        <Icon name="star" size={14} filled className="text-tertiary-fixed-dim" />
+        Rated {existing.rating}/5
+      </span>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1 text-label-md font-semibold text-secondary hover:text-primary"
+      >
+        <Icon name="grade" size={16} /> Rate
+      </button>
+    );
+  }
+
+  return (
+    <div className="w-full rounded-lg bg-surface-low p-3">
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button key={n} onClick={() => setStars(n)} aria-label={`${n} star${n > 1 ? "s" : ""}`}>
+            <Icon
+              name="star"
+              size={26}
+              filled={n <= stars}
+              className={n <= stars ? "text-tertiary-fixed-dim" : "text-outline-variant"}
+            />
+          </button>
+        ))}
+        <span className="ml-2 text-label-sm text-on-surface-variant">
+          {stars > 0 ? `${stars}/5` : "Tap to rate"}
+        </span>
+      </div>
+      <Textarea
+        className="mt-2"
+        placeholder="Share your experience (optional)…"
+        rows={2}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      {addReview.error && (
+        <p className="mt-1 text-label-sm text-error">
+          {addReview.error.message ?? "Could not save review. Run supabase/fixes.sql."}
+        </p>
+      )}
+      <div className="mt-2 flex gap-2">
+        <Button
+          size="sm"
+          icon="send"
+          disabled={stars === 0 || addReview.isPending}
+          onClick={() =>
+            addReview.mutate(
+              { product_id: item.product_id!, order_id: orderId, buyer_id: user.id, rating: stars, review: text },
+              { onSuccess: () => setOpen(false) },
+            )
+          }
+        >
+          {addReview.isPending ? "Saving…" : "Submit review"}
+        </Button>
+        <Button size="sm" variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
 
 function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel: (id: string) => void; cancelling: boolean }) {
   const items  = order.order_items ?? [];
@@ -44,7 +129,7 @@ function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel:
 
       <ul className="mt-token-sm divide-y divide-surface-highest">
         {items.map((item) => (
-          <li key={item.id} className="flex items-center gap-3 py-2.5">
+          <li key={item.id} className="flex flex-wrap items-center gap-3 py-2.5">
             {item.image_url ? (
               <img src={item.image_url} alt="" className="h-12 w-12 shrink-0 rounded-md object-cover" />
             ) : (
@@ -52,7 +137,7 @@ function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel:
                 <Icon name="inventory_2" size={18} />
               </span>
             )}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <p className="text-body-md font-medium text-on-surface">{item.name}</p>
               <p className="text-label-sm text-on-surface-variant">Qty {item.quantity} · {formatPrice(item.price)}</p>
             </div>
@@ -64,6 +149,7 @@ function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel:
                 <Icon name="qr_code_2" size={16} /> Trace
               </Link>
             )}
+            {order.status === "COMPLETED" && <RateItem item={item} orderId={order.id} />}
           </li>
         ))}
       </ul>
@@ -78,7 +164,7 @@ function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel:
         {order.status === "COMPLETED" ? (
           <>
             <span className="inline-flex items-center gap-1 text-label-md text-on-surface-variant">
-              <Icon name="grade" size={16} className="text-tertiary-fixed-dim" filled /> Rate this order
+              <Icon name="grade" size={16} className="text-tertiary-fixed-dim" filled /> Tap "Rate" on an item to review it
             </span>
             <Button size="sm" variant="secondary" icon="replay">Buy again</Button>
           </>

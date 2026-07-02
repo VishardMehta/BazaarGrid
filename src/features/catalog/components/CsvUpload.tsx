@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import { Button, Icon } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { formatPrice } from "@/lib/format";
+import { useAddProduct } from "@/lib/hooks/useProducts";
+import type { ProductCategory } from "@/shared/types";
 import sampleUrl from "@/shared/mocks/products_upload_sample.csv?url";
 
 export interface ParsedRow {
@@ -12,11 +15,15 @@ export interface ParsedRow {
   [key: string]: string;
 }
 
+const CATEGORIES = new Set([
+  "GROCERY","HONEY","OILS","GRAINS","TEXTILES","POTTERY","CRAFTS","DAIRY","SPICES","OTHER",
+]);
+
 /** Minimal CSV parser (handles simple comma-separated rows + header). */
 function parseCsv(text: string): ParsedRow[] {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return [];
-  const headers = lines[0].split(",").map((h) => h.trim());
+  const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
   return lines.slice(1).map((line) => {
     const cells = line.split(",");
     const row: ParsedRow = {} as ParsedRow;
@@ -25,24 +32,35 @@ function parseCsv(text: string): ParsedRow[] {
   });
 }
 
+function rowError(r: ParsedRow): string | null {
+  if (!r.name) return "missing name";
+  if (!r.price || isNaN(parseFloat(r.price))) return "invalid price";
+  if (r.category && !CATEGORIES.has(r.category.toUpperCase())) return `unknown category "${r.category}"`;
+  return null;
+}
+
 interface CsvUploadProps {
+  /** Seller the imported products belong to. Import is disabled without it. */
+  sellerId?: string;
   onParsed?: (rows: ParsedRow[]) => void;
 }
 
 /**
- * Task 2 — CSV bulk product upload. Drag/drop or pick a file, preview the
- * parsed rows, then "import". Real import swaps to an API call later.
+ * CSV bulk product upload. Drag/drop or pick a file, preview the parsed rows,
+ * then import straight into Supabase as PENDING_APPROVAL listings.
  */
-export function CsvUpload({ onParsed }: CsvUploadProps) {
+export function CsvUpload({ sellerId, onParsed }: CsvUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const addProduct = useAddProduct();
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [fileName, setFileName] = useState<string>();
   const [dragging, setDragging] = useState(false);
-  const [imported, setImported] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [result, setResult] = useState<{ ok: number; failed: number; error?: string } | null>(null);
 
   function handleFile(file: File) {
     setFileName(file.name);
-    setImported(false);
+    setResult(null);
     const reader = new FileReader();
     reader.onload = () => {
       const parsed = parseCsv(String(reader.result));
@@ -51,6 +69,48 @@ export function CsvUpload({ onParsed }: CsvUploadProps) {
     };
     reader.readAsText(file);
   }
+
+  async function handleImport() {
+    if (!sellerId || rows.length === 0) return;
+    setImporting(true);
+    let ok = 0, failed = 0;
+    let firstError: string | undefined;
+
+    for (const r of rows) {
+      if (rowError(r)) { failed++; continue; }
+      const name      = r.name;
+      const traceable = (r.traceable ?? "true").toLowerCase() !== "false";
+      const initials  = name.split(/\s+/).map((w) => w[0]).join("").replace(/[^a-zA-Z]/g, "").slice(0, 3).toUpperCase();
+      try {
+        await addProduct.mutateAsync({
+          seller_id:   sellerId,
+          name,
+          description: r.description ?? "",
+          tags:        (r.tags ?? "").split("|").map((t) => t.trim()).filter(Boolean),
+          batch_id:    traceable
+            ? `BG-${new Date().getFullYear()}-${initials || "PRD"}-${Math.random().toString(16).slice(2, 6).toUpperCase()}`
+            : null,
+          price:       parseFloat(r.price),
+          unit:        r.unit || "each",
+          category:    (CATEGORIES.has((r.category ?? "").toUpperCase()) ? r.category.toUpperCase() : "OTHER") as ProductCategory,
+          stock:       parseInt(r.stock) || 0,
+          organic:     (r.organic ?? "").toLowerCase() === "true",
+          traceable,
+          status:      "PENDING_APPROVAL",
+        });
+        ok++;
+      } catch (e) {
+        failed++;
+        firstError ??= e instanceof Error ? e.message : "insert failed";
+      }
+    }
+
+    setImporting(false);
+    setResult({ ok, failed, error: firstError });
+    if (ok > 0 && failed === 0) setRows([]);
+  }
+
+  const invalidCount = rows.filter((r) => rowError(r)).length;
 
   return (
     <div>
@@ -85,7 +145,7 @@ export function CsvUpload({ onParsed }: CsvUploadProps) {
           </button>
         </p>
         <p className="text-label-sm text-on-surface-variant">
-          Columns: name, category, price, unit, stock, organic, traceable, tags, description
+          Columns: name, category, price, unit, stock, organic, traceable, tags (| separated), description
         </p>
         <a href={sampleUrl} download="products_upload_sample.csv" className="mt-1 inline-flex items-center gap-1 text-label-md font-semibold text-secondary hover:text-primary">
           <Icon name="download" size={16} /> Download template
@@ -102,19 +162,32 @@ export function CsvUpload({ onParsed }: CsvUploadProps) {
         />
       </div>
 
+      {result && (
+        <div className={cn(
+          "mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-label-md",
+          result.failed === 0 ? "bg-secondary-container/40 text-secondary-on-container" : "bg-error-container/40 text-error",
+        )}>
+          <Icon name={result.failed === 0 ? "check_circle" : "warning"} size={16} filled />
+          {result.ok} product{result.ok !== 1 ? "s" : ""} imported (pending approval)
+          {result.failed > 0 && ` · ${result.failed} failed${result.error ? ` — ${result.error}` : ""}`}
+        </div>
+      )}
+
       {rows.length > 0 && (
         <div className="mt-4 overflow-hidden rounded-lg border border-surface-highest">
           <div className="flex items-center justify-between bg-surface-low px-token-sm py-2">
             <p className="text-label-md font-semibold text-on-surface">
               <Icon name="description" size={16} className="mr-1 align-middle text-secondary" />
-              {fileName} · {rows.length} products parsed
+              {fileName} · {rows.length} rows parsed
+              {invalidCount > 0 && <span className="ml-1 text-error">({invalidCount} invalid, will be skipped)</span>}
             </p>
             <Button
               size="sm"
-              icon={imported ? "check" : "cloud_upload"}
-              onClick={() => setImported(true)}
+              icon={importing ? "hourglass_empty" : "cloud_upload"}
+              disabled={importing || !sellerId || rows.length === invalidCount}
+              onClick={handleImport}
             >
-              {imported ? "Imported" : `Import ${rows.length}`}
+              {importing ? "Importing…" : `Import ${rows.length - invalidCount}`}
             </Button>
           </div>
           <div className="max-h-56 overflow-auto">
@@ -125,21 +198,37 @@ export function CsvUpload({ onParsed }: CsvUploadProps) {
                   <th className="px-token-sm py-2 font-semibold">Category</th>
                   <th className="px-token-sm py-2 font-semibold">Price</th>
                   <th className="px-token-sm py-2 font-semibold">Stock</th>
+                  <th className="px-token-sm py-2 font-semibold">Check</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-highest">
-                {rows.map((r, i) => (
-                  <tr key={i} className="bg-surface-lowest">
-                    <td className="px-token-sm py-2 font-medium text-on-surface">{r.name}</td>
-                    <td className="px-token-sm py-2 text-on-surface-variant">{r.category}</td>
-                    <td className="px-token-sm py-2 text-on-surface-variant">${r.price}</td>
-                    <td className="px-token-sm py-2 text-on-surface-variant">{r.stock}</td>
-                  </tr>
-                ))}
+                {rows.map((r, i) => {
+                  const err = rowError(r);
+                  return (
+                    <tr key={i} className="bg-surface-lowest">
+                      <td className="px-token-sm py-2 font-medium text-on-surface">{r.name || "—"}</td>
+                      <td className="px-token-sm py-2 text-on-surface-variant">{r.category}</td>
+                      <td className="px-token-sm py-2 text-on-surface-variant">
+                        {isNaN(parseFloat(r.price)) ? r.price : formatPrice(parseFloat(r.price))}
+                      </td>
+                      <td className="px-token-sm py-2 text-on-surface-variant">{r.stock}</td>
+                      <td className="px-token-sm py-2">
+                        {err ? (
+                          <span className="inline-flex items-center gap-1 text-label-sm text-error"><Icon name="error" size={13} /> {err}</span>
+                        ) : (
+                          <Icon name="check_circle" size={15} className="text-secondary" filled />
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
+      )}
+      {!sellerId && rows.length > 0 && (
+        <p className="mt-2 text-label-sm text-error">No seller profile found — import is disabled.</p>
       )}
     </div>
   );

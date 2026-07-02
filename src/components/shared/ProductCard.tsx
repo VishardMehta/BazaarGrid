@@ -63,7 +63,14 @@ export function ProductCard({ product, sellerName, onAdd, className }: ProductCa
           <span className="font-serif text-headline-md font-semibold text-primary">
             {formatPrice(product.price, product.currency)}
           </span>
-          {onAdd && (
+          {onAdd && ((product.stock ?? 1) <= 0 ? (
+            <span
+              title="Out of stock"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-high text-outline"
+            >
+              <Icon name="production_quantity_limits" size={18} />
+            </span>
+          ) : (
             <motion.button
               type="button"
               onClick={handleAdd}
@@ -79,7 +86,7 @@ export function ProductCard({ product, sellerName, onAdd, className }: ProductCa
             >
               <Icon name={justAdded ? "check" : "add_shopping_cart"} size={18} />
             </motion.button>
-          )}
+          ))}
         </div>
         <span className="text-label-sm text-outline">per {product.unit}</span>
       </div>

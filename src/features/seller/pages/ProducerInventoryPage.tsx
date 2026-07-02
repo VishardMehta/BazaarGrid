@@ -247,7 +247,7 @@ export function ProducerInventoryPage() {
               </div>
             </form>
           ) : (
-            <CsvUpload />
+            <CsvUpload sellerId={seller?.id} />
           )}
         </div>
       </Card>

@@ -45,6 +45,21 @@ export function ProducerOrdersPage() {
     { value: "CANCELLED", label: "Cancelled", count: orders.filter((o) => o.status === "CANCELLED").length },
   ];
 
+  function exportCsv() {
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = "order_id,placed_at,channel,status,fulfillment,items,total";
+    const lines = shown.map((o) =>
+      [o.id, o.placed_at, o.channel, o.status, o.fulfillment, o.order_items?.length ?? 0, o.total].map(esc).join(","),
+    );
+    const blob = new Blob([[header, ...lines].join("\n")], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href     = url;
+    a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <PortalLayout
       portalName="Producer Portal"
@@ -57,7 +72,9 @@ export function ProducerOrdersPage() {
           <h1 className="font-serif text-headline-lg font-semibold text-on-surface">Orders</h1>
           <p className="mt-1 text-body-md text-on-surface-variant">Manage and fulfil customer orders</p>
         </div>
-        <Button icon="file_download" variant="secondary">Export CSV</Button>
+        <Button icon="file_download" variant="secondary" onClick={exportCsv} disabled={shown.length === 0}>
+          Export CSV
+        </Button>
       </div>
 
       {/* Tab bar */}

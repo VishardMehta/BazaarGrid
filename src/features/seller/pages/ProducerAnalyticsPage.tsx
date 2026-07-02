@@ -8,14 +8,7 @@ import { useMySellerProfile } from "@/lib/hooks/useSellers";
 import { useSellerOrders } from "@/lib/hooks/useOrders";
 import { useAllSellerProducts } from "@/lib/hooks/useProducts";
 
-const MONTHLY = [
-  { month: "Jan", revenue: 1240, orders: 14 },
-  { month: "Feb", revenue: 1580, orders: 18 },
-  { month: "Mar", revenue: 2100, orders: 24 },
-  { month: "Apr", revenue: 1890, orders: 21 },
-  { month: "May", revenue: 2430, orders: 28 },
-  { month: "Jun", revenue: 2780, orders: 32 },
-];
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 export function ProducerAnalyticsPage() {
   const { profile }             = useAuth();
@@ -24,9 +17,56 @@ export function ProducerAnalyticsPage() {
   const { data: myProducts = [] } = useAllSellerProducts(seller?.id ?? null);
 
   const liveProducts  = myProducts.filter((p) => p.status === "LIVE");
-  const totalRevenue  = myOrders.reduce((sum, o) => sum + o.total, 0);
-  const avgOrderValue = myOrders.length ? totalRevenue / myOrders.length : 0;
-  const maxRevenue    = Math.max(...MONTHLY.map((m) => m.revenue));
+  const validOrders   = myOrders.filter((o) => o.status !== "CANCELLED");
+  const totalRevenue  = validOrders.reduce((sum, o) => sum + o.total, 0);
+  const avgOrderValue = validOrders.length ? totalRevenue / validOrders.length : 0;
+
+  // Last 6 months of real revenue, grouped by placed_at
+  const now = new Date();
+  const monthly = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    return { key: `${d.getFullYear()}-${d.getMonth()}`, month: MONTH_NAMES[d.getMonth()], revenue: 0, orders: 0 };
+  });
+  const byMonth = new Map(monthly.map((b) => [b.key, b]));
+  for (const o of validOrders) {
+    const d = new Date(o.placed_at);
+    const b = byMonth.get(`${d.getFullYear()}-${d.getMonth()}`);
+    if (b) { b.revenue += o.total; b.orders += 1; }
+  }
+  const maxRevenue = Math.max(1, ...monthly.map((m) => m.revenue));
+
+  // Month-over-month revenue delta
+  const thisM = monthly[5].revenue, lastM = monthly[4].revenue;
+  const revDelta = lastM > 0 ? Math.round(((thisM - lastM) / lastM) * 100) : null;
+
+  // Average rating across live products, weighted by review count
+  const totalReviews = liveProducts.reduce((n, p) => n + (p.review_count ?? 0), 0);
+  const avgRating = totalReviews
+    ? liveProducts.reduce((s, p) => s + (p.rating ?? 0) * (p.review_count ?? 0), 0) / totalReviews
+    : null;
+
+  // Fulfilment SLA from real order timestamps
+  const completed = myOrders.filter((o) => o.status === "COMPLETED");
+  const hoursTaken = (o: (typeof myOrders)[number]) =>
+    (new Date(o.updated_at).getTime() - new Date(o.placed_at).getTime()) / 36e5;
+  const avgFulfilHrs = completed.length
+    ? completed.reduce((s, o) => s + hoursTaken(o), 0) / completed.length
+    : null;
+  const onTimeRate = completed.length
+    ? Math.round((completed.filter((o) => hoursTaken(o) <= 72).length / completed.length) * 100)
+    : null;
+  const cancelRate = myOrders.length
+    ? Math.round((myOrders.filter((o) => o.status === "CANCELLED").length / myOrders.length) * 100)
+    : null;
+  const openOrders = myOrders.filter((o) => !["COMPLETED", "CANCELLED"].includes(o.status)).length;
+
+  const fmtHrs = (h: number) => (h < 48 ? `${h.toFixed(1)} hrs` : `${(h / 24).toFixed(1)} days`);
+  const slaRows = [
+    { label: "Avg fulfilment time", value: avgFulfilHrs != null ? fmtHrs(avgFulfilHrs) : "No data yet", target: "< 3 days", ok: avgFulfilHrs == null || avgFulfilHrs <= 72 },
+    { label: "On-time rate (≤72h)", value: onTimeRate  != null ? `${onTimeRate}%`      : "No data yet", target: "> 90%",   ok: onTimeRate  == null || onTimeRate >= 90 },
+    { label: "Cancellation rate",   value: cancelRate  != null ? `${cancelRate}%`      : "No data yet", target: "< 10%",   ok: cancelRate  == null || cancelRate < 10 },
+    { label: "Open orders",         value: `${openOrders}`, target: "keep them moving", ok: true },
+  ];
 
   const topProducts = [...liveProducts]
     .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
@@ -45,10 +85,14 @@ export function ProducerAnalyticsPage() {
       </div>
 
       <div className="mt-token-md grid gap-token-md sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Revenue"    value={formatPrice(totalRevenue)} icon="payments"      delta="+18% vs last quarter" deltaTone="up" />
-        <StatCard label="Total Orders"     value={myOrders.length}           icon="receipt_long"  delta="+4 this month" deltaTone="up" />
-        <StatCard label="Avg Order Value"  value={formatPrice(avgOrderValue)} icon="trending_up"  delta="Above category avg" deltaTone="up" />
-        <StatCard label="Store Visits"     value="1,284"                     icon="visibility"    delta="+12%" deltaTone="up" />
+        <StatCard label="Total Revenue"    value={formatPrice(totalRevenue)} icon="payments"
+          delta={revDelta != null ? `${revDelta >= 0 ? "+" : ""}${revDelta}% vs last month` : undefined}
+          deltaTone={revDelta == null || revDelta >= 0 ? "up" : "down"} />
+        <StatCard label="Total Orders"     value={validOrders.length}         icon="receipt_long"
+          delta={`${monthly[5].orders} this month`} deltaTone="up" />
+        <StatCard label="Avg Order Value"  value={formatPrice(avgOrderValue)} icon="trending_up" />
+        <StatCard label="Avg Rating"       value={avgRating != null ? avgRating.toFixed(1) : "—"} icon="grade"
+          delta={totalReviews ? `${totalReviews} review${totalReviews !== 1 ? "s" : ""}` : "No reviews yet"} deltaTone="up" />
       </div>
 
       <div className="mt-token-md grid gap-token-md lg:grid-cols-[1.5fr_1fr]">
@@ -57,7 +101,7 @@ export function ProducerAnalyticsPage() {
           <h2 className="font-serif text-headline-md font-medium text-on-surface">Monthly Revenue</h2>
           <p className="text-label-sm text-on-surface-variant">Last 6 months</p>
           <div className="mt-token-md flex items-end gap-2 h-44">
-            {MONTHLY.map((m) => {
+            {monthly.map((m) => {
               const pct = (m.revenue / maxRevenue) * 100;
               return (
                 <div key={m.month} className="flex flex-1 flex-col items-center gap-1">
@@ -125,12 +169,7 @@ export function ProducerAnalyticsPage() {
       <Card padding="md" className="mt-token-md">
         <h2 className="font-serif text-headline-md font-medium text-on-surface">Fulfilment SLA</h2>
         <div className="mt-4 space-y-3">
-          {[
-            { label: "Avg time to confirm", value: "2.1 hrs",  target: "< 4 hrs",  ok: true },
-            { label: "Avg time to pack",    value: "5.4 hrs",  target: "< 8 hrs",  ok: true },
-            { label: "Avg delivery time",   value: "1.4 days", target: "< 2 days", ok: true },
-            { label: "On-time rate",        value: "94%",      target: "> 90%",    ok: true },
-          ].map((row) => (
+          {slaRows.map((row) => (
             <div key={row.label} className="flex items-center justify-between rounded-lg bg-surface-low px-4 py-2.5">
               <span className="text-body-md text-on-surface-variant">{row.label}</span>
               <div className="flex items-center gap-3">

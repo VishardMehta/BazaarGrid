@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/format";
 import { useCart } from "@/features/cart/CartContext";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useAddresses } from "@/lib/hooks/useAddresses";
+import { useRewardBalance } from "@/lib/hooks/useRewards";
 import { supabase } from "@/lib/supabase";
 import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import type { FulfillmentMethod, PaymentMethod } from "@/shared/types";
@@ -38,6 +39,7 @@ export function CartPage() {
   const [manualAddr, setManualAddr] = useState({ line1: "", city: "", postal_code: "" });
   const [placing, setPlacing]       = useState(false);
   const [placed,  setPlaced]        = useState(false);
+  const [earned,  setEarned]        = useState(0);
   const [error,   setError]         = useState<string | null>(null);
   const [_waLoading, setWaLoading]  = useState(false);
 
@@ -45,8 +47,14 @@ export function CartPage() {
   const [promo, setPromo]           = useState<{ code: string; percent: number } | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
 
+  // Harvest Tokens: 1 token per ₹10 earned; 100 tokens = ₹10 off (1 token = ₹0.10)
+  const { data: tokenBalance = 0 } = useRewardBalance(user?.id ?? null);
+  const [useTokens, setUseTokens]  = useState(false);
+  const tokensUsable = Math.min(tokenBalance, Math.floor(subtotal * 10));
+  const tokenValue   = Math.round(tokensUsable * 0.10 * 100) / 100;
+
   const deliveryFee     = fulfilment === "DELIVERY" ? (subtotal > 999 ? 0 : 49) : 0;
-  const rewardsDiscount = useMemo(() => Math.round(subtotal * 0.05 * 100) / 100, [subtotal]);
+  const rewardsDiscount = useTokens && tokensUsable > 0 ? tokenValue : 0;
   const promoDiscount   = useMemo(
     () => (promo ? Math.round(subtotal * (promo.percent / 100) * 100) / 100 : 0),
     [promo, subtotal],
@@ -91,6 +99,8 @@ export function CartPage() {
 
     setPlacing(true);
     try {
+      let earnedTokens = 0;
+
       // One order per seller; look up each seller's village for pickup
       const bySeller = new Map<string, typeof lines>();
       for (const line of lines) {
@@ -150,9 +160,24 @@ export function CartPage() {
         }));
         const { error: iErr } = await supabase.from("order_items").insert(items);
         if (iErr) throw new Error(iErr.message);
+
+        earnedTokens += Math.floor(groupTotal / 10); // mirrors the DB earn trigger
+      }
+
+      // Record token redemption (100 tokens = ₹10)
+      if (useTokens && tokensUsable > 0) {
+        await supabase.from("reward_transactions").insert({
+          profile_id:  user.id,
+          type:        "REDEEM",
+          points:      tokensUsable,
+          description: `Redeemed at checkout (₹${tokenValue.toFixed(2)} off)`,
+        });
       }
 
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["rewards"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] }); // stock changed
+      setEarned(earnedTokens);
       clear();
       setPlaced(true);
     } catch (e) {
@@ -202,6 +227,11 @@ export function CartPage() {
           <p className="mt-2 text-body-md text-on-surface-variant">
             Thank you. Your order is confirmed and traceable end-to-end. Track its journey from My Orders.
           </p>
+          {earned > 0 && (
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary-container px-4 py-2 text-label-md font-semibold text-secondary-on-container">
+              <Icon name="redeem" size={18} /> You earned {earned} Harvest Tokens!
+            </p>
+          )}
           <Button className="mt-5" icon="receipt_long" onClick={() => (window.location.href = "/orders")}>
             View my orders
           </Button>
@@ -356,12 +386,27 @@ export function CartPage() {
                 <dt className="text-on-surface-variant">Delivery</dt>
                 <dd className="font-medium">{deliveryFee === 0 ? "Free" : formatPrice(deliveryFee)}</dd>
               </div>
-              <div className="flex justify-between text-secondary">
-                <dt className="inline-flex items-center gap-1">
-                  <Icon name="redeem" size={16} /> Producer Rewards (5%)
-                </dt>
-                <dd className="font-medium">−{formatPrice(rewardsDiscount)}</dd>
-              </div>
+              {user && (
+                <div className="flex items-center justify-between text-secondary">
+                  <dt className="inline-flex items-center gap-1.5">
+                    <label className="inline-flex cursor-pointer items-center gap-1.5">
+                      <input
+                        type="checkbox"
+                        checked={useTokens}
+                        disabled={tokensUsable === 0}
+                        onChange={(e) => setUseTokens(e.target.checked)}
+                        className="h-4 w-4 accent-secondary"
+                      />
+                      <Icon name="redeem" size={16} />
+                      Harvest Tokens
+                    </label>
+                    <span className="text-label-sm text-on-surface-variant">
+                      {tokenBalance} available
+                    </span>
+                  </dt>
+                  <dd className="font-medium">−{formatPrice(rewardsDiscount)}</dd>
+                </div>
+              )}
               {promo && (
                 <div className="flex justify-between text-secondary">
                   <dt className="inline-flex items-center gap-1">

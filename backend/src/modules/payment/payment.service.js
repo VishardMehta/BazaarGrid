@@ -32,6 +32,32 @@ class PaymentService {
     return order; // { id, amount, currency, receipt, status, ... }
   }
 
+  get configured() {
+    return Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET);
+  }
+
+  /**
+   * Creates a Razorpay Payment Link — the right primitive for WhatsApp,
+   * since it's a short URL the buyer taps in chat. In dry-run (no keys)
+   * returns a placeholder so the conversation flow stays coherent while
+   * the gateway is not yet wired.
+   */
+  async createPaymentLink({ amountRupees, reference, customer }) {
+    if (!this.configured) {
+      return { short_url: `https://rzp.io/i/DEMO-${reference}`, id: `plink_demo_${reference}`, dryRun: true };
+    }
+    const link = await this.#client().paymentLink.create({
+      amount: Math.round(amountRupees * 100),
+      currency: 'INR',
+      description: `BazaarGrid order ${reference}`,
+      reference_id: reference,
+      customer: customer ?? undefined,
+      notify: { sms: false, email: false },
+      reminder_enable: false,
+    });
+    return link; // { short_url, id, ... }
+  }
+
   /** Verifies the signature Razorpay Checkout returns to the browser on success. */
   verifyCheckoutSignature({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) {
     const key_secret = process.env.RAZORPAY_KEY_SECRET;

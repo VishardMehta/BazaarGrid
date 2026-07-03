@@ -14,6 +14,11 @@ const CreateWhatsappOrderUseCase = require('./modules/whatsapp/application/use-c
 const WhatsappController = require('./modules/whatsapp/infrastructure/controllers/whatsapp.controller');
 const buildWhatsappRoutes = require('./modules/whatsapp/infrastructure/routes/whatsapp.routes');
 
+const { WhatsappConversationEngine } = require('./modules/whatsapp/application/conversation-engine');
+const WhatsappSender = require('./modules/whatsapp/infrastructure/whatsapp-sender');
+const WhatsappWebhookController = require('./modules/whatsapp/infrastructure/controllers/whatsapp-webhook.controller');
+const SupabaseRestClient = require('./shared/supabase/supabase-rest.client');
+
 const PaymentService = require('./modules/payment/payment.service');
 const PaymentController = require('./modules/payment/payment.controller');
 const buildPaymentRoutes = require('./modules/payment/payment.routes');
@@ -67,6 +72,19 @@ function createApp() {
   const paymentService = new PaymentService();
   const paymentController = new PaymentController(paymentService);
 
+  // ---- WhatsApp structured-commerce bot wiring ----
+  // Reads the live catalogue and writes orders straight into Supabase
+  // (channel: WHATSAPP), so producers see them in the same dashboard as
+  // app/web orders. Reuses paymentService for the checkout payment link.
+  const supabaseRest = new SupabaseRestClient();
+  const whatsappSender = new WhatsappSender();
+  const conversationEngine = new WhatsappConversationEngine({
+    supabase: supabaseRest,
+    sender: whatsappSender,
+    paymentService,
+  });
+  const whatsappWebhookController = new WhatsappWebhookController(conversationEngine, whatsappSender);
+
   // ---- Static test UI ----
   app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -77,7 +95,7 @@ function createApp() {
   // PATCH /:id/status, PATCH /:id/cancel) don't collide on method+path,
   // but mounting order is kept explicit and intentional here so a
   // future route addition doesn't accidentally get shadowed.
-  app.use('/orders', buildWhatsappRoutes(whatsappController));
+  app.use('/orders', buildWhatsappRoutes(whatsappController, whatsappWebhookController));
   app.use('/orders', buildOrderRoutes(orderController));
   app.use('/payments', buildPaymentRoutes(paymentController));
 

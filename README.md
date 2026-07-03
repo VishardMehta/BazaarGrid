@@ -108,15 +108,32 @@ supabase/              # SQL migrations
 
 ## Backend (Node.js API)
 
-The `backend/` directory is a standalone Express API for order management with a WhatsApp order flow. It runs separately from the Vite frontend.
+The `backend/` directory is a standalone Express API hosting the **Razorpay payment module** and the **WhatsApp structured-commerce bot**. It runs separately from the Vite frontend; Vite proxies `/api/*` to it in dev.
 
 ```bash
 cd backend
 npm install
-npm start        # runs on http://localhost:3000
+cp .env.example .env   # fill in Supabase service-role + (optional) Razorpay/WhatsApp
+npm start              # http://localhost:3000
+npm test               # 27 tests incl. the WhatsApp conversation flow
 ```
 
-It currently uses a local JSON file as a datastore (`backend/src/data/orders.json`). Not yet connected to Supabase.
+### WhatsApp bot (structured ordering, no NLP — roadmap V1)
+
+Buyers order entirely inside WhatsApp: **pick store → browse catalogue → quantity → confirm → payment link**. The order lands in the **same Supabase `orders` table** (`channel: 'WHATSAPP'`), so producers see it in the same dashboard as app/web orders.
+
+- **Live now, no Meta account needed:** the whole flow runs in **dry-run** and is testable via a simulator. With the backend running:
+  ```bash
+  curl -sX POST localhost:3000/orders/whatsapp/simulate \
+    -H 'content-type: application/json' -d '{"from":"919876543210","text":"hi"}'
+  # returns the outbound messages; keep POSTing with interactiveId (e.g. "store:<id>")
+  ```
+  (Requires `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `backend/.env` so it can read the live catalogue and write orders.)
+- **To go live:** set `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_VERIFY_TOKEN` from a Meta WhatsApp Business API account, and point the Meta webhook at `https://<your-public-host>/orders/whatsapp/webhook`. The same engine that the simulator drives then talks to real WhatsApp — no code change.
+
+> The old one-shot `wa.me` deep link (`POST /orders/whatsapp`) still exists for the frontend's "Order on WhatsApp" button; the bot above is the new full conversational flow.
+
+The legacy JSON-backed order endpoints (`backend/src/data/orders.json`) are unused by the live app (Supabase is the datastore) — safe to ignore.
 
 ---
 
@@ -126,7 +143,7 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 
 - **Razorpay needs live keys to actually charge anyone.** The integration (backend order creation, signature verification, frontend Checkout) is fully built — see "Configure Razorpay" above. Until keys are added, only Cash on Delivery completes checkout.
 
-- **WhatsApp is still a `wa.me` deep link**, not real Business API ordering. Needs a WhatsApp Business API account (Meta or a provider like Twilio/Gupshup) and a deployed public webhook — see project notes for the planned structured (non-NLP) flow.
+- **WhatsApp bot needs a Meta account + public webhook to go live.** The full structured-ordering engine is built and tested (dry-run + simulator work now); it just needs WhatsApp Business API credentials and a deployed HTTPS webhook URL — see the Backend section.
 
 - **Real QR codes** — The product passport page shows styled heritage content, not an actual scannable QR. Needs `npm install qrcode` to generate one encoding `/trace/:batchId` (that route already exists and resolves batch → product).
 
@@ -148,6 +165,7 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 - ✅ **FPO / SHG seller types** — modeled as `sellers.type` values (same architecture as any producer), selectable at onboarding.
 - ✅ **Payments** — Razorpay Checkout wired end-to-end (needs your keys to go live); COD works with zero config.
 - ✅ **Invoices** — printable per-order invoice at `/orders/:id/invoice`.
+- ✅ **WhatsApp structured ordering** — full conversational bot (store → catalogue → quantity → confirm → payment link), orders into the same Supabase tables; dry-run + simulator work now, plug in Meta creds to go live.
 - ✅ **Harvest Tokens, reviews/ratings, live stock, real analytics, working CSV bulk import** — see prior commits.
 
 ---

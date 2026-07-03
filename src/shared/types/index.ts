@@ -73,6 +73,9 @@ export type ProductCategory =
 export interface Product {
   id: string;
   sellerId: string;
+  /** When set, this product is one store's offer on a shared catalogue SKU;
+   *  other stores may sell the same item. Undefined = a unique product. */
+  catalogItemId?: string;
   name: string;
   category: ProductCategory;
   /** Price in the smallest sensible major unit (e.g. rupees/dollars), not cents. */

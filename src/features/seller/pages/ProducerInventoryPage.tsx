@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Badge, Button, Card, Icon, Input, Select, Textarea } from "@/components/ui";
 import { PortalLayout } from "@/components/layout";
 import { CsvUpload } from "@/features/catalog/components/CsvUpload";
+import { KiranaListingForm } from "@/features/seller/components/KiranaListingForm";
 import { formatPrice } from "@/lib/format";
 import { PRODUCER_NAV } from "../sellerNav";
 import { useAuth } from "@/features/auth/AuthContext";
@@ -30,6 +31,7 @@ export function ProducerInventoryPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const shown = filter === "ALL" ? products : products.filter((p) => p.status === filter);
+  const isKirana = seller?.type === "KIRANA_STORE";
 
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -186,25 +188,31 @@ export function ProducerInventoryPage() {
       {/* Add product */}
       <Card padding="md" className="mt-token-lg" id="add-product">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-serif text-headline-md font-medium text-on-surface">List a new product</h2>
-          <div className="inline-flex rounded-full border border-outline-variant p-1">
-            <button
-              onClick={() => setMode("single")}
-              className={`rounded-full px-4 py-1.5 text-label-md font-semibold transition-colors ${mode === "single" ? "bg-secondary text-secondary-on" : "text-on-surface-variant"}`}
-            >
-              Single product
-            </button>
-            <button
-              onClick={() => setMode("bulk")}
-              className={`rounded-full px-4 py-1.5 text-label-md font-semibold transition-colors ${mode === "bulk" ? "bg-secondary text-secondary-on" : "text-on-surface-variant"}`}
-            >
-              Bulk CSV
-            </button>
-          </div>
+          <h2 className="font-serif text-headline-md font-medium text-on-surface">
+            {isKirana ? "List from the catalogue" : "List a new product"}
+          </h2>
+          {!isKirana && (
+            <div className="inline-flex rounded-full border border-outline-variant p-1">
+              <button
+                onClick={() => setMode("single")}
+                className={`rounded-full px-4 py-1.5 text-label-md font-semibold transition-colors ${mode === "single" ? "bg-secondary text-secondary-on" : "text-on-surface-variant"}`}
+              >
+                Single product
+              </button>
+              <button
+                onClick={() => setMode("bulk")}
+                className={`rounded-full px-4 py-1.5 text-label-md font-semibold transition-colors ${mode === "bulk" ? "bg-secondary text-secondary-on" : "text-on-surface-variant"}`}
+              >
+                Bulk CSV
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="mt-token-md">
-          {mode === "single" ? (
+          {isKirana && seller ? (
+            <KiranaListingForm sellerId={seller.id} />
+          ) : mode === "single" ? (
             <form onSubmit={handleAddProduct} className="grid gap-token-md md:grid-cols-2">
               <Input name="name"     label="Product name"   placeholder="e.g. Wildflower Forest Honey" required />
               <Select name="category" label="Category" required defaultValue="HONEY">

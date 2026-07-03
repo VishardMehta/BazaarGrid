@@ -13,12 +13,15 @@ interface ProductCardProps {
   product: Product;
   /** Optional seller name shown below the product card */
   sellerName?: string;
+  /** When >1, this SKU is sold by several stores — show "from ₹X · N stores". */
+  storesCount?: number;
   onAdd?: (product: Product) => void;
   className?: string;
 }
 
-export function ProductCard({ product, sellerName, onAdd, className }: ProductCardProps) {
+export function ProductCard({ product, sellerName, storesCount, onAdd, className }: ProductCardProps) {
   const [justAdded, setJustAdded] = useState(false);
+  const multiStore = (storesCount ?? 0) > 1;
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -58,9 +61,15 @@ export function ProductCard({ product, sellerName, onAdd, className }: ProductCa
           </h3>
         </Link>
         {product.rating ? <Rating value={product.rating} count={product.reviewCount} /> : null}
+        {multiStore && (
+          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-secondary-container/40 px-2 py-0.5 text-label-sm font-medium text-secondary-on-container">
+            <Icon name="storefront" size={12} /> {storesCount} stores nearby
+          </span>
+        )}
 
         <div className="mt-auto flex items-center justify-between pt-1">
           <span className="font-serif text-headline-md font-semibold text-primary">
+            {multiStore && <span className="text-label-md font-normal text-on-surface-variant">from </span>}
             {formatPrice(product.price, product.currency)}
           </span>
           {onAdd && ((product.stock ?? 1) <= 0 ? (

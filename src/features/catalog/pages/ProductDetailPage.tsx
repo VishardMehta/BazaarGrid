@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button, ButtonLink, Badge, Icon, Rating } from "@/components/ui";
@@ -9,6 +9,7 @@ import {
   SellerBadge,
   TrustBadge,
   QuantityStepper,
+  useCurrentLocation,
 } from "@/components/shared";
 import { formatPrice, formatDate } from "@/lib/format";
 import { categoryIcon, gradientFor } from "@/lib/placeholder";
@@ -17,9 +18,11 @@ import { whatsappProductLink } from "@/features/whatsapp/whatsapp";
 import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import { NotFoundPage } from "@/features/misc/NotFoundPage";
 import { useProduct, useProducts } from "@/lib/hooks/useProducts";
+import { useProductOffers } from "@/lib/hooks/useCatalog";
 import { useSeller } from "@/lib/hooks/useSellers";
 import { useProductReviews } from "@/lib/hooks/useReviews";
 import { mapProduct, mapSeller } from "@/lib/mappers";
+import { rankOffers, type OfferSort } from "@/features/catalog/offers";
 
 const TRUST_ROW = [
   { icon: "verified",        label: "Verified Producer" },
@@ -34,10 +37,14 @@ export function ProductDetailPage() {
   const { data: dbRelated = [] } = useProducts({ sellerId: dbProduct?.seller_id });
   const { data: reviews = [] } = useProductReviews(productId);
   const { add, lines } = useCart();
+  const { data: offers = [] } = useProductOffers(dbProduct?.catalog_item_id ?? undefined);
+  const buyerLoc = useCurrentLocation();
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
-  const inCart = !dbProduct ? 0 : (lines.find((l) => l.product.id === dbProduct.id)?.quantity ?? 0);
+  const [offerSort, setOfferSort] = useState<OfferSort>("NEAREST");
+  const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
+  const ranked = useMemo(() => rankOffers(offers, buyerLoc, offerSort), [offers, buyerLoc, offerSort]);
 
   if (isLoading) {
     return (
@@ -59,8 +66,15 @@ export function ProductDetailPage() {
     ? product.images
     : [undefined, undefined, undefined, undefined];
 
+  // Catalogue products are sold by several stores; the buyer picks one offer.
+  // `activeProduct` is that chosen offer (falls back to the page's product).
+  const isCatalogue = !!product.catalogItemId;
+  const selectedOffer = ranked.find((o) => o.product.id === selectedOfferId) ?? ranked[0];
+  const activeProduct = isCatalogue && selectedOffer ? mapProduct(selectedOffer.product) : product;
+  const inCart = lines.find((l) => l.product.id === activeProduct.id)?.quantity ?? 0;
+
   function handleAdd() {
-    add(product, qty);
+    add(activeProduct, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 1000);
   }
@@ -136,43 +150,126 @@ export function ProductDetailPage() {
 
           <div className="mt-4 flex items-end gap-2">
             <span className="font-serif text-display-lg text-[2.5rem] font-semibold text-primary">
-              {formatPrice(product.price, product.currency)}
+              {formatPrice(activeProduct.price, activeProduct.currency)}
             </span>
-            <span className="mb-2 text-body-md text-on-surface-variant">per {product.unit}</span>
+            <span className="mb-2 text-body-md text-on-surface-variant">per {activeProduct.unit}</span>
           </div>
 
-          <p className="mt-4 text-body-lg text-on-surface-variant">{product.description}</p>
+          {product.description && (
+            <p className="mt-4 text-body-lg text-on-surface-variant">{product.description}</p>
+          )}
 
-          {seller && (
-            <div className="mt-5 rounded-lg border border-surface-highest bg-surface-low p-token-sm">
-              <SellerBadge seller={seller} size="md" />
+          {/* Multi-seller buy-box: same product, pick which store to buy from */}
+          {isCatalogue && ranked.length > 0 ? (
+            <div className="mt-5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-label-md font-semibold text-on-surface">
+                  Available from {ranked.length} {ranked.length === 1 ? "store" : "stores"}
+                </p>
+                <div className="inline-flex rounded-full border border-outline-variant p-0.5">
+                  {([
+                    ["NEAREST", "Nearest"],
+                    ["CHEAPEST", "Cheapest"],
+                    ["RATING", "Top-rated"],
+                  ] as const).map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setOfferSort(val)}
+                      className={`rounded-full px-3 py-1 text-label-sm font-semibold transition-colors ${
+                        offerSort === val ? "bg-secondary text-secondary-on" : "text-on-surface-variant"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-2">
+                {ranked.map((o) => {
+                  const chosen = o.product.id === activeProduct.id;
+                  const soldOut = (o.product.stock ?? 0) <= 0;
+                  return (
+                    <button
+                      key={o.product.id}
+                      type="button"
+                      disabled={soldOut}
+                      onClick={() => setSelectedOfferId(o.product.id)}
+                      className={`flex w-full items-center gap-3 rounded-xl border-2 p-3 text-left transition ${
+                        chosen ? "border-secondary bg-secondary-container/20" : "border-outline-variant hover:border-secondary/50"
+                      } ${soldOut ? "opacity-50" : ""}`}
+                    >
+                      <Icon
+                        name={chosen ? "radio_button_checked" : "radio_button_unchecked"}
+                        size={20}
+                        className={chosen ? "text-secondary" : "text-outline"}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="flex items-center gap-1.5 font-medium text-on-surface">
+                          {o.seller?.name ?? "Store"}
+                          {o.seller?.verified && <Icon name="verified" size={14} className="text-secondary" filled />}
+                        </p>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-label-sm text-on-surface-variant">
+                          <span className="inline-flex items-center gap-1">
+                            <Icon name="location_on" size={13} /> {o.distanceLabel}
+                          </span>
+                          <span className="inline-flex items-center gap-1">
+                            <Icon name="local_shipping" size={13} /> {o.deliveryLabel}
+                          </span>
+                          {o.seller?.rating ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Icon name="star" size={13} filled /> {o.seller.rating.toFixed(1)}
+                            </span>
+                          ) : null}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="font-serif text-headline-md font-semibold text-primary">
+                          {formatPrice(o.product.price, o.product.currency)}
+                        </p>
+                        <p className="text-label-sm text-on-surface-variant">
+                          {soldOut ? "Out of stock" : `${o.product.stock} in stock`}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+          ) : (
+            seller && (
+              <div className="mt-5 rounded-lg border border-surface-highest bg-surface-low p-token-sm">
+                <SellerBadge seller={seller} size="md" />
+              </div>
+            )
           )}
 
           {/* Buy box */}
-          {(product.stock ?? 1) <= 0 ? (
+          {(activeProduct.stock ?? 1) <= 0 ? (
             <div className="mt-5 flex items-center gap-2 rounded-lg bg-surface-high px-4 py-3 text-body-md font-medium text-on-surface-variant">
               <Icon name="production_quantity_limits" size={20} /> Out of stock — check back soon
             </div>
           ) : (
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <QuantityStepper value={qty} onChange={setQty} max={product.stock ?? 99} />
+              <QuantityStepper value={qty} onChange={setQty} max={activeProduct.stock ?? 99} />
               <Button onClick={handleAdd} size="lg" icon={added ? "check" : "add_shopping_cart"} className="flex-1">
                 {added
                   ? `Added! · ${inCart} in basket`
                   : inCart > 0
                     ? `Add more · ${inCart} in basket`
-                    : "Add to basket"}
+                    : isCatalogue && selectedOffer?.seller
+                      ? `Add from ${selectedOffer.seller.name}`
+                      : "Add to basket"}
               </Button>
             </div>
           )}
-          {(product.stock ?? 0) > 0 && (product.stock ?? 0) <= 10 && (
+          {(activeProduct.stock ?? 0) > 0 && (activeProduct.stock ?? 0) <= 10 && (
             <p className="mt-2 text-label-sm font-semibold text-primary">
-              Only {product.stock} left in stock
+              Only {activeProduct.stock} left in stock
             </p>
           )}
 
-          {seller && (
+          {!isCatalogue && seller && (
             <WhatsAppButton
               href={whatsappProductLink(seller, product, qty)}
               size="lg"

@@ -4,10 +4,12 @@ import { ProductCard, SectionHeading, Reveal, RevealItem, LocationBadge } from "
 import { useCart } from "@/features/cart/CartContext";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { mapProduct } from "@/lib/mappers";
+import { groupByCatalog } from "@/features/catalog/grouping";
 import type { ProductCategory } from "@/shared/types";
 
 const FILTERS: { value: ProductCategory | "ALL"; label: string }[] = [
   { value: "ALL",      label: "All"      },
+  { value: "GROCERY",  label: "Grocery"  },
   { value: "HONEY",    label: "Honey"    },
   { value: "OILS",     label: "Oils"     },
   { value: "DAIRY",    label: "Dairy"    },
@@ -26,7 +28,7 @@ export function CatalogPage() {
     category: filter !== "ALL" ? filter : undefined,
   });
 
-  const products = dbProducts.map(mapProduct);
+  const entries = groupByCatalog(dbProducts.map(mapProduct));
 
   return (
     <div className="container-page py-token-md">
@@ -57,7 +59,7 @@ export function CatalogPage() {
             <div key={i} className="h-72 animate-pulse rounded-xl bg-surface-high" />
           ))}
         </div>
-      ) : products.length === 0 ? (
+      ) : entries.length === 0 ? (
         <div className="mt-16 text-center text-on-surface-variant">
           No products in this category yet.
         </div>
@@ -67,9 +69,9 @@ export function CatalogPage() {
           stagger={0.05}
           className="mt-token-md grid grid-cols-2 gap-token-md md:grid-cols-3 xl:grid-cols-4"
         >
-          {products.map((p) => (
-            <RevealItem key={p.id}>
-              <ProductCard product={p} onAdd={add} />
+          {entries.map((e) => (
+            <RevealItem key={e.product.catalogItemId ?? e.product.id}>
+              <ProductCard product={e.product} storesCount={e.offerCount} onAdd={add} />
             </RevealItem>
           ))}
         </Reveal>

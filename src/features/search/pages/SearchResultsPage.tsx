@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Chip, Icon, Select } from "@/components/ui";
 import { EmptyState, ProductCard, Reveal, RevealItem } from "@/components/shared";
+import { groupHits } from "@/features/catalog/grouping";
 import { useCart } from "@/features/cart/CartContext";
 import type { ProductFacet, SortOption } from "@/shared/types";
 import { SearchBar } from "../components/SearchBar";
@@ -222,10 +223,10 @@ export function SearchResultsPage() {
                 stagger={0.04}
                 className="grid grid-cols-2 gap-token-md xl:grid-cols-3"
               >
-                {hits.map(({ product, score, matchedFields }) => (
-                  <RevealItem key={product.id}>
+                {groupHits(hits).map(({ product, score, matchedFields, offerCount }) => (
+                  <RevealItem key={product.catalogItemId ?? product.id}>
                     <div className="relative">
-                      <ProductCard product={product} onAdd={add} />
+                      <ProductCard product={product} storesCount={offerCount} onAdd={add} />
                       {query && sort === "RELEVANCE" && (
                         <RelevanceBadge
                           score={score}

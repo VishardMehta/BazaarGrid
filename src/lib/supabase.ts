@@ -70,10 +70,24 @@ export interface DbSeller {
   created_at:         string;
 }
 
+export interface DbCatalogItem {
+  id:         string;
+  name:       string;
+  brand:      string | null;
+  category:   string;
+  unit:       string | null;
+  image_url:  string | null;
+  barcode:    string | null;
+  created_at: string;
+}
+
 export interface DbProduct {
-  id:           string;
-  seller_id:    string;
-  name:         string;
+  id:              string;
+  seller_id:       string;
+  /** When set, this row is a store's OFFER on a shared catalogue SKU
+   *  (multiple stores sell the same item). NULL = a unique product. */
+  catalog_item_id: string | null;
+  name:            string;
   description:  string | null;
   story:        string | null;
   price:        number;

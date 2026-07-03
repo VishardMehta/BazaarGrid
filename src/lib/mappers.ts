@@ -8,9 +8,10 @@ import type { DbProduct, DbSeller } from "@/lib/supabase";
 
 export function mapProduct(p: DbProduct): Product {
   return {
-    id:          p.id,
-    sellerId:    p.seller_id,
-    name:        p.name,
+    id:            p.id,
+    sellerId:      p.seller_id,
+    catalogItemId: p.catalog_item_id ?? undefined,
+    name:          p.name,
     category:    p.category as ProductCategory,
     price:       p.price,
     currency:    p.currency,

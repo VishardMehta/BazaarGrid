@@ -33,11 +33,16 @@ const ROLES: {
   },
 ];
 
-const SELLER_TYPES: { value: SellerType; label: string; icon: string }[] = [
-  { value: "VILLAGE_PRODUCER", label: "Village Producer", icon: "cottage" },
-  { value: "KIRANA_STORE",     label: "Kirana Store",      icon: "storefront" },
-  { value: "FPO",              label: "FPO",                icon: "groups" },
-  { value: "SHG",              label: "Self Help Group",    icon: "diversity_3" },
+type SellerGroup = "MAKER" | "STORE";
+const SELLER_TYPES: { value: SellerType; label: string; icon: string; group: SellerGroup; hint: string }[] = [
+  { value: "VILLAGE_PRODUCER", label: "Village Producer",  icon: "cottage",     group: "MAKER", hint: "Heritage goods you grow or make" },
+  { value: "FPO",              label: "FPO",               icon: "groups",      group: "MAKER", hint: "Farmer producer collective" },
+  { value: "SHG",              label: "Self Help Group",   icon: "diversity_3", group: "MAKER", hint: "Community collective" },
+  { value: "KIRANA_STORE",     label: "Kirana Store",      icon: "storefront",  group: "STORE", hint: "Everyday branded groceries" },
+];
+const SELLER_GROUPS: { key: SellerGroup; title: string; sub: string }[] = [
+  { key: "MAKER", title: "I make my own goods", sub: "Unique products with a heritage story & QR traceability" },
+  { key: "STORE", title: "I run a store",        sub: "Resell everyday branded goods from the shared catalogue" },
 ];
 
 export function OnboardingPage() {
@@ -137,26 +142,32 @@ export function OnboardingPage() {
         {selected === "PRODUCER" && (
           <div className="mt-4 rounded-xl border border-outline-variant bg-surface p-5">
             <p className="font-semibold text-on-surface">What kind of seller are you?</p>
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              {SELLER_TYPES.map((t) => (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() => setSellerType(t.value)}
-                  className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left transition ${
-                    sellerType === t.value
-                      ? "border-secondary bg-secondary-container/30"
-                      : "border-outline-variant hover:border-secondary/50"
-                  }`}
-                >
-                  <Icon name={t.icon} size={18} className={sellerType === t.value ? "text-secondary" : "text-on-surface-variant"} />
-                  <span className="text-label-md font-medium text-on-surface">{t.label}</span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-label-sm text-on-surface-variant">
-              FPOs and Self Help Groups sell as one collective storefront, same as any producer.
-            </p>
+            {SELLER_GROUPS.map((g) => (
+              <div key={g.key} className="mt-4 first:mt-3">
+                <p className="text-label-sm font-semibold uppercase tracking-wide text-on-surface-variant">{g.title}</p>
+                <p className="text-label-sm text-outline">{g.sub}</p>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {SELLER_TYPES.filter((t) => t.group === g.key).map((t) => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => setSellerType(t.value)}
+                      className={`flex items-start gap-2 rounded-lg border px-3 py-2.5 text-left transition ${
+                        sellerType === t.value
+                          ? "border-secondary bg-secondary-container/30"
+                          : "border-outline-variant hover:border-secondary/50"
+                      }`}
+                    >
+                      <Icon name={t.icon} size={18} className={sellerType === t.value ? "mt-0.5 text-secondary" : "mt-0.5 text-on-surface-variant"} />
+                      <span>
+                        <span className="block text-label-md font-medium text-on-surface">{t.label}</span>
+                        <span className="block text-label-sm text-on-surface-variant">{t.hint}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

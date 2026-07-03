@@ -74,9 +74,11 @@ export function usePendingProducts(villageId?: string | null) {
 // ── Mutations ─────────────────────────────────────────────────────────────────
 
 interface AddProductInput {
-  seller_id:   string;
-  name:        string;
-  description: string;
+  seller_id:        string;
+  /** Set when listing against a shared catalogue SKU (kirana offer). */
+  catalog_item_id?: string | null;
+  name:             string;
+  description?:      string;
   story?:      string | null;
   tags?:       string[];
   batch_id?:   string | null;

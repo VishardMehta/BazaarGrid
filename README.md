@@ -35,6 +35,7 @@ supabase/seed.sql                    ← initial data (villages, sample products
 supabase/fixes.sql                   ← favorites, promo codes, approval RPCs, backfills
 supabase/location_and_collectives.sql ← state/district columns, FPO/SHG seller types
 supabase/payments.sql                ← Razorpay payment tracking columns
+supabase/catalog.sql                 ← shared catalogue + multi-seller offers (kirana), seed kirana stores
 ```
 
 All files are safe to re-run. Each is scoped to one topic rather than one giant file, so re-running after a pull only costs you the new file, not the whole history.
@@ -74,6 +75,15 @@ Open [http://localhost:5173](http://localhost:5173).
 | `OPERATOR` | Platform-wide admin. Sees all analytics, inventory, villages. |
 
 Role is set during onboarding. Producers require manual approval in the Village Admin portal.
+
+### Two kinds of seller
+
+Onboarding splits sellers into two groups because they sell fundamentally differently:
+
+- **Makers** (Village Producer / FPO / SHG) sell **unique** goods — this honey, this weave. One product = one maker, with a heritage story and QR traceability passport. Listings go through Village-Admin **approval**.
+- **Stores** (Kirana) sell **commodity** goods that many stores carry (Tata Salt, Aashirvaad Atta). They list against a **shared catalogue** (`catalog_items`) — pick the SKU, set your own price + stock — and the listing goes **live instantly**.
+
+Because many stores can offer the same catalogue SKU, the shop and search **collapse them into one card** ("Tata Salt · from ₹22 · 3 stores"), and the product page shows an **"Available from N stores"** buy-box where the buyer picks which store by price / distance / delivery / rating. Under the hood a store's offer is just a `products` row with `catalog_item_id` set, so cart → orders → fulfillment → the WhatsApp bot all work unchanged.
 
 ---
 
@@ -162,7 +172,8 @@ The legacy JSON-backed order endpoints (`backend/src/data/orders.json`) are unus
 - ✅ **Traceability / Product Passport page** — live Supabase data: product, seller, village, "Meet the Producer" deck, journey timeline, heritage story card.
 - ✅ **Search** — migrated off mock data; products/sellers/village filters all query Supabase live.
 - ✅ **Location** — State → District picker (bundled India dataset), buyer's shopping location shown on Shop/Villages pages, "near you" sorting.
-- ✅ **FPO / SHG seller types** — modeled as `sellers.type` values (same architecture as any producer), selectable at onboarding.
+- ✅ **Kirana stores + shared catalogue (multi-seller offers)** — kirana stores list against a shared `catalog_items` catalogue (search SKU → set price/stock, goes live instantly). Same product sold by several stores collapses to one card in shop + search; the product page shows an "Available from N stores" buy-box sorted by nearest / cheapest / top-rated. See "Two kinds of seller" above.
+- ✅ **FPO / SHG seller types** — modeled as `sellers.type` values (same architecture as any producer), selectable at onboarding under the "makers" group.
 - ✅ **Payments** — Razorpay Checkout wired end-to-end (needs your keys to go live); COD works with zero config.
 - ✅ **Invoices** — printable per-order invoice at `/orders/:id/invoice`.
 - ✅ **WhatsApp structured ordering** — full conversational bot (store → catalogue → quantity → confirm → payment link), orders into the same Supabase tables; dry-run + simulator work now, plug in Meta creds to go live.

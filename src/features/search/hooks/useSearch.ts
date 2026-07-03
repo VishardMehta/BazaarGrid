@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { products as allProducts, sellers } from "@/shared/mocks";
+import { useProducts } from "@/lib/hooks/useProducts";
+import { useSellers } from "@/lib/hooks/useSellers";
+import { mapProduct, mapSeller } from "@/lib/mappers";
 import { searchProducts, type SearchHit } from "../engine";
 import type { ProductCategory, SortOption, SellerType } from "@/shared/types";
 
@@ -20,7 +22,7 @@ export const DEFAULT_FILTERS: Filters = {
   categories: [],
   villages: [],
   minPrice: 0,
-  maxPrice: 100,
+  maxPrice: 5000,
   sellerType: "ALL",
   verifiedOnly: false,
   organicOnly: false,
@@ -28,15 +30,20 @@ export const DEFAULT_FILTERS: Filters = {
   minRating: 0,
 };
 
-// Built once at module level — mock data never changes
-const sellerIndex = new Map(sellers.map((s) => [s.id, s]));
-const liveProducts = allProducts.filter((p) => p.status === "LIVE");
-
 export function useSearch() {
   const [params, setParams] = useSearchParams();
   const query = params.get("q") ?? "";
   const [sort, setSort] = useState<SortOption>("RELEVANCE");
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  const { data: dbProducts = [], isLoading: loadingProducts } = useProducts();
+  const { data: dbSellers  = [], isLoading: loadingSellers  } = useSellers();
+
+  const liveProducts = useMemo(() => dbProducts.map(mapProduct), [dbProducts]);
+  const sellerIndex  = useMemo(
+    () => new Map(dbSellers.map((s) => [s.id, mapSeller(s)])),
+    [dbSellers],
+  );
 
   function setQuery(q: string) {
     setParams(q.trim() ? { q: q.trim() } : {}, { replace: true });
@@ -99,7 +106,7 @@ export function useSearch() {
       default:
         return list; // RELEVANCE: already sorted by score
     }
-  }, [query, sort, filters]);
+  }, [query, sort, filters, liveProducts, sellerIndex]);
 
   const activeFilterCount = useMemo(() => {
     let n = 0;
@@ -120,5 +127,6 @@ export function useSearch() {
     filters, updateFilter, resetFilters,
     activeFilterCount,
     sellerIndex,
+    isLoading: loadingProducts || loadingSellers,
   };
 }

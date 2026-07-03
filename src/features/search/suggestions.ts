@@ -1,10 +1,7 @@
-import { products, sellers } from "@/shared/mocks";
-
+// Curated flavor terms shown while typing — cheap, synchronous, no network
+// round-trip per keystroke. Real matches still come from useSearch()'s live
+// Supabase-backed engine; this is just autocomplete flavor.
 const POOL: string[] = [
-  ...products.map((p) => p.name),
-  ...products.flatMap((p) => p.tags ?? []),
-  ...Array.from(new Set(sellers.map((s) => s.village))),
-  ...Array.from(new Set(sellers.map((s) => s.name))),
   "Organic Honey", "Cold-Pressed Oil", "Heritage Ghee", "Handmade Pottery",
   "Woven Linen", "Small Batch", "Single Origin Coffee", "Traceable Products",
   "Village Crafts", "Artisan Goods", "Gift Sets", "Grass-Fed Dairy",

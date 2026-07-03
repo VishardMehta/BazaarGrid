@@ -1,5 +1,5 @@
 import { Chip, Icon } from "@/components/ui";
-import { sellers } from "@/shared/mocks";
+import { useSellers } from "@/lib/hooks/useSellers";
 import type { ProductCategory, SellerType } from "@/shared/types";
 import type { Filters } from "../hooks/useSearch";
 
@@ -13,8 +13,6 @@ const CATEGORIES: { value: ProductCategory; label: string; icon: string }[] = [
   { value: "CRAFTS",   label: "Crafts",   icon: "brush" },
   { value: "SPICES",   label: "Spices",   icon: "spa" },
 ];
-
-const VILLAGES = Array.from(new Set(sellers.map((s) => s.village)));
 
 const SELLER_TYPES: { value: SellerType | "ALL"; label: string }[] = [
   { value: "ALL",              label: "All" },
@@ -44,6 +42,9 @@ interface SearchFiltersProps {
 }
 
 export function SearchFilters({ filters, onChange, onReset, activeCount }: SearchFiltersProps) {
+  const { data: dbSellers = [] } = useSellers();
+  const villageOptions = Array.from(new Set(dbSellers.map((s) => s.village).filter(Boolean))) as string[];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -84,7 +85,7 @@ export function SearchFilters({ filters, onChange, onReset, activeCount }: Searc
         </h3>
         <div className="flex items-end gap-3">
           <label className="flex flex-1 flex-col gap-1">
-            <span className="text-label-sm text-on-surface-variant">Min ($)</span>
+            <span className="text-label-sm text-on-surface-variant">Min (₹)</span>
             <input
               type="number"
               min={0}
@@ -97,12 +98,12 @@ export function SearchFilters({ filters, onChange, onReset, activeCount }: Searc
           </label>
           <span className="mb-2.5 text-outline">—</span>
           <label className="flex flex-1 flex-col gap-1">
-            <span className="text-label-sm text-on-surface-variant">Max ($)</span>
+            <span className="text-label-sm text-on-surface-variant">Max (₹)</span>
             <input
               type="number"
               min={filters.minPrice + 1}
-              max={500}
-              step={5}
+              max={5000}
+              step={50}
               value={filters.maxPrice}
               onChange={(e) => onChange("maxPrice", Number(e.target.value))}
               className="w-full rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-md text-on-surface focus:border-primary focus:outline-none"
@@ -135,7 +136,7 @@ export function SearchFilters({ filters, onChange, onReset, activeCount }: Searc
           Origin village
         </h3>
         <div className="flex flex-wrap gap-2">
-          {VILLAGES.map((v) => (
+          {villageOptions.map((v) => (
             <Chip
               key={v}
               selected={filters.villages.includes(v)}

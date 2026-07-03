@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Chip, Icon, Select } from "@/components/ui";
 import { EmptyState, ProductCard, Reveal, RevealItem } from "@/components/shared";
 import { useCart } from "@/features/cart/CartContext";
-import { sellers } from "@/shared/mocks";
 import type { ProductFacet, SortOption } from "@/shared/types";
 import { SearchBar } from "../components/SearchBar";
 import { SearchFilters } from "../components/SearchFilters";
@@ -20,6 +19,13 @@ const SORTS: { value: SortOption; label: string }[] = [
   { value: "NEWEST",     label: "Newest First" },
 ];
 
+const SELLER_TYPE_LABEL: Record<string, string> = {
+  VILLAGE_PRODUCER: "Village Producer",
+  KIRANA_STORE:      "Kirana Store",
+  FPO:                "FPO",
+  SHG:                "Self Help Group",
+};
+
 const FACETS: { value: ProductFacet; label: string; icon: string }[] = [
   { value: "PRODUCTS",  label: "Products",  icon: "inventory_2" },
   { value: "VILLAGES",  label: "Villages",  icon: "cottage" },
@@ -33,10 +39,12 @@ export function SearchResultsPage() {
     hits, sort, setSort,
     filters, updateFilter, resetFilters,
     activeFilterCount,
+    sellerIndex,
   } = useSearch();
   const [facet, setFacet] = useState<ProductFacet>("PRODUCTS");
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const sellers = [...sellerIndex.values()];
   const q = query.toLowerCase();
   const matchedSellers = q
     ? sellers.filter(
@@ -290,8 +298,7 @@ export function SearchResultsPage() {
                           {s.name}
                         </p>
                         <p className="text-label-sm text-on-surface-variant">
-                          {s.village} ·{" "}
-                          {s.type === "VILLAGE_PRODUCER" ? "Village Producer" : "Kirana Store"}
+                          {s.village} · {SELLER_TYPE_LABEL[s.type]}
                         </p>
                       </div>
                       {s.verified && (

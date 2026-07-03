@@ -9,8 +9,10 @@ import {
   TrustBadge,
 } from "@/components/shared";
 import { gradientFor } from "@/lib/placeholder";
-import { sellers, getLiveProducts } from "@/shared/mocks";
 import { useCart } from "@/features/cart/CartContext";
+import { useSellers } from "@/lib/hooks/useSellers";
+import { useProducts } from "@/lib/hooks/useProducts";
+import { mapProduct, mapSeller } from "@/lib/mappers";
 import { SearchBar } from "@/features/search/components/SearchBar";
 
 const TRUST_STEPS = [
@@ -22,8 +24,10 @@ const TRUST_STEPS = [
 
 export function LandingPage() {
   const { add } = useCart();
-  const villages = sellers.filter((s) => s.type === "VILLAGE_PRODUCER").slice(0, 3);
-  const featured = getLiveProducts().slice(0, 4);
+  const { data: dbSellers  = [] } = useSellers();
+  const { data: dbProducts = [] } = useProducts();
+  const villages = dbSellers.filter((s) => s.type === "VILLAGE_PRODUCER").slice(0, 3).map(mapSeller);
+  const featured = dbProducts.slice(0, 4).map(mapProduct);
 
   return (
     <div className="pb-token-lg">

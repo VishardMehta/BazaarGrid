@@ -27,27 +27,34 @@ Get these from **Supabase → Project Settings → API**.
 
 ### 3. Set up the database
 
-Run the SQL files in order in the **Supabase SQL Editor**:
+Run the SQL files **in this order** in the **Supabase SQL Editor**:
 
 ```
-supabase/schema.sql   ← tables, enums, RLS policies, triggers
-supabase/seed.sql     ← initial data (villages, sample products)
-supabase/fixes.sql    ← additional policies, fixes, backfills (re-runnable)
+supabase/schema.sql                  ← tables, enums, RLS policies, triggers
+supabase/seed.sql                    ← initial data (villages, sample products)
+supabase/fixes.sql                   ← favorites, promo codes, approval RPCs, backfills
+supabase/location_and_collectives.sql ← state/district columns, FPO/SHG seller types
+supabase/payments.sql                ← Razorpay payment tracking columns
 ```
 
-`fixes.sql` is safe to re-run at any time. It adds:
-- `favorites` table + RLS
-- `promo_codes` table with seed codes (`BAZAAR10`, `HARVEST15`, `VILLAGE20`)
-- `payment_method`, `promo_code`, `pickup_location` columns on `orders`
-- Auto-create seller row when a producer is approved
-- Village Admin write policy on `sellers` table
-- Profile row backfill for any users missing a `profiles` row
+All files are safe to re-run. Each is scoped to one topic rather than one giant file, so re-running after a pull only costs you the new file, not the whole history.
 
-### 4. Enable Google OAuth (optional)
+### 4. Configure Razorpay (optional — needed for real checkout)
+
+Card/UPI/netbanking checkout uses Razorpay; Cash on Delivery works without it.
+
+1. Get keys from **Razorpay Dashboard → Settings → API Keys**.
+2. Add to `.env.local`: `VITE_RAZORPAY_KEY_ID=<your key id>` (public, safe client-side).
+3. Copy `backend/.env.example` to `backend/.env` and fill in `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET` (server-side only — never put the secret in `.env.local`).
+4. Run the backend (`cd backend && npm install && npm start`) alongside the frontend — Vite proxies `/api/*` to it in dev.
+
+Without this, checkout still works end-to-end via **Cash on Delivery**.
+
+### 5. Enable Google OAuth (optional)
 
 In **Supabase → Auth → Providers → Google**, enable it and add your OAuth credentials. Set the redirect URL to `http://localhost:5173/auth/callback`.
 
-### 5. Run the dev server
+### 6. Run the dev server
 
 ```bash
 npm run dev
@@ -117,23 +124,31 @@ It currently uses a local JSON file as a datastore (`backend/src/data/orders.jso
 
 ### High priority
 
-- **Search on live data** — `src/features/search/hooks/useSearch.ts` still imports from `@/shared/mocks`. Needs to query `supabase.from("products")` and feed results into the existing BM25 engine (or replace with Supabase full-text search).
+- **Razorpay needs live keys to actually charge anyone.** The integration (backend order creation, signature verification, frontend Checkout) is fully built — see "Configure Razorpay" above. Until keys are added, only Cash on Delivery completes checkout.
 
-- **Real QR codes** — The product passport page shows a styled placeholder. Needs `npm install qrcode` to generate a real scannable QR encoding `https://bazaargrid.com/product/:id/passport`.
+- **WhatsApp is still a `wa.me` deep link**, not real Business API ordering. Needs a WhatsApp Business API account (Meta or a provider like Twilio/Gupshup) and a deployed public webhook — see project notes for the planned structured (non-NLP) flow.
 
-- **Backend → Supabase** — `backend/` uses a local JSON file (`backend/src/data/orders.json`). Should be migrated to read/write the `orders` table in Supabase.
+- **Real QR codes** — The product passport page shows styled heritage content, not an actual scannable QR. Needs `npm install qrcode` to generate one encoding `/trace/:batchId` (that route already exists and resolves batch → product).
 
 ### Lower priority
 
-- **Semantic search** — The search engine (`src/features/search/engine.ts`) uses a hardcoded synonym table and Levenshtein fuzzy matching. There is a marked swap-point for a Python embedding service (`/api/search?q=...`) — not yet built.
+- **Semantic search** — The search engine (`src/features/search/engine.ts`) uses a hardcoded synonym table and Levenshtein fuzzy matching, not embeddings. Comment marks the swap point for a future embedding service.
 
 - **ProducerSettingsPage** — Form exists but save is not wired to Supabase.
 
 - **Operator portal** — Analytics and inventory pages render static/mock data. Need real queries.
 
+- **Backend order storage** — `backend/` (the standalone Express API used only for the payment module) still has an unrelated legacy JSON-backed order flow (`backend/src/data/orders.json`) from before the app moved to Supabase. It isn't used by the live checkout path (`src/lib/api/orders.ts` is dead code) — safe to ignore or remove.
+
 ### Done
 
-- ✅ **Traceability / Product Passport page** — fully on live Supabase data. Pulls product + seller + village from DB. Shows "Meet the Producer" deck, origin village card with stats, 5-step journey timeline synthesised from `created_at`, batch specs, and QR placeholder. Works for any product with `traceable: true`.
+- ✅ **Traceability / Product Passport page** — live Supabase data: product, seller, village, "Meet the Producer" deck, journey timeline, heritage story card.
+- ✅ **Search** — migrated off mock data; products/sellers/village filters all query Supabase live.
+- ✅ **Location** — State → District picker (bundled India dataset), buyer's shopping location shown on Shop/Villages pages, "near you" sorting.
+- ✅ **FPO / SHG seller types** — modeled as `sellers.type` values (same architecture as any producer), selectable at onboarding.
+- ✅ **Payments** — Razorpay Checkout wired end-to-end (needs your keys to go live); COD works with zero config.
+- ✅ **Invoices** — printable per-order invoice at `/orders/:id/invoice`.
+- ✅ **Harvest Tokens, reviews/ratings, live stock, real analytics, working CSV bulk import** — see prior commits.
 
 ---
 

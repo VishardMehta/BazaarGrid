@@ -8,6 +8,7 @@ import { useCart } from "@/features/cart/CartContext";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useAddresses } from "@/lib/hooks/useAddresses";
 import { useRewardBalance } from "@/lib/hooks/useRewards";
+import { payWithRazorpay, type RazorpaySuccessResponse } from "@/lib/razorpay";
 import { supabase } from "@/lib/supabase";
 import { WhatsAppButton } from "@/features/whatsapp/WhatsAppButton";
 import type { FulfillmentMethod, PaymentMethod } from "@/shared/types";
@@ -101,6 +102,17 @@ export function CartPage() {
     try {
       let earnedTokens = 0;
 
+      // COD skips the gateway entirely; every other method is charged once,
+      // up front, for the full basket total via Razorpay Checkout.
+      let paymentResult: RazorpaySuccessResponse | null = null;
+      if (payment !== "COD") {
+        paymentResult = await payWithRazorpay({
+          amountRupees: total,
+          receipt: `bg-${user.id.slice(0, 8)}-${Date.now()}`,
+          buyerEmail: user.email ?? undefined,
+        });
+      }
+
       // One order per seller; look up each seller's village for pickup
       const bySeller = new Map<string, typeof lines>();
       for (const line of lines) {
@@ -137,6 +149,9 @@ export function CartPage() {
             total:            groupTotal,
             fulfillment:      fulfilment,
             payment_method:   PAYMENT_DB[payment],
+            payment_status:      paymentResult ? "PAID" : "PENDING",
+            razorpay_order_id:   paymentResult?.razorpay_order_id ?? null,
+            razorpay_payment_id: paymentResult?.razorpay_payment_id ?? null,
             promo_code:       promo?.code ?? null,
             delivery_address: deliveryAddress,
             pickup_location:  pickup,
@@ -449,7 +464,11 @@ export function CartPage() {
               disabled={placing}
               onClick={handlePlaceOrder}
             >
-              {placing ? "Placing order…" : "Place order"}
+              {placing
+                ? (payment === "COD" ? "Placing order…" : "Waiting for payment…")
+                : payment === "COD"
+                  ? "Place order · Pay on delivery"
+                  : `Pay ${formatPrice(total)} & place order`}
             </Button>
 
             {soloSeller && (

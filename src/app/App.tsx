@@ -26,6 +26,7 @@ import { VillagesPage }       from "@/features/seller/pages/VillagesPage";
 import { BecomeProducerPage } from "@/features/seller/pages/BecomeProducerPage";
 import { CartPage }           from "@/features/orders/pages/CartPage";
 import { MyOrdersPage }       from "@/features/orders/pages/MyOrdersPage";
+import { InvoicePage }        from "@/features/orders/pages/InvoicePage";
 import { BulkInquiriesPage }  from "@/features/orders/pages/BulkInquiriesPage";
 import { MyProfilePage }      from "@/features/account/pages/MyProfilePage";
 import { FavoritesPage }      from "@/features/account/pages/FavoritesPage";
@@ -92,6 +93,9 @@ export default function App() {
             } />
             <Route path="/rewards" element={
               <ProtectedRoute><RewardsPage /></ProtectedRoute>
+            } />
+            <Route path="/orders/:orderId/invoice" element={
+              <ProtectedRoute><InvoicePage /></ProtectedRoute>
             } />
 
             <Route path="*" element={<NotFoundPage />} />

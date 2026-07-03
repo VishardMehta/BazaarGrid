@@ -24,6 +24,24 @@ export function useMyOrders(buyerId: string | null) {
   });
 }
 
+// ── Single order (invoice page) ───────────────────────────────────────────────
+
+export function useOrder(orderId: string | undefined) {
+  return useQuery({
+    queryKey: ["order", orderId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*, order_items(*)")
+        .eq("id", orderId!)
+        .single();
+      if (error) throw error;
+      return data as OrderWithItems;
+    },
+    enabled: !!orderId,
+  });
+}
+
 // ── Seller's incoming orders ──────────────────────────────────────────────────
 
 export function useSellerOrders(sellerId: string | null) {

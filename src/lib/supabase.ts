@@ -105,6 +105,9 @@ export interface DbOrder {
   total:            number;
   fulfillment:      "DELIVERY" | "PICKUP";
   payment_method:   string | null;
+  payment_status:      "PENDING" | "PAID" | "FAILED" | null;
+  razorpay_order_id:   string | null;
+  razorpay_payment_id: string | null;
   promo_code:       string | null;
   pickup_location:  string | null;
   delivery_address: Record<string, unknown> | null;

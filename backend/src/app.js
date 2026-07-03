@@ -14,6 +14,10 @@ const CreateWhatsappOrderUseCase = require('./modules/whatsapp/application/use-c
 const WhatsappController = require('./modules/whatsapp/infrastructure/controllers/whatsapp.controller');
 const buildWhatsappRoutes = require('./modules/whatsapp/infrastructure/routes/whatsapp.routes');
 
+const PaymentService = require('./modules/payment/payment.service');
+const PaymentController = require('./modules/payment/payment.controller');
+const buildPaymentRoutes = require('./modules/payment/payment.routes');
+
 const { errorHandlerMiddleware } = require('./shared/middleware/error-handler.middleware');
 
 /**
@@ -36,7 +40,9 @@ const { errorHandlerMiddleware } = require('./shared/middleware/error-handler.mi
 function createApp() {
   const app = express();
 
-  app.use(express.json());
+  // rawBody is captured for Razorpay webhook signature verification, which
+  // must hash the exact bytes received, not a re-serialized JSON.parse result.
+  app.use(express.json({ verify: (req, _res, buf) => { req.rawBody = buf.toString('utf8'); } }));
   app.use(express.urlencoded({ extended: true }));
 
   // ---- Dependency wiring (manual DI) ----
@@ -57,6 +63,10 @@ function createApp() {
   const createWhatsappOrderUseCase = new CreateWhatsappOrderUseCase(createOrderUseCase, whatsappMessageService);
   const whatsappController = new WhatsappController(createWhatsappOrderUseCase);
 
+  // ---- Payment module wiring (Razorpay) ----
+  const paymentService = new PaymentService();
+  const paymentController = new PaymentController(paymentService);
+
   // ---- Static test UI ----
   app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -69,6 +79,7 @@ function createApp() {
   // future route addition doesn't accidentally get shadowed.
   app.use('/orders', buildWhatsappRoutes(whatsappController));
   app.use('/orders', buildOrderRoutes(orderController));
+  app.use('/payments', buildPaymentRoutes(paymentController));
 
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', service: 'bazaargrid-order-management' });

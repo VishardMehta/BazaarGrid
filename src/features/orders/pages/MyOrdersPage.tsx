@@ -122,7 +122,12 @@ function OrderCard({ order, onCancel, cancelling }: { order: OrderRow; onCancel:
             {order.channel === "WHATSAPP" ? "WhatsApp" : "App"} order
           </p>
         </div>
-        <span className="font-serif text-headline-md font-semibold text-primary">{formatPrice(order.total)}</span>
+        <div className="text-right">
+          <span className="block font-serif text-headline-md font-semibold text-primary">{formatPrice(order.total)}</span>
+          <Link to={`/orders/${order.id}/invoice`} className="inline-flex items-center gap-1 text-label-sm font-semibold text-secondary hover:text-primary">
+            <Icon name="receipt" size={14} /> Invoice
+          </Link>
+        </div>
       </div>
 
       {active && <OrderTimeline status={order.status as OrderStatus} className="my-token-md" />}

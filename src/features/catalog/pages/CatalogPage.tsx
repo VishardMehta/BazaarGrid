@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Chip } from "@/components/ui";
-import { ProductCard, SectionHeading, Reveal, RevealItem } from "@/components/shared";
+import { ProductCard, SectionHeading, Reveal, RevealItem, LocationBadge } from "@/components/shared";
 import { useCart } from "@/features/cart/CartContext";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { mapProduct } from "@/lib/mappers";
@@ -30,11 +30,14 @@ export function CatalogPage() {
 
   return (
     <div className="container-page py-token-md">
-      <SectionHeading
-        eyebrow="The Marketplace"
-        title="Shop the heritage grid"
-        subtitle="Every item is made or grown by a verified village producer or trusted kirana store."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <SectionHeading
+          eyebrow="The Marketplace"
+          title="Shop the heritage grid"
+          subtitle="Every item is made or grown by a verified village producer, kirana store, FPO, or SHG."
+        />
+        <LocationBadge className="mt-1" />
+      </div>
 
       <div className="mt-token-md flex flex-wrap gap-2">
         {FILTERS.map((f) => (

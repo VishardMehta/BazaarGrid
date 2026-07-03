@@ -24,6 +24,8 @@ export interface DbProfile {
   phone:      string | null;
   avatar_url: string | null;
   village_id: string | null;
+  state:      string | null;
+  district:   string | null;
   created_at: string;
   updated_at: string;
 }
@@ -32,6 +34,8 @@ export interface DbVillage {
   id:                 string;
   name:               string;
   region:             string | null;
+  state:              string | null;
+  district:           string | null;
   description:        string | null;
   status:             "ACTIVE" | "PENDING";
   traceability_score: number;
@@ -44,7 +48,7 @@ export interface DbSeller {
   id:                 string;
   profile_id:         string | null;
   village_id:         string | null;
-  type:               "VILLAGE_PRODUCER" | "KIRANA_STORE";
+  type:               "VILLAGE_PRODUCER" | "KIRANA_STORE" | "FPO" | "SHG";
   name:               string;
   tagline:            string | null;
   story:              string | null;
@@ -57,6 +61,7 @@ export interface DbSeller {
   rating:             number;
   review_count:       number;
   product_count:      number;
+  member_count:       number | null;
   member_since:       string | null;
   avatar_url:         string | null;
   banner_url:         string | null;
@@ -130,6 +135,7 @@ export interface DbAddress {
   line2:       string | null;
   city:        string | null;
   region:      string | null;
+  district:    string | null;
   postal_code: string | null;
   country:     string | null;
   is_default:  boolean;

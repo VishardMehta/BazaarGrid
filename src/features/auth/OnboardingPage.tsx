@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Icon, Select } from "@/components/ui";
+import { LocationPicker, type LocationValue } from "@/components/shared";
 import { supabase, type UserRole } from "@/lib/supabase";
 import { useVillages } from "@/lib/hooks/useVillages";
 import { useAuth } from "./AuthContext";
+import type { SellerType } from "@/shared/types";
 
 const ROLES: {
   role: UserRole;
@@ -31,33 +33,36 @@ const ROLES: {
   },
 ];
 
+const SELLER_TYPES: { value: SellerType; label: string; icon: string }[] = [
+  { value: "VILLAGE_PRODUCER", label: "Village Producer", icon: "cottage" },
+  { value: "KIRANA_STORE",     label: "Kirana Store",      icon: "storefront" },
+  { value: "FPO",              label: "FPO",                icon: "groups" },
+  { value: "SHG",              label: "Self Help Group",    icon: "diversity_3" },
+];
+
 export function OnboardingPage() {
   const { updateRole, profile } = useAuth();
   const navigate = useNavigate();
   const { data: villages = [] } = useVillages();
 
-  const [selected, setSelected]   = useState<UserRole | null>(null);
-  const [region, setRegion]       = useState("");
-  const [villageId, setVillageId] = useState("");
-  const [busy,     setBusy]       = useState(false);
-  const [error,    setError]      = useState<string | null>(null);
+  const [selected, setSelected]     = useState<UserRole | null>(null);
+  const [sellerType, setSellerType] = useState<SellerType>("VILLAGE_PRODUCER");
+  const [loc, setLoc]               = useState<LocationValue>({ state: "", district: "" });
+  const [villageId, setVillageId]   = useState("");
+  const [busy,     setBusy]         = useState(false);
+  const [error,    setError]        = useState<string | null>(null);
 
   const needsVillage = selected === "PRODUCER" || selected === "VILLAGE_ADMIN";
 
-  const regions = useMemo(
-    () => [...new Set(villages.map((v) => v.region).filter(Boolean))].sort() as string[],
-    [villages],
-  );
-  const regionVillages = useMemo(
-    () => villages.filter((v) => v.region === region),
-    [villages, region],
+  const districtVillages = villages.filter(
+    (v) => v.state === loc.state && v.district === loc.district,
   );
   const village = villages.find((v) => v.id === villageId);
 
   async function handleContinue() {
     if (!selected) return;
     if (needsVillage && !villageId) {
-      setError("Please select your state and village to continue.");
+      setError("Please select your state, district and village to continue.");
       return;
     }
     setBusy(true);
@@ -72,7 +77,7 @@ export function OnboardingPage() {
       await supabase.from("sellers").insert({
         profile_id: profile.id,
         village_id: villageId || null,
-        type:       "VILLAGE_PRODUCER",
+        type:       sellerType,
         name:       profile.name ?? "New Producer",
         tagline:    "Heritage goods, direct from the source.",
         village:    village?.name ?? null,
@@ -129,34 +134,60 @@ export function OnboardingPage() {
           ))}
         </div>
 
+        {selected === "PRODUCER" && (
+          <div className="mt-4 rounded-xl border border-outline-variant bg-surface p-5">
+            <p className="font-semibold text-on-surface">What kind of seller are you?</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {SELLER_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setSellerType(t.value)}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 text-left transition ${
+                    sellerType === t.value
+                      ? "border-secondary bg-secondary-container/30"
+                      : "border-outline-variant hover:border-secondary/50"
+                  }`}
+                >
+                  <Icon name={t.icon} size={18} className={sellerType === t.value ? "text-secondary" : "text-on-surface-variant"} />
+                  <span className="text-label-md font-medium text-on-surface">{t.label}</span>
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-label-sm text-on-surface-variant">
+              FPOs and Self Help Groups sell as one collective storefront, same as any producer.
+            </p>
+          </div>
+        )}
+
         {needsVillage && (
           <div className="mt-4 rounded-xl border border-outline-variant bg-surface p-5">
             <p className="flex items-center gap-2 font-semibold text-on-surface">
               <Icon name="cottage" size={18} className="text-secondary" />
-              {selected === "PRODUCER" ? "Which village are you producing from?" : "Which village do you manage?"}
+              {selected === "PRODUCER" ? "Where are you based?" : "Which village do you manage?"}
             </p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <LocationPicker
+              className="mt-3 grid gap-3 sm:grid-cols-2"
+              value={loc}
+              onChange={(v) => { setLoc(v); setVillageId(""); }}
+            />
+            <div className="mt-3">
               <Select
-                label="State / region"
-                value={region}
-                onChange={(e) => { setRegion(e.target.value); setVillageId(""); }}
-              >
-                <option value="">Select state…</option>
-                {regions.map((r) => (
-                  <option key={r} value={r}>{r}</option>
-                ))}
-              </Select>
-              <Select
-                label="Village"
+                label="Village / collective"
                 value={villageId}
                 onChange={(e) => setVillageId(e.target.value)}
-                disabled={!region}
+                disabled={!loc.district}
               >
-                <option value="">{region ? "Select village…" : "Pick a state first"}</option>
-                {regionVillages.map((v) => (
+                <option value="">{loc.district ? "Select village…" : "Pick a state and district first"}</option>
+                {districtVillages.map((v) => (
                   <option key={v.id} value={v.id}>{v.name}</option>
                 ))}
               </Select>
+              {loc.district && districtVillages.length === 0 && (
+                <p className="mt-2 text-label-sm text-on-surface-variant">
+                  No registered village in {loc.district} yet — an Operator can add one, or contact support.
+                </p>
+              )}
             </div>
             {village && (
               <p className="mt-3 flex items-start gap-1.5 text-label-sm text-on-surface-variant">

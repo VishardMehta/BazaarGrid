@@ -8,10 +8,12 @@
  */
 
 /* ------------------------------------------------------------------ *
- * Seller — the umbrella. A seller is a village producer OR a kirana.
+ * Seller — the umbrella. A village producer, kirana store, FPO, or SHG.
+ * FPOs/SHGs are collectives that sell as one storefront (member_count
+ * shown), same architecture as any other seller — not village-level.
  * ------------------------------------------------------------------ */
 
-export type SellerType = "VILLAGE_PRODUCER" | "KIRANA_STORE";
+export type SellerType = "VILLAGE_PRODUCER" | "KIRANA_STORE" | "FPO" | "SHG";
 
 export interface Certification {
   id: string;
@@ -46,6 +48,8 @@ export interface Seller {
   /** Up to ~4 brand accent colors a village can customise its storefront with. */
   brandAccents?: string[];
   productCount?: number;
+  /** Farmer/artisan member count — shown for FPO/SHG collectives. */
+  memberCount?: number;
 }
 
 /* ------------------------------------------------------------------ *

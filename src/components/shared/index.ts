@@ -13,3 +13,6 @@ export { QuantityStepper } from "./QuantityStepper";
 export { Breadcrumbs } from "./Breadcrumbs";
 export type { Crumb } from "./Breadcrumbs";
 export { EmptyState } from "./EmptyState";
+export { LocationPicker } from "./LocationPicker";
+export type { LocationValue } from "./LocationPicker";
+export { LocationBadge, useCurrentLocation } from "./LocationBadge";

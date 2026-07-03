@@ -37,7 +37,12 @@ export function StorefrontPage() {
 
   const seller   = mapSeller(dbSeller);
   const products = dbProducts.map(mapProduct);
-  const isKirana = seller.type === "KIRANA_STORE";
+  const TYPE_LABEL: Record<typeof seller.type, string> = {
+    VILLAGE_PRODUCER: "Heritage Village",
+    KIRANA_STORE:      "Kirana Store",
+    FPO:                "Farmer Producer Organisation",
+    SHG:                "Self Help Group",
+  };
 
   return (
     <div className="pb-token-lg">
@@ -51,7 +56,7 @@ export function StorefrontPage() {
         <div className="container-page relative flex h-full flex-col justify-end pb-16">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-surface/90 px-3 py-1 text-label-md font-semibold text-on-surface backdrop-blur">
-              {isKirana ? "Kirana Store" : "Heritage Village"}
+              {TYPE_LABEL[seller.type]}
             </span>
             {seller.verified && <TrustBadge kind="verified" />}
           </div>
@@ -71,6 +76,7 @@ export function StorefrontPage() {
               [`${seller.traceabilityScore ?? "—"}%`, "Traceability"],
               [`${seller.rating ?? "—"}★`, `${seller.reviewCount ?? 0} reviews`],
               [seller.region ?? seller.village, "Region"],
+              ...(seller.memberCount ? [[String(seller.memberCount), "Members"]] : []),
             ].map(([n, l]) => (
               <div key={l}>
                 <p className="font-serif text-headline-md font-semibold text-on-surface">{n}</p>

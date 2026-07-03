@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Avatar, Badge, Button, Card, Icon, Input, Select } from "@/components/ui";
-import { TraceabilityScore } from "@/components/shared";
+import { TraceabilityScore, LocationPicker, type LocationValue } from "@/components/shared";
 import { formatPrice, formatDate, compact } from "@/lib/format";
 import { useAuth } from "@/features/auth/AuthContext";
 import { useUpdateProfile } from "@/lib/hooks/useProfile";
@@ -39,6 +39,9 @@ export function MyProfilePage() {
   const [editing,  setEditing]  = useState(false);
   const [editName, setEditName] = useState(profile?.name ?? "");
   const [editPhone,setEditPhone]= useState(profile?.phone ?? "");
+  const [editLoc,  setEditLoc]  = useState<LocationValue>({
+    state: profile?.state ?? "", district: profile?.district ?? "",
+  });
 
   // Orders
   const { data: orders = [] } = useMyOrders(profile?.id ?? null);
@@ -76,7 +79,10 @@ export function MyProfilePage() {
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
     if (!profile) return;
-    await updateProfile.mutateAsync({ id: profile.id, name: editName, phone: editPhone });
+    await updateProfile.mutateAsync({
+      id: profile.id, name: editName, phone: editPhone,
+      state: editLoc.state, district: editLoc.district,
+    });
     setEditing(false);
   }
 
@@ -92,6 +98,7 @@ export function MyProfilePage() {
       line2:       null,
       city:        data.get("city") as string,
       region:      data.get("region") as string,
+      district:    null,
       postal_code: data.get("postalCode") as string,
       country:     "India",
       is_default:  addresses.length === 0,
@@ -175,6 +182,7 @@ export function MyProfilePage() {
               <form onSubmit={handleSaveProfile} className="mt-3 space-y-3">
                 <Input label="Full name" value={editName} onChange={(e) => setEditName(e.target.value)} required />
                 <Input label="Phone number" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} type="tel" />
+                <LocationPicker value={editLoc} onChange={setEditLoc} />
                 <div className="flex gap-3">
                   <Button type="submit" icon="save" disabled={updateProfile.isPending}>
                     {updateProfile.isPending ? "Saving…" : "Save"}
@@ -188,6 +196,7 @@ export function MyProfilePage() {
                   {[
                     ["Full name",     profile.name     ?? "—"],
                     ["Phone number",  profile.phone    ?? "—"],
+                    ["Location",      profile.district && profile.state ? `${profile.district}, ${profile.state}` : "—"],
                     ["Loyalty tier",  `${tier} Member`],
                     ["Account role",  profile.role],
                   ].map(([k, v]) => (

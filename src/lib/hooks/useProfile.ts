@@ -9,16 +9,23 @@ export function useUpdateProfile() {
       name,
       phone,
       avatar_url,
+      state,
+      district,
     }: {
       id:          string;
       name?:       string;
       phone?:      string;
       avatar_url?: string;
+      state?:      string;
+      district?:   string;
     }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ name, phone, avatar_url, updated_at: new Date().toISOString() })
-        .eq("id", id);
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (name       !== undefined) patch.name       = name;
+      if (phone      !== undefined) patch.phone      = phone;
+      if (avatar_url !== undefined) patch.avatar_url = avatar_url;
+      if (state      !== undefined) patch.state      = state;
+      if (district   !== undefined) patch.district   = district;
+      const { error } = await supabase.from("profiles").update(patch).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["profile"] }),

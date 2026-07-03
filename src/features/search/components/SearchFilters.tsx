@@ -20,6 +20,8 @@ const SELLER_TYPES: { value: SellerType | "ALL"; label: string }[] = [
   { value: "ALL",              label: "All" },
   { value: "VILLAGE_PRODUCER", label: "Village" },
   { value: "KIRANA_STORE",     label: "Kirana" },
+  { value: "FPO",              label: "FPO" },
+  { value: "SHG",              label: "SHG" },
 ];
 
 const RATINGS = [4, 3, 2] as const;
@@ -114,19 +116,15 @@ export function SearchFilters({ filters, onChange, onReset, activeCount }: Searc
         <h3 className="mb-3 text-label-sm font-semibold uppercase tracking-[0.05em] text-secondary">
           Seller type
         </h3>
-        <div className="grid grid-cols-3 overflow-hidden rounded-lg border border-outline-variant text-center">
+        <div className="flex flex-wrap gap-2">
           {SELLER_TYPES.map((t) => (
-            <button
+            <Chip
               key={t.value}
+              selected={filters.sellerType === t.value}
               onClick={() => onChange("sellerType", t.value)}
-              className={`py-2 text-label-md font-semibold transition-colors ${
-                filters.sellerType === t.value
-                  ? "bg-secondary text-secondary-on"
-                  : "text-on-surface-variant hover:bg-surface-low"
-              }`}
             >
               {t.label}
-            </button>
+            </Chip>
           ))}
         </div>
       </section>

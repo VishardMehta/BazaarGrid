@@ -50,5 +50,6 @@ export function mapSeller(s: DbSeller): Seller {
     productCount:      s.product_count,
     memberSince:       s.member_since ?? undefined,
     brandAccents:      s.brand_accents ?? [],
+    memberCount:       s.member_count ?? undefined,
   };
 }

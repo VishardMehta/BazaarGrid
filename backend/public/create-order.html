@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BazaarGrid — Create Order</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Create Order</h1>
+  <p class="subtitle">Same form creates DIRECT, RESELLER, and RESTOCK orders — just change Order Type / Seller Type.</p>
+
+  <nav>
+    <a href="index.html">Orders List</a>
+    <a href="create-order.html">Create Order</a>
+    <a href="whatsapp-order.html">WhatsApp Order</a>
+  </nav>
+
+  <div id="message"></div>
+
+  <form id="createOrderForm">
+    <label for="orderType">Order Type</label>
+    <select id="orderType" required>
+      <option value="CUSTOMER_ORDER">CUSTOMER_ORDER</option>
+      <option value="RESTOCK_ORDER">RESTOCK_ORDER</option>
+    </select>
+
+    <label for="buyerId">Buyer ID</label>
+    <input type="text" id="buyerId" placeholder="e.g. cust-101 or store-301" required />
+
+    <label for="sellerType">Seller Type</label>
+    <select id="sellerType" required>
+      <option value="PRODUCER">PRODUCER</option>
+      <option value="LOCAL_STORE">LOCAL_STORE</option>
+    </select>
+
+    <label for="fulfillingSellerId">Fulfilling Seller ID</label>
+    <input type="text" id="fulfillingSellerId" placeholder="e.g. prod-201 or store-301" required />
+
+    <label for="channel">Channel</label>
+    <select id="channel" required>
+      <option value="APP">APP</option>
+      <option value="WHATSAPP">WHATSAPP</option>
+    </select>
+
+    <label for="fulfillmentMode">Fulfillment Mode</label>
+    <select id="fulfillmentMode" required>
+      <option value="DELIVERY">DELIVERY</option>
+      <option value="PICKUP">PICKUP</option>
+    </select>
+
+    <div class="section-title">Items</div>
+    <div id="itemsContainer"></div>
+    <button type="button" class="add-item-btn" id="addItemBtn">+ Add Item</button>
+
+    <div>
+      <button type="submit">Create Order</button>
+    </div>
+  </form>
+
+  <script src="api.js"></script>
+  <script>
+    const itemsContainer = document.getElementById('itemsContainer');
+    let itemCounter = 0;
+
+    function addItemRow() {
+      itemCounter += 1;
+      const rowId = `item-${itemCounter}`;
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.id = rowId;
+      row.innerHTML = `
+        <div>
+          <label>Product ID</label>
+          <input type="text" class="item-productId" placeholder="prd-aata-5kg" required />
+        </div>
+        <div>
+          <label>Batch ID</label>
+          <input type="text" class="item-batchId" placeholder="batch-2026-06-20" required />
+        </div>
+        <div>
+          <label>Title</label>
+          <input type="text" class="item-title" placeholder="Wheat Flour 5kg" required />
+        </div>
+        <div style="max-width:80px;">
+          <label>Qty</label>
+          <input type="number" class="item-qty" min="1" step="1" value="1" required />
+        </div>
+        <div style="max-width:110px;">
+          <label>Unit Price</label>
+          <input type="number" class="item-unitPrice" min="0.01" step="0.01" value="100" required />
+        </div>
+        <div style="max-width:90px;">
+          <button type="button" class="remove-item-btn" data-row="${rowId}">Remove</button>
+        </div>
+      `;
+      itemsContainer.appendChild(row);
+      row.querySelector('.remove-item-btn').addEventListener('click', () => {
+        if (itemsContainer.children.length > 1) {
+          row.remove();
+        } else {
+          showMessage('message', 'At least one item is required.', true);
+        }
+      });
+    }
+
+    document.getElementById('addItemBtn').addEventListener('click', addItemRow);
+    addItemRow(); // start with one row
+
+    function collectItems() {
+      const rows = Array.from(itemsContainer.querySelectorAll('.item-row'));
+      return rows.map((row) => ({
+        productId: row.querySelector('.item-productId').value.trim(),
+        batchId: row.querySelector('.item-batchId').value.trim(),
+        title: row.querySelector('.item-title').value.trim(),
+        qty: Number(row.querySelector('.item-qty').value),
+        unitPrice: Number(row.querySelector('.item-unitPrice').value),
+      }));
+    }
+
+    document.getElementById('createOrderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        orderType: document.getElementById('orderType').value,
+        buyerId: document.getElementById('buyerId').value.trim(),
+        sellerType: document.getElementById('sellerType').value,
+        fulfillingSellerId: document.getElementById('fulfillingSellerId').value.trim(),
+        channel: document.getElementById('channel').value,
+        fulfillmentMode: document.getElementById('fulfillmentMode').value,
+        items: collectItems(),
+      };
+
+      try {
+        const result = await apiRequest('POST', '/orders', payload);
+        showMessage('message', `Order ${result.data.id} created successfully.`, false);
+        setTimeout(() => {
+          window.location.href = `order-details.html?id=${encodeURIComponent(result.data.id)}`;
+        }, 800);
+      } catch (err) {
+        let text = err.message;
+        if (err.details && err.details.length) {
+          text += ' — ' + err.details.map((d) => `${d.path}: ${d.message}`).join('; ');
+        }
+        showMessage('message', text, true);
+      }
+    });
+  </script>
+</body>
+</html>

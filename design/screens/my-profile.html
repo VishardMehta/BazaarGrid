@@ -1,0 +1,364 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Customer Profile | BazaarGrid</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#9b6f01",
+                    "on-secondary-container": "#4c6952",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#faf9f5",
+                    "surface-container": "#efeeea",
+                    "surface-container-high": "#e9e8e4",
+                    "background": "#faf9f5",
+                    "secondary-fixed-dim": "#aecfb3",
+                    "surface-variant": "#e3e2df",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdea7",
+                    "on-primary-fixed-variant": "#80281b",
+                    "on-tertiary-container": "#080400",
+                    "secondary-fixed": "#caebce",
+                    "on-surface-variant": "#56423e",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#ffb4a7",
+                    "surface-tint": "#a03f30",
+                    "primary-fixed-dim": "#ffb4a7",
+                    "outline": "#89726d",
+                    "on-secondary-fixed": "#04210f",
+                    "tertiary-fixed-dim": "#f4be55",
+                    "surface": "#faf9f5",
+                    "on-tertiary-fixed-variant": "#5e4200",
+                    "surface-container-low": "#f4f4f0",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f2f1ed",
+                    "tertiary": "#7c5800",
+                    "primary-container": "#bd5444",
+                    "primary": "#9d3d2e",
+                    "on-primary-fixed": "#400200",
+                    "on-primary-container": "#fffbff",
+                    "on-surface": "#1b1c1a",
+                    "primary-fixed": "#ffdad4",
+                    "surface-container-highest": "#e3e2df",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1b1c1a",
+                    "inverse-surface": "#2f312e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#48654e",
+                    "outline-variant": "#ddc0bb",
+                    "on-secondary-fixed-variant": "#304d38",
+                    "on-tertiary-fixed": "#271900",
+                    "secondary-container": "#c7e8cb",
+                    "surface-dim": "#dbdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "48px",
+                    "md": "24px",
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "sm": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Work Sans"],
+                    "label-md": ["Work Sans"],
+                    "body-lg": ["Work Sans"],
+                    "headline-lg": ["Newsreader"],
+                    "headline-md": ["Newsreader"],
+                    "headline-lg-mobile": ["Newsreader"],
+                    "label-sm": ["Work Sans"],
+                    "display-lg": ["Newsreader"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            @apply border-b-2 border-primary text-primary;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(253, 252, 248, 0.7);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-20 lg:pb-0">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="text-headline-md font-headline-md font-bold text-primary">BazaarGrid</div>
+<nav class="hidden md:flex items-center gap-xl">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_2}}">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Become a Producer</a>
+</nav>
+<div class="flex items-center gap-md">
+<div class="hidden lg:flex items-center bg-surface-container rounded-full px-4 py-2 border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48" placeholder="Search heritage goods..." type="text">
+</div>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">shopping_basket</button>
+<div class="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sophisticated close-up portrait of a woman with a warm, natural expression, styled in a minimalist agrarian aesthetic. The lighting is soft and golden, suggesting a late afternoon sun in a rustic workshop setting. Her attire is premium linen in earth tones, reinforcing a brand identity of luxury craftsmanship and authentic connection to nature." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUgFDhIzY29E4dzLpDbqtRb3o4v9664W5sDVRJ1n1h1L4hlPxbz3OoR08GxZlHXE41xG7uZ-NTYa7CPkuOSr4PzlVER2TLSEUjahMYOKqAKE_Mm2rUl6uQyACvApkG9dKYBS_j1-wWU0AJ_YlWUCuqNjpQA6jZIxdrvvbkcfp7GYoqJz4SkqtNHqeqj7aqfnsVLi_B-IO0GDostRGcCnZX98IrZ5xqoroKpGCV6lqh6mffjLNNIHDwEy3R4TaDpLzhBy6WbLces6OW">
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-container-margin py-xl">
+<!-- Profile Header Section -->
+<section class="mb-xl flex flex-col md:flex-row items-center md:items-end gap-md">
+<div class="relative group">
+<div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a person with a friendly, welcoming demeanor. The background features a blurred, high-end organic farm with lush greenery and clean, modern agricultural architecture. The person wears a high-quality terracotta-colored apron over a cream shirt, embodying the modern agrarian lifestyle of BazaarGrid's community." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXkCZs1ZvW-qEKaJX1kAfBaNPqrlF2dO3684a02Xr05p-VnP2iW4yoYHewNHGNFmNgolodyaQg9XntY3xeG-YM8hTdRoED4MDuHXCGI-7D4zuR4-lE39ATIVaimLED_Dz3rheT4t2nNiLRSzEb69Ssun17I1pEPfSAYODl7C_z-sOePuigOuwOnc5oN1HHPDhH2i062suyjhlMnGRF3gfxeIqxsX48YY5r8Wuo0Q0xMHPGqRX5t56PlEWpl0p0ndrTvjE8ifo4OJ7g">
+</div>
+<button class="absolute bottom-1 right-1 bg-primary text-on-primary p-2 rounded-full shadow-md hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<div class="text-center md:text-left pb-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Elena Vance</h1>
+<p class="font-body-md text-on-surface-variant flex items-center justify-center md:justify-start gap-1">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+                    Gold Member • Member since March 2022
+                </p>
+</div>
+<div class="md:ml-auto flex gap-base">
+<button class="px-md py-base border-2 border-secondary text-secondary font-label-md rounded-lg hover:bg-secondary-container transition-colors">
+                    Edit Profile
+                </button>
+<a href="{{DATA:SCREEN:SCREEN_2}}" class="px-md py-base bg-error/10 text-error font-label-md rounded-lg hover:bg-error hover:text-on-error transition-all flex items-center gap-1"><span class="material-symbols-outlined text-sm">logout</span>Logout</a>
+</div>
+</section>
+<!-- Profile Tabs -->
+<div class="flex overflow-x-auto no-scrollbar border-b border-outline-variant mb-lg gap-lg">
+<a href="{{DATA:SCREEN:SCREEN_10}}" class="pb-4 font-label-md text-label-md whitespace-nowrap active-tab" id="tab-personal">Personal Info</a>
+<a href="{{DATA:SCREEN:SCREEN_11}}" class="pb-4 font-label-md text-label-md whitespace-nowrap text-on-surface-variant hover:text-primary transition-colors" id="tab-orders">Order History</a>
+<button class="pb-4 font-label-md text-label-md whitespace-nowrap text-on-surface-variant hover:text-primary transition-colors" id="tab-addresses" onclick="switchTab('addresses')">Saved Addresses</button>
+<a href="{{DATA:SCREEN:SCREEN_8}}" class="pb-4 font-label-md text-label-md whitespace-nowrap text-on-surface-variant hover:text-primary transition-colors" id="tab-rewards">Rewards</a>
+<button class="pb-4 font-label-md text-label-md whitespace-nowrap text-on-surface-variant hover:text-primary transition-colors" id="tab-payment" onclick="switchTab('payment')">Payment Methods</button>
+<button class="pb-4 font-label-md text-label-md whitespace-nowrap text-on-surface-variant hover:text-primary transition-colors" id="tab-notifications" onclick="switchTab('notifications')">Preferences</button>
+</div>
+<!-- Content Area - Bento Layout -->
+<div class="bento-grid" id="content-personal">
+<!-- Basic Details -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-low p-md rounded-xl border border-outline-variant shadow-sm">
+<h3 class="font-headline-md text-headline-md mb-md">Personal Details</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant uppercase tracking-wider">Full Name</label>
+<p class="font-body-md text-on-surface border-b border-outline-variant/30 pb-2">Elena Vance</p>
+</div>
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant uppercase tracking-wider">Email Address</label>
+<p class="font-body-md text-on-surface border-b border-outline-variant/30 pb-2">elena.vance@agraria.com</p>
+</div>
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant uppercase tracking-wider">Phone Number</label>
+<p class="font-body-md text-on-surface border-b border-outline-variant/30 pb-2">+1 (555) 012-3456</p>
+</div>
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant uppercase tracking-wider">Date of Birth</label>
+<p class="font-body-md text-on-surface border-b border-outline-variant/30 pb-2">January 14, 1988</p>
+</div>
+</div>
+</div>
+<!-- Trust Stats Card -->
+<div class="col-span-12 lg:col-span-4 bg-primary-container text-on-primary-container p-md rounded-xl flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md mb-xs">Traceability Score</h3>
+<p class="font-body-md opacity-90 mb-md">You've supported 12 verified heritage producers this year.</p>
+</div>
+<div class="flex items-end justify-between">
+<span class="text-display-lg font-display-lg leading-none">98%</span>
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+</div>
+<!-- Recent Orders (Preview) -->
+<div class="col-span-12 lg:col-span-12 bg-surface-container-low p-md rounded-xl border border-outline-variant">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-headline-md text-headline-md">Recent Orders</h3>
+<a href="{{DATA:SCREEN:SCREEN_11}}" class="text-primary font-label-md flex items-center gap-1 hover:underline">View All <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="border-b border-outline-variant">
+<tr>
+<th class="py-3 font-label-md text-on-surface-variant">Order #</th>
+<th class="py-3 font-label-md text-on-surface-variant">Date</th>
+<th class="py-3 font-label-md text-on-surface-variant">Producer</th>
+<th class="py-3 font-label-md text-on-surface-variant">Status</th>
+<th class="py-3 font-label-md text-on-surface-variant text-right">Total</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30"><tr class="cursor-pointer hover:bg-surface-container transition-colors" onclick="window.location.href='{{DATA:SCREEN:SCREEN_11}}'"><td class="py-4 font-body-md">#BG-98321</td><td class="py-4 font-body-md text-on-surface-variant">Oct 12, 2024</td><td class="py-4 font-body-md">Green Valley Farm</td><td class="py-4"><span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold">Shipped</span></td><td class="py-4 font-body-md text-right">$124.50</td></tr><tr class="cursor-pointer hover:bg-surface-container transition-colors" onclick="window.location.href='{{DATA:SCREEN:SCREEN_11}}'"><td class="py-4 font-body-md">#BG-98288</td><td class="py-4 font-body-md text-on-surface-variant">Sept 28, 2024</td><td class="py-4 font-body-md">Old Oak Mill</td><td class="py-4"><span class="px-3 py-1 bg-surface-variant text-on-surface-variant rounded-full text-xs font-bold">Delivered</span></td><td class="py-4 font-body-md text-right">$89.00</td></tr></tbody>
+</table>
+</div>
+</div>
+<!-- Rewards Tile -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-highest p-md rounded-xl border border-outline-variant">
+<h3 class="font-label-md text-on-surface-variant uppercase mb-base">Rewards Balance</h3>
+<div class="flex items-center gap-md mb-md">
+<div class="p-3 bg-tertiary-container text-on-tertiary rounded-lg">
+<span class="material-symbols-outlined text-3xl">toll</span>
+</div>
+<div>
+<p class="text-3xl font-display-lg text-tertiary">2,450</p>
+<p class="text-label-sm text-on-surface-variant">Bazaar Credits</p>
+</div>
+</div>
+<button class="w-full py-2 bg-tertiary text-on-tertiary rounded-lg font-label-md hover:bg-tertiary-container transition-colors">
+                    Redeem for Discounts
+                </button>
+</div>
+<!-- Saved Address Tile -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 bg-surface-container-low p-md rounded-xl border border-outline-variant">
+<div class="flex justify-between mb-base">
+<h3 class="font-label-md text-on-surface-variant uppercase">Primary Address</h3>
+<span class="px-2 py-0.5 bg-secondary text-on-secondary text-[10px] rounded uppercase font-bold tracking-tighter">Default</span>
+</div>
+<p class="font-body-md text-on-surface">128 Artisan Way</p>
+<p class="font-body-md text-on-surface">Hill Country, TX 78701</p>
+<p class="font-body-md text-on-surface-variant mt-base">United States</p>
+<button class="mt-md text-primary font-label-md flex items-center gap-1 hover:underline">
+                    Edit Address <span class="material-symbols-outlined text-sm">edit</span>
+</button>
+</div>
+<!-- Payment Methods Tile -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-low p-md rounded-xl border border-outline-variant flex flex-col">
+<h3 class="font-label-md text-on-surface-variant uppercase mb-md">Active Payment</h3>
+<div class="flex items-center gap-md border border-outline-variant/40 p-base rounded-lg bg-surface/50">
+<div class="w-12 h-8 bg-inverse-surface rounded flex items-center justify-center text-on-primary-container text-[10px] font-bold">VISA</div>
+<div>
+<p class="font-label-md">•••• 4421</p>
+<p class="text-xs text-on-surface-variant">Exp 08/26</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-on-surface-variant text-sm">chevron_right</span>
+</div>
+<button class="mt-auto pt-md text-primary font-label-md flex items-center gap-1 hover:underline">
+                    Manage Cards <span class="material-symbols-outlined text-sm">payments</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-xl px-container-margin bg-surface-container-highest border-t border-outline-variant">
+<div class="w-full grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="col-span-1 md:col-span-2">
+<div class="font-headline-md text-headline-md text-primary mb-md">BazaarGrid</div>
+<p class="text-on-surface-variant text-body-md mb-lg">Connecting heritage craftsmanship with modern precision through transparency and technology.</p>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-md">Explore</h4>
+<ul class="space-y-base">
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Shop All</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Producer Map</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">New Arrivals</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-on-surface mb-md">Resources</h4>
+<ul class="space-y-base">
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Traceability Guide</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Help Center</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Partner Portals</a></li>
+</ul>
+</div>
+<div class="col-span-1 lg:col-span-2">
+<h4 class="font-label-md text-on-surface mb-md">Legal</h4>
+<ul class="space-y-base">
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Privacy Policy</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Terms of Service</a></li>
+<li class=""><a class="text-label-sm text-on-surface-variant hover:text-primary" href="#">Sustainability Report</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-xl pt-lg border-t border-outline-variant/30 flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-label-sm text-on-surface-variant">© 2024 BazaarGrid. All rights reserved.</p>
+<div class="flex gap-md">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">public</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">potted_plant</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">shield_with_heart</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md shadow-[0_-4px_12px_rgba(72,101,78,0.08)] border-t border-outline-variant rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        function switchTab(tabId) {
+            // Update UI for tabs
+            const tabs = document.querySelectorAll('[id^="tab-"]');
+            tabs.forEach(tab => {
+                tab.classList.remove('active-tab', 'text-primary');
+                tab.classList.add('text-on-surface-variant');
+            });
+            
+            const activeTab = document.getElementById('tab-' + tabId);
+            activeTab.classList.add('active-tab');
+            activeTab.classList.remove('text-on-surface-variant');
+
+            // Logic to switch content would go here
+            console.log('Navigating to ' + tabId + ' section');
+        }
+
+        // Simple scale effect on interaction
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => el.classList.add('scale-95', 'opacity-80'));
+            el.addEventListener('mouseup', () => el.classList.remove('scale-95', 'opacity-80'));
+            el.addEventListener('mouseleave', () => el.classList.remove('scale-95', 'opacity-80'));
+        });
+    </script>
+
+
+</body></html>

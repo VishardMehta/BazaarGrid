@@ -1,0 +1,387 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BazaarGrid — Secure Checkout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;500;600&amp;family=Work+Sans:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@100..900&amp;family=Work+Sans:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        /* Custom scrollbar for a premium feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #ddc0bb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a03f30; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#9b6f01",
+                        "on-secondary-container": "#4c6952",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#faf9f5",
+                        "surface-container": "#efeeea",
+                        "surface-container-high": "#e9e8e4",
+                        "background": "#faf9f5",
+                        "secondary-fixed-dim": "#aecfb3",
+                        "surface-variant": "#e3e2df",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdea7",
+                        "on-primary-fixed-variant": "#80281b",
+                        "on-tertiary-container": "#080400",
+                        "secondary-fixed": "#caebce",
+                        "on-surface-variant": "#56423e",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#ffb4a7",
+                        "surface-tint": "#a03f30",
+                        "primary-fixed-dim": "#ffb4a7",
+                        "outline": "#89726d",
+                        "on-secondary-fixed": "#04210f",
+                        "tertiary-fixed-dim": "#f4be55",
+                        "surface": "#faf9f5",
+                        "on-tertiary-fixed-variant": "#5e4200",
+                        "surface-container-low": "#f4f4f0",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f2f1ed",
+                        "tertiary": "#7c5800",
+                        "primary-container": "#bd5444",
+                        "primary": "#9d3d2e",
+                        "on-primary-fixed": "#400200",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#1b1c1a",
+                        "primary-fixed": "#ffdad4",
+                        "surface-container-highest": "#e3e2df",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1c1a",
+                        "inverse-surface": "#2f312e",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#48654e",
+                        "outline-variant": "#ddc0bb",
+                        "on-secondary-fixed-variant": "#304d38",
+                        "on-tertiary-fixed": "#271900",
+                        "secondary-container": "#c7e8cb",
+                        "surface-dim": "#dbdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "sm": "12px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Work Sans"],
+                        "label-md": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-lg": ["Newsreader"],
+                        "headline-md": ["Newsreader"],
+                        "headline-lg-mobile": ["Newsreader"],
+                        "label-sm": ["Work Sans"],
+                        "display-lg": ["Newsreader"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="flex items-center gap-base">
+<span class="text-headline-md font-headline-md font-bold text-primary">BazaarGrid</span>
+</div>
+<nav class="hidden md:flex gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#shop">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#villages">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#become-producer">Become a Producer</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container rounded-full p-2 transition-colors">notifications</button>
+<div class="relative">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container rounded-full p-2 transition-colors">shopping_basket</button>
+<span class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] w-4 h-4 flex items-center justify-center rounded-full">3</span>
+</div>
+<img alt="User profile menu" class="w-10 h-10 rounded-full border-2 border-primary-fixed cursor-pointer" data-alt="A professional studio portrait of a friendly artisan producer in his early 40s. He has a warm smile and is wearing a sustainable linen shirt. The lighting is soft and natural, emphasizing a trustworthy and authentic personality. The background is a clean, minimalist studio setting with warm, earthy tones consistent with a premium agrarian aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCB5QzV2N6MZRtoBPdChrGg5FXr4tF1UoHdxKY_Tr8OU30SwOs7QHc6TCyrZ_YolKWta8YMus1hbwjYqASO2EMMIHvceIpWna9lI2jsiMBPzDu4GY75qZ1b29avvhxzALvvGsydLGmf1swtK8Ep-Dr9LL54aASLMGx0e32DicNz6XZb4wHiFBrgs7Iy6TnaI-221PU6K8QQYO-VqncAA4G3FxMISR4KjnnzlDxmzepYxA4n3_gmLpaaFxxzYydPjYLMkrv0yLuOU75Z">
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-container-margin py-lg grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Cart & Checkout Details -->
+<section class="lg:col-span-8 space-y-lg">
+<div class="flex items-center justify-between">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Your Basket</h1>
+<span class="font-label-md text-label-md text-on-surface-variant">3 Items</span>
+</div>
+<!-- Trust Reinforcement Strip -->
+<div class="bg-secondary-container/30 border border-secondary-container p-md rounded-xl flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary filled-icon text-3xl">verified_user</span>
+<div>
+<h3 class="font-label-md text-label-md text-on-secondary-container">Safe &amp; Traceable</h3>
+<p class="font-body-md text-label-sm text-on-secondary-container opacity-80">Every item in your cart is traceable back to the verified producer's farm via blockchain QR.</p>
+</div>
+</div>
+<!-- Cart Items -->
+<div class="space-y-base">
+<!-- Item 1 -->
+<div class="bg-surface-container-low border border-outline-variant p-md rounded-xl flex flex-col sm:flex-row gap-md items-center group transition-all hover:border-primary-container">
+<div class="w-24 h-24 rounded-lg bg-cover bg-center overflow-hidden flex-shrink-0" data-alt="A macro shot of artisanal sun-dried tomatoes resting in a hand-crafted ceramic bowl. The tomatoes are rich terracotta red, glistening with a light coat of extra virgin olive oil and sprigs of fresh oregano. The lighting is warm and golden, reminiscent of late afternoon sun on a Mediterranean farm. The aesthetic is tactile, premium, and deeply agrarian." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDiFjt5kx2jZKUSkO5sJZ2kGQLLBizT-okCiu7k8VwQn1B4LGP706jHMsyW1vB2ZRgP9vEfqH-BF8XjnwSRERoZasqmsKodTCKlRy6eBW5BhbVXNp-dLVCCaUz1uUXCCI0m0a92ogtWqPGzHHWQZ4Nc4QmuN4GzbnAtjBhU52D0RIHVKQvgYikCv11FeQfhbe5c0x7OToR0eFUYTsVKu1gF5S6rpaqPC7M646CV0q3KOFia6llm3qYeGmSSVNLAE2PxP5dAQh4yJIvW')"></div>
+<div class="flex-grow space-y-xs">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-wider">Organic</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="font-headline-md text-headline-md text-on-surface hover:text-primary transition-colors">Sun-Dried Heritage Tomatoes</a>
+</div>
+<span class="font-headline-md text-headline-md text-primary">$18.00</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Produced by: <span class="text-secondary font-semibold">Old Oak Farms</span></p>
+<div class="flex items-center justify-between pt-base">
+<div class="flex items-center border border-outline-variant rounded-full p-1 bg-surface">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="px-4 font-label-md">1</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="text-label-sm text-error hover:underline flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">delete</span> Remove
+                            </button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-low border border-outline-variant p-md rounded-xl flex flex-col sm:flex-row gap-md items-center group transition-all hover:border-primary-container">
+<div class="w-24 h-24 rounded-lg bg-cover bg-center overflow-hidden flex-shrink-0" data-alt="A close-up of a rustic glass jar filled with raw wildflower honey. The honey is a deep amber color, catching rays of light that reveal its natural clarity and texture. Beside the jar is a wooden honey dipper and a small sprig of lavender. The setting is a weathered wooden table in a sunlit meadow, creating a mood of pure, authentic craftsmanship." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDqmBldhv_UbSUqpsfNrvSe3C1eXkOzzDikPzrQlFZQdUP0YlTOnJ42Q1cI9U2hv1KMKZznUnX6PatALcpdA86e0DQLbFPpJRZXy6uyvgVq3ltQERwUG82XNk46A7kZUFnuh-oq9dBdubegpOksjp2VaZxUzYZzMG6l4PFT2WeNRmkmLuAKt3EtIseZhL1h0yJoiRLD6ht5L8GGDJJk6Eh0PIHM6UuCXGEqSM0zW3gAEnoGi8fdQByr0-oklzzunghA0b1Yk2ce12a9')"></div>
+<div class="flex-grow space-y-xs">
+<div class="flex justify-between items-start">
+<div>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-wider">Small Batch</span>
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="font-headline-md text-headline-md text-on-surface hover:text-primary transition-colors">Wildflower Raw Honey (500g)</a>
+</div>
+<span class="font-headline-md text-headline-md text-primary">$24.50</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Produced by: <span class="text-secondary font-semibold">Bee’s Knees Apiary</span></p>
+<div class="flex items-center justify-between pt-base">
+<div class="flex items-center border border-outline-variant rounded-full p-1 bg-surface">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-sm">remove</span></button>
+<span class="px-4 font-label-md">2</span>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined text-sm">add</span></button>
+</div>
+<button class="text-label-sm text-error hover:underline flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">delete</span> Remove
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Delivery/Pickup Toggle -->
+<div class="space-y-md">
+<h3 class="font-headline-md text-headline-md">Fulfillment Method</h3>
+<div class="grid grid-cols-2 gap-md">
+<label class="relative flex items-center justify-between p-md border-2 border-primary bg-primary-container/10 rounded-xl cursor-pointer">
+<input checked="" class="hidden" name="fulfillment" type="radio">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">local_shipping</span>
+<div>
+<p class="font-label-md">Delivery</p>
+<p class="text-label-sm text-on-surface-variant">Arrives Oct 24 - 26</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary filled-icon">check_circle</span>
+</label>
+<label class="relative flex items-center justify-between p-md border-2 border-outline-variant hover:border-primary-container transition-all rounded-xl cursor-pointer">
+<input class="hidden" name="fulfillment" type="radio">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">storefront</span>
+<div>
+<p class="font-label-md text-on-surface-variant">Village Pickup</p>
+<p class="text-label-sm text-on-surface-variant">Ready in 2 hours</p>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Payment Method -->
+<div class="space-y-md">
+<h3 class="font-headline-md text-headline-md">Payment Selection</h3>
+<div class="space-y-base">
+<div class="flex items-center justify-between p-md border border-outline-variant rounded-xl hover:bg-surface-container transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">credit_card</span>
+<span class="font-body-md">•••• •••• •••• 4242</span>
+</div>
+<span class="text-label-sm text-secondary font-bold">Visa</span>
+</div>
+<div class="flex items-center justify-between p-md border border-outline-variant rounded-xl opacity-60 hover:opacity-100 transition-all cursor-pointer">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-body-md">Digital Wallet (Apple Pay)</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">arrow_forward_ios</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky Order Summary -->
+<aside class="lg:col-span-4">
+<div class="sticky top-24 space-y-md">
+<div class="bg-surface-container-high p-lg rounded-xl border border-outline-variant shadow-sm">
+<h2 class="font-headline-md text-headline-md mb-lg">Order Summary</h2>
+<div class="space-y-md border-b border-outline-variant pb-lg mb-lg">
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-body-md">Subtotal</span>
+<span class="font-label-md">$67.00</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-body-md">Estimated Delivery</span>
+<span class="font-label-md text-secondary">FREE</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-body-md">Producer Rewards</span>
+<span class="font-label-md text-tertiary">-$5.50</span>
+</div>
+</div>
+<div class="flex justify-between items-center mb-xl">
+<span class="font-headline-md text-headline-md">Total</span>
+<div class="text-right">
+<span class="font-headline-md text-headline-md text-primary">$61.50</span>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-tighter">Incl. VAT &amp; Traceability Tax</p>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-md px-lg rounded-lg font-label-md flex items-center justify-center gap-md hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20" onclick="window.location.href='{{DATA:SCREEN:SCREEN_11}}'">
+                        Place Order
+                        <span class="material-symbols-outlined">lock</span>
+</button>
+<div class="mt-lg pt-lg border-t border-outline-variant">
+<div class="flex items-center gap-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-sm">eco</span>
+<span class="">Carbon Neutral Delivery</span>
+</div>
+<div class="flex items-center gap-sm mt-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-sm">workspace_premium</span>
+<span class="">100% Quality Assurance Guarantee</span>
+</div>
+</div>
+</div>
+<!-- Promo Code -->
+<div class="bg-surface-container-low p-md rounded-xl border border-outline-variant flex items-center gap-md">
+<input class="flex-grow bg-surface border-outline-variant rounded-lg px-4 py-2 text-label-md focus:ring-2 focus:ring-primary focus:border-primary outline-none" placeholder="Promo Code" type="text">
+<button class="text-primary font-label-md px-4 py-2 hover:bg-primary/10 rounded-lg transition-colors">Apply</button>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="w-full py-xl px-container-margin border-t border-outline-variant bg-surface-container-highest mt-xl">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="lg:col-span-2 space-y-md">
+<span class="font-headline-md text-headline-md text-primary font-bold">BazaarGrid</span>
+<p class="font-body-md text-on-surface-variant">Connecting heritage craftsmanship with modern precision through a decentralized marketplace of verified producers.</p>
+</div>
+<div class="space-y-base">
+<h4 class="font-label-md text-on-surface">Company</h4>
+<a class="block text-label-sm text-on-surface-variant hover:text-primary" href="#">About BazaarGrid</a>
+<a class="block text-label-sm text-on-surface-variant hover:text-primary" href="#">Partner Portals</a>
+<a class="block text-label-sm text-on-surface-variant hover:text-primary" href="#">Sustainability Report</a>
+</div>
+<div class="space-y-base">
+<h4 class="font-label-md text-on-surface">Legal</h4>
+<a class="block text-label-sm text-on-surface-variant hover:text-primary" href="#">Privacy Policy</a>
+<a class="block text-label-sm text-on-surface-variant hover:text-primary" href="#">Terms of Service</a>
+</div>
+<div class="lg:col-span-2 flex flex-col items-end justify-between text-right">
+<div class="flex gap-md">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface transition-colors"><span class="material-symbols-outlined">share</span></button>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface transition-colors"><span class="material-symbols-outlined">public</span></button>
+</div>
+<p class="font-label-sm text-on-surface-variant opacity-70">© 2024 BazaarGrid. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md shadow-[0_-4px_12px_rgba(72,101,78,0.08)] border-t border-outline-variant rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform shadow-md" href="#">
+<span class="material-symbols-outlined filled-icon">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interactions for Quantity Steppers
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const icon = this.querySelector('.material-symbols-outlined');
+                if (icon && (icon.innerText === 'add' || icon.innerText === 'remove')) {
+                    const span = this.parentElement.querySelector('span');
+                    let val = parseInt(span.innerText);
+                    if (icon.innerText === 'add') {
+                        span.innerText = val + 1;
+                    } else if (icon.innerText === 'remove' && val > 1) {
+                        span.innerText = val - 1;
+                    }
+                    
+                    // Add a tiny animation effect
+                    span.classList.add('scale-125', 'text-primary');
+                    setTimeout(() => span.classList.remove('scale-125', 'text-primary'), 200);
+                }
+            });
+        });
+
+        // Checkout Toggle Interaction
+        document.querySelectorAll('input[name="fulfillment"]').forEach(input => {
+            input.addEventListener('change', function() {
+                document.querySelectorAll('input[name="fulfillment"]').forEach(i => {
+                    const parent = i.parentElement;
+                    if (i.checked) {
+                        parent.classList.remove('border-outline-variant');
+                        parent.classList.add('border-primary', 'bg-primary-container/10');
+                        parent.querySelector('.material-symbols-outlined:last-child')?.classList.remove('hidden');
+                    } else {
+                        parent.classList.add('border-outline-variant');
+                        parent.classList.remove('border-primary', 'bg-primary-container/10');
+                        parent.querySelector('.material-symbols-outlined:last-child')?.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+
+
+</body></html>

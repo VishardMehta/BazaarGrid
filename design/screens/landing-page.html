@@ -1,0 +1,500 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BazaarGrid | Know Your Village. Know Your Food.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Config Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#9b6f01",
+                    "on-secondary-container": "#4c6952",
+                    "on-tertiary": "#ffffff",
+                    "surface-bright": "#faf9f5",
+                    "surface-container": "#efeeea",
+                    "surface-container-high": "#e9e8e4",
+                    "background": "#faf9f5",
+                    "secondary-fixed-dim": "#aecfb3",
+                    "surface-variant": "#e3e2df",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdea7",
+                    "on-primary-fixed-variant": "#80281b",
+                    "on-tertiary-container": "#080400",
+                    "secondary-fixed": "#caebce",
+                    "on-surface-variant": "#56423e",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#ffb4a7",
+                    "surface-tint": "#a03f30",
+                    "primary-fixed-dim": "#ffb4a7",
+                    "outline": "#89726d",
+                    "on-secondary-fixed": "#04210f",
+                    "tertiary-fixed-dim": "#f4be55",
+                    "surface": "#faf9f5",
+                    "on-tertiary-fixed-variant": "#5e4200",
+                    "surface-container-low": "#f4f4f0",
+                    "on-error-container": "#93000a",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#f2f1ed",
+                    "tertiary": "#7c5800",
+                    "primary-container": "#bd5444",
+                    "primary": "#9d3d2e",
+                    "on-primary-fixed": "#400200",
+                    "on-primary-container": "#fffbff",
+                    "on-surface": "#1b1c1a",
+                    "primary-fixed": "#ffdad4",
+                    "surface-container-highest": "#e3e2df",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1b1c1a",
+                    "inverse-surface": "#2f312e",
+                    "error": "#ba1a1a",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#48654e",
+                    "outline-variant": "#ddc0bb",
+                    "on-secondary-fixed-variant": "#304d38",
+                    "on-tertiary-fixed": "#271900",
+                    "secondary-container": "#c7e8cb",
+                    "surface-dim": "#dbdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "48px",
+                    "md": "24px",
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "container-margin": "32px",
+                    "sm": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Work Sans"],
+                    "label-md": ["Work Sans"],
+                    "body-lg": ["Work Sans"],
+                    "headline-lg": ["Newsreader"],
+                    "headline-md": ["Newsreader"],
+                    "headline-lg-mobile": ["Newsreader"],
+                    "label-sm": ["Work Sans"],
+                    "display-lg": ["Newsreader"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.02;
+            background-image: url("https://www.transparenttextures.com/patterns/p6.png");
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, minmax(200px, auto));
+            gap: 24px;
+        }
+        .smooth-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<div class="grain-overlay"></div>
+<!-- TopAppBar -->
+<nav class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="flex items-center gap-xl">
+<a href="{{DATA:SCREEN:SCREEN_2}}" class="text-headline-md font-headline-md font-bold text-primary">BazaarGrid</a>
+<div class="hidden md:flex gap-lg items-center">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="{{DATA:SCREEN:SCREEN_14}}">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_13}}">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_5}}">Become a Producer</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden lg:flex items-center bg-surface-container px-sm py-2 rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md w-48" placeholder="Find a producer or product..." type="text">
+</div>
+<div class="flex items-center gap-base">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<a href="{{DATA:SCREEN:SCREEN_9}}" class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors active:scale-95"><span class="material-symbols-outlined">shopping_basket</span></a>
+<a href="{{DATA:SCREEN:SCREEN_10}}" class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant"><img class="w-full h-full object-cover" data-alt="A professional studio headshot of a person with a warm smile, wearing modern business-casual attire. The background is a soft, out-of-focus agrarian landscape in warm golden hour light. The style is clean, high-end photography with natural skin tones and professional clarity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcan973YlmWQZyIb8Lesw9b2NwcUNpKwE9PaCL2mxOaV74IyxQ_ubvzrKnAe3a_R05xGY__h7MzDh6qNVV4q4boXiaZEUHgDbOKMojCSavOflhieiDZuDh_zHcJh9PD0qgz1yKFpI7rnYvdDI-fpGWGkr9bNRIIt2ferH5E71QrWZGlxgR2nf_NZWaNqjiyOmxRziPZj1UFjToBz273WweZ3IMUVQezUQmYSQTJUmQIHSioHA221dgOpwjciJMIeji6Ey_WNPyNLat"></a>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative w-full pt-xl pb-lg px-container-margin overflow-hidden">
+<div class="max-w-[1280px] mx-auto flex flex-col lg:flex-row gap-xl items-center">
+<div class="w-full lg:w-1/2 space-y-md z-10">
+<div class="inline-flex items-center px-4 py-2 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-sm">
+<span class="material-symbols-outlined mr-2 text-[18px]">verified</span>
+                    Direct from heritage villages
+                </div>
+<h1 class="font-display-lg text-display-lg leading-tight text-on-surface">
+                    Know Your <span class="text-primary italic">Village.</span><br>Know Your <span class="text-primary italic">Food.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                    Bridge the gap between your table and the source. Discover traceable, artisanal products from verified rural producers through our transparent grid.
+                </p>
+<div class="flex flex-wrap gap-md pt-base">
+<a href="{{DATA:SCREEN:SCREEN_13}}" class="px-xl py-md bg-primary text-on-primary rounded-lg font-label-md text-label-md smooth-hover hover:opacity-90 active:scale-95 shadow-lg shadow-primary/10 inline-block text-center">Shop Now</a>
+<a href="{{DATA:SCREEN:SCREEN_5}}" class="px-xl py-md border-2 border-secondary text-secondary rounded-lg font-label-md text-label-md smooth-hover hover:bg-secondary/5 active:scale-95 inline-block text-center">Join as Producer</a>
+</div>
+</div>
+<div class="w-full lg:w-1/2 relative">
+<div class="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] group">
+<img class="w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A wide-angle landscape shot of a lush, sun-drenched organic farm in a Mediterranean village. Terraced hills are filled with olive trees and vegetable rows. In the foreground, a wooden table holds crates of vibrant, freshly harvested produce. The lighting is warm and golden, evoking a sense of trust and natural abundance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhrsRU1XsMSKHsYoB_EbZEcqcSOK5S80yKQlNL2kJb5Jxx4SX8w8t5McmTHtvbE0sMOtb1osAhbrPT0GRN8hvV3gL83aePIGKQjFeN1WSIJEYpOktXWRN3vvn9lPo1cTFz9u9qTEMFSn7qqFdy9LrJz69gviQ2TF5-KRR2ZN18p7XQbrW1DYu2tj2wrv-PGbH_LCSFxOg1ftKepKjDnXEVT-qErTCTopO0JclxEpCzk1VYD3PN9IrTNigzlZPrH2mU5B8DCepkyGcK">
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 to-transparent"></div>
+<!-- Subtle QR Tag Visual -->
+<div class="absolute bottom-md left-md bg-surface/90 backdrop-blur-md p-md rounded-xl border border-outline-variant flex items-center gap-md max-w-xs transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+<div class="w-16 h-16 bg-on-surface flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-surface text-4xl">qr_code_2</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Trace Origin</p>
+<p class="font-body-md text-label-sm text-on-surface-variant">Scan to meet the producer</p>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute -top-6 -right-6 w-32 h-32 bg-tertiary-fixed rounded-full opacity-30 blur-3xl -z-10"></div>
+<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-primary-fixed rounded-full opacity-20 blur-3xl -z-10"></div>
+</div>
+</div>
+</section>
+<!-- Trust Strip -->
+<div class="w-full bg-surface-container-low border-y border-outline-variant py-md">
+<div class="max-w-[1280px] mx-auto px-container-margin">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl">verified_user</span>
+<div>
+<p class="font-label-md text-label-sm uppercase tracking-wider text-on-surface">Village Brand</p>
+<p class="font-body-md text-label-sm text-on-surface-variant">Unified Quality</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl">psychology_alt</span>
+<div>
+<p class="font-label-md text-label-sm uppercase tracking-wider text-on-surface">Verified Producer</p>
+<p class="font-body-md text-label-sm text-on-surface-variant">Vetted Authenticity</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl">qr_code_scanner</span>
+<div>
+<p class="font-label-md text-label-sm uppercase tracking-wider text-on-surface">QR-Traceable</p>
+<p class="font-body-md text-label-sm text-on-surface-variant">Scan to Source</p>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl">local_shipping</span>
+<div>
+<p class="font-label-md text-label-sm uppercase tracking-wider text-on-surface">Local Delivery</p>
+<p class="font-body-md text-label-sm text-on-surface-variant">Farm to Doorstep</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Featured Villages Carousel -->
+<section class="py-xl bg-surface">
+<div class="max-w-[1280px] mx-auto px-container-margin">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Pioneer Villages</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Supporting collective rural excellence.</p>
+</div>
+<div class="flex gap-sm">
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-md no-scrollbar">
+<!-- Village Card 1 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant group">
+<div class="h-56 relative overflow-hidden">
+<img class="w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A cinematic, detailed shot of a rustic artisan workshop in a remote hillside village. Sunbeams filter through small windows, illuminating hand-crafted pottery and woven textiles. The color palette features earthy terracottas, sage greens, and warm creams, reflecting a modern agrarian aesthetic of refined craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL3Lp0FfHwtPURseG9XZs86cHw4Ju-DZuOiP3SY2oOHhVXkwh1DBq6M39_jguxgfBfFzxvJBEWRnpPCp8UAmgaxk31kL0zoeKijdIYgyySBmbv41aPD8J1RIDN1HgBG_0ePTBbbQ4T29jqS2eFLFetkvGZt6V-Aa3wntwGDDm8GjA7N9moK9zCqvL3yVUtAvceuxw1yI_457t-_HP8jq0WWF6yrzliSFj27_HG1gxacsJ7Nat2OzEpnFOc9EknK8O8H3XLy80wIAbM">
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur rounded-full px-3 py-1 font-label-md text-label-sm text-on-surface flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1 text-primary">location_on</span> Tuscany
+                        </div>
+</div>
+<div class="p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Green Valley Collective</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">A cooperative of 12 small-scale olive growers dedicated to cold-pressed excellence.</p>
+<div class="mt-md flex items-center justify-between">
+<span class="font-label-md text-label-sm text-secondary">24 Active Producers</span>
+<a class="text-primary font-label-md text-label-md flex items-center hover:underline" href="{{DATA:SCREEN:SCREEN_6}}">
+                                Explore Village <span class="material-symbols-outlined ml-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Village Card 2 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant group">
+<div class="h-56 relative overflow-hidden">
+<img class="w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A high-contrast photo of a traditional stone-built bakery in a highland village. A baker is seen pulling freshly baked artisanal sourdough loaves from a wood-fired oven. The atmosphere is warm, smoky, and deeply authentic, with a focus on tactile surfaces and rich, golden-brown bread textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA28cD6Qb_vMNl9YE9qflVrjHQOqJXBoCCOYVbTQe9ruDoJQV-l2tyW5gzNF_L4AXXdZl7Bvf6iCD1Y-gegHkkNfxFblwISVsAgFS00NhHxJNITbHkzvpxZF-ewUCeOqc2QLRxWxO8ocXW_4aa4a_xI3LaU-vVkER8QwDQwvp90j4FzppzfUbNKxXUKJECv5kGOioM1kVGom4zjdVvO18zPd5H06KZ-Yi6QhytGacFWjw4bsS4CJzSz0yg3Rfjt5nB7m2twPCmxSxjJ">
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur rounded-full px-3 py-1 font-label-md text-label-sm text-on-surface flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1 text-primary">location_on</span> Highlands
+                        </div>
+</div>
+<div class="p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Stone Mill Artisans</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Heritage grain preservation and traditional baking methods passed through generations.</p>
+<div class="mt-md flex items-center justify-between">
+<span class="font-label-md text-label-sm text-secondary">8 Active Producers</span>
+<a class="text-primary font-label-md text-label-md flex items-center hover:underline" href="{{DATA:SCREEN:SCREEN_6}}">
+                                Explore Village <span class="material-symbols-outlined ml-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Village Card 3 -->
+<div class="min-w-[320px] md:min-w-[400px] bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant group">
+<div class="h-56 relative overflow-hidden">
+<img class="w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A serene landscape of rolling honey-bee meadows with modern, clean beehives integrated into a diverse wildflower field. The style is bright and ethereal, using a palette of soft yellows, whites, and pale greens to convey a sense of purity and natural health." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiWaaf57LV9fSJTVJGEPHtlM1_bsQ_MnuqLXdQ5ekcHbxYSeZc3JDXnYvW7TR-pP0TPouk0S3EtlXpp_JI58x3UvfSvbo0V7HlTeS8z1bgtgWgb7z5kECNnMMNG0m1_q_zeRwTKOva9vetcu1FyZzfdFFJTrwEQeRwn-thst757g8_u2NLcVSvyIv87NmfFbnqMRTJWs2t5Rx1jvnF4CPGuQuoId6DaeKiNy18ZkGtsxQZPi2DR2zlR--MHRm76MpI__tUZ0Qu4rH8">
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur rounded-full px-3 py-1 font-label-md text-label-sm text-on-surface flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1 text-primary">location_on</span> Alps
+                        </div>
+</div>
+<div class="p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Wildflower Meadows</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Specialized honey and botanical essences harvested from high-altitude protected landscapes.</p>
+<div class="mt-md flex items-center justify-between">
+<span class="font-label-md text-label-sm text-secondary">15 Active Producers</span>
+<a class="text-primary font-label-md text-label-md flex items-center hover:underline" href="{{DATA:SCREEN:SCREEN_6}}">
+                                Explore Village <span class="material-symbols-outlined ml-1">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Products Grid -->
+<section class="py-xl bg-surface-container-low">
+<div class="max-w-[1280px] mx-auto px-container-margin">
+<div class="text-center mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Curated Harvest</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Hand-picked selections from our verified grid.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Product 1 -->
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="bg-surface rounded-xl border border-outline-variant p-md hover:border-primary transition-colors group block">$0</a>
+<!-- Product 2 -->
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="bg-surface rounded-xl border border-outline-variant p-md hover:border-primary transition-colors group block">$0</a>
+<!-- Product 3 -->
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="bg-surface rounded-xl border border-outline-variant p-md hover:border-primary transition-colors group block">$0</a>
+<!-- Product 4 -->
+<a href="{{DATA:SCREEN:SCREEN_7}}" class="bg-surface rounded-xl border border-outline-variant p-md hover:border-primary transition-colors group block">$0</a>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="py-xl bg-surface overflow-hidden">
+<div class="max-w-[1280px] mx-auto px-container-margin">
+<h2 class="font-headline-lg text-headline-lg text-on-surface text-center mb-xl">The Journey of Trust</h2>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-xl relative">
+<!-- Connecting Line (Desktop) -->
+<div class="hidden md:block absolute top-12 left-[10%] right-[10%] h-[2px] bg-outline-variant -z-10"></div>
+<!-- Step 1 -->
+<div class="flex flex-col items-center text-center space-y-md">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg relative">
+<span class="material-symbols-outlined text-4xl">travel_explore</span>
+<div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold border-2 border-surface">1</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase mb-xs">Discover</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Browse our verified grid of producers and heritage villages.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center text-center space-y-md">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg relative">
+<span class="material-symbols-outlined text-4xl">qr_code_2</span>
+<div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold border-2 border-surface">2</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase mb-xs">Verify</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Scan QR codes to see production dates and origin stories.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center text-center space-y-md">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg relative">
+<span class="material-symbols-outlined text-4xl">shopping_cart</span>
+<div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold border-2 border-surface">3</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase mb-xs">Procure</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Direct purchase with fair pricing for rural artisans.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center text-center space-y-md">
+<div class="w-24 h-24 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg relative">
+<span class="material-symbols-outlined text-4xl">celebration</span>
+<div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold border-2 border-surface">4</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase mb-xs">Enjoy</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Authentic quality delivered locally to your doorstep.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Dual CTA Banner -->
+<section class="py-xl px-container-margin">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- Producer CTA -->
+<div class="relative rounded-2xl overflow-hidden group min-h-[400px] flex items-end">
+<img class="absolute inset-0 w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A portrait of a proud village producer standing in front of an old stone building with agricultural tools. He is smiling warmly at the camera, wearing durable, traditional work clothes. The lighting is early morning sun, casting long shadows and creating a heroic, dignified feel. The palette is dominated by warm earth tones and rich greens." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZr8qClOgpluv-HWZWNRv4uRw0L-j_7Ku_72UP3HwTg3QeSZa3d5UZLxlmHtvJYp5-6CkRBfNuIelxwjXUqifuLrkyuYPtvalgVmWYZwub4I4PzMWzRb__p0ZvIQZ_h0O0ZcDkvcDx237y-3eTfixygE24cg7cvT3TeGkwnYX9ouobxUCAcWSS8B0xlxv6JUsqYnxKFPKBpplJkoLHtBFnH886vtTwPt4AftFeb2nM08Cq_OJEC7dFr_0CiplV-H4KizvaSK57uAy8">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="relative p-xl text-on-primary">
+<h3 class="font-headline-lg text-headline-lg mb-sm">Are you a Producer?</h3>
+<p class="font-body-md text-body-md mb-md opacity-90">Join the BazaarGrid network, digitize your inventory, and connect directly with quality-conscious consumers.</p>
+<button class="px-lg py-sm bg-white text-primary font-label-md text-label-md rounded-lg smooth-hover hover:shadow-xl">Start Your Portal</button>
+</div>
+</div>
+<!-- Store Partner CTA -->
+<div class="relative rounded-2xl overflow-hidden group min-h-[400px] flex items-end">
+<img class="absolute inset-0 w-full h-full object-cover smooth-hover group-hover:scale-105" data-alt="A bright, modern boutique storefront in an urban area with large glass windows. Inside, shelves are neatly organized with local products, artisanal packaging, and digital display screens showing QR codes. The style is clean, airy, and high-end, representing a successful retail partnership between rural sources and urban commerce." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVEGquj2UwGzhlAQmGvPlD3214ZuQjQHpQpjnphWxZpuO0RchT2IXn5tFuLs1Aznj8MaAXPXxnvP3ACZ7W0tSQ2BTchF1iA3naDyAqdj49NG8SouEyvw8U5EtKnhG-OaSgThN1LxvX9up3IJWvWCR62pztgzu60dyazrOg6CvDa2sb47VnJ09jtfBNfMvyL9sBEcTy87wRZJnG_0LhHVTcstoqqX88Z5s6Zj5PqHlQ-bga0MtUF0_4O_n9mytWlg2TxnHki91vZYMl">
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent"></div>
+<div class="relative p-xl text-on-secondary">
+<h3 class="font-headline-lg text-headline-lg mb-sm">Local Store Partner</h3>
+<p class="font-body-md text-body-md mb-md opacity-90">Bring heritage craftsmanship to your neighborhood. Become a collection point and showcase verified village brands.</p>
+<button class="px-lg py-sm bg-white text-secondary font-label-md text-label-md rounded-lg smooth-hover hover:shadow-xl">Become a Partner</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-highest py-xl px-container-margin border-t border-outline-variant">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="lg:col-span-2">
+<span class="font-headline-md text-headline-md text-primary font-bold">BazaarGrid</span>
+<p class="mt-md font-body-md text-label-sm text-on-surface-variant leading-relaxed">
+                    Connecting heritage craftsmanship with modern precision. Our platform empowers rural producers to share their story and products with transparency and integrity.
+                </p>
+<div class="flex gap-md mt-lg">
+<a class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+<a class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-[20px]">share</span></a>
+<a class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined text-[20px]">mail</span></a>
+</div>
+</div>
+<div class="lg:col-start-4">
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Company</h5>
+<ul class="space-y-sm">
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">About BazaarGrid</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Sustainability Report</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Press Kits</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Careers</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Resources</h5>
+<ul class="space-y-sm">
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Partner Portals</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">QR Verification Guide</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Producer Success Stories</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-md text-label-md text-on-surface mb-md">Legal</h5>
+<ul class="space-y-sm">
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Privacy Policy</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Terms of Service</a></li>
+<li class=""><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary" href="#">Cookie Settings</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto mt-xl pt-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 BazaarGrid. All rights reserved.</p>
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary">eco</span>
+<span class="font-label-md text-label-sm text-secondary">Verified Climate Positive Platform</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md border-t border-outline-variant shadow-[0_-4px_12px_rgba(72,101,78,0.08)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and effects
+        document.querySelectorAll('.smooth-hover').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = '';
+            });
+        });
+
+        // Hide navigation on scroll down (optional enhancement)
+        let lastScroll = 0;
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && currentScroll > 80) {
+                nav.style.transform = 'translateY(-100%)';
+                nav.style.transition = 'transform 0.3s ease-in-out';
+            } else {
+                nav.style.transform = 'translateY(0)';
+            }
+            lastScroll = currentScroll;
+        });
+    </script>
+
+
+</body></html>

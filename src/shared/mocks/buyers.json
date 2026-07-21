@@ -1,0 +1,46 @@
+[
+  {
+    "id": "buy_elena_vance",
+    "name": "Elena Vance",
+    "email": "elena.vance@example.com",
+    "phone": "15559820456",
+    "memberSince": "2022-03-14",
+    "tier": "GOLD",
+    "rewardsBalance": 2480,
+    "traceabilityScore": 98,
+    "addresses": [
+      {
+        "id": "addr_home",
+        "label": "Home",
+        "line1": "528 Artisan Way",
+        "city": "Hill Country",
+        "region": "TX",
+        "postalCode": "78701",
+        "country": "USA",
+        "isDefault": true
+      }
+    ]
+  },
+  {
+    "id": "buy_marco_valente",
+    "name": "Marco Valente",
+    "email": "marco.valente@example.com",
+    "phone": "15557712233",
+    "memberSince": "2023-07-02",
+    "tier": "SILVER",
+    "rewardsBalance": 860,
+    "traceabilityScore": 71,
+    "addresses": [
+      {
+        "id": "addr_home",
+        "label": "Home",
+        "line1": "12 Harbour Lane",
+        "city": "Coast Village",
+        "region": "ME",
+        "postalCode": "04011",
+        "country": "USA",
+        "isDefault": true
+      }
+    ]
+  }
+]

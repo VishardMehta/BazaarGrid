@@ -1,0 +1,229 @@
+body {
+  font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+  max-width: 960px;
+  margin: 24px auto;
+  padding: 0 16px;
+  color: #1a1a1a;
+  background: #ffffff;
+}
+
+h1 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 13px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+nav {
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+nav a {
+  margin-right: 16px;
+  color: #1a4fd6;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+th {
+  background: #f4f4f4;
+}
+
+tr:hover {
+  background: #fafafa;
+}
+
+a.row-link {
+  color: #1a4fd6;
+  text-decoration: none;
+}
+
+a.row-link:hover {
+  text-decoration: underline;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-PLACED { background: #eef0ff; color: #3344aa; }
+.badge-CONFIRMED { background: #e6f4ff; color: #155a8a; }
+.badge-PACKED { background: #fff4d9; color: #8a6d11; }
+.badge-FULFILLED { background: #e6f9ee; color: #1c7a44; }
+.badge-COMPLETED { background: #d8f0d8; color: #1d5e1d; }
+.badge-CANCELLED { background: #fde8e8; color: #a3221f; }
+
+form {
+  max-width: 520px;
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+button {
+  margin-top: 16px;
+  padding: 8px 16px;
+  font-size: 14px;
+  background: #1a4fd6;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #143fb0;
+}
+
+button.secondary {
+  background: #888;
+}
+
+button.secondary:hover {
+  background: #666;
+}
+
+button.danger {
+  background: #a3221f;
+}
+
+button.danger:hover {
+  background: #841a17;
+}
+
+.item-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: flex-end;
+}
+
+.item-row > div {
+  flex: 1;
+}
+
+.item-row label {
+  margin-top: 0;
+}
+
+#message {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: none;
+}
+
+#message.success {
+  display: block;
+  background: #e6f9ee;
+  color: #1c7a44;
+  border: 1px solid #b6e6c9;
+}
+
+#message.error {
+  display: block;
+  background: #fde8e8;
+  color: #a3221f;
+  border: 1px solid #f5c2c0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 6px 12px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.detail-grid .label {
+  font-weight: 600;
+  color: #444;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+.muted {
+  color: #777;
+  font-size: 12px;
+}
+
+.actions-row {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.add-item-btn {
+  background: #444;
+  margin-top: 0;
+  margin-bottom: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.add-item-btn:hover {
+  background: #222;
+}
+
+.remove-item-btn {
+  background: #a3221f;
+  padding: 6px 10px;
+  margin-top: 0;
+  font-size: 13px;
+}
+
+.remove-item-btn:hover {
+  background: #841a17;
+}

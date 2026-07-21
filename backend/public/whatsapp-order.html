@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BazaarGrid — WhatsApp Order</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Order on WhatsApp</h1>
+  <p class="subtitle">Test UI for POST /orders/whatsapp — creates a real order via the existing Order module, then opens WhatsApp.</p>
+
+  <nav>
+    <a href="index.html">Orders List</a>
+    <a href="create-order.html">Create Order</a>
+    <a href="whatsapp-order.html">WhatsApp Order</a>
+  </nav>
+
+  <div id="message"></div>
+
+  <form id="whatsappOrderForm">
+    <label for="buyerId">Buyer ID</label>
+    <input type="text" id="buyerId" placeholder="e.g. buy_001" required />
+
+    <label for="sellerType">Seller Type</label>
+    <select id="sellerType" required>
+      <option value="PRODUCER">PRODUCER</option>
+      <option value="LOCAL_STORE">LOCAL_STORE</option>
+    </select>
+
+    <label for="fulfillingSellerId">Seller ID</label>
+    <input type="text" id="fulfillingSellerId" placeholder="e.g. sel_001" required />
+
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" placeholder="+919876543210" required />
+
+    <label for="fulfillmentMode">Fulfillment Mode</label>
+    <select id="fulfillmentMode" required>
+      <option value="DELIVERY">DELIVERY</option>
+      <option value="PICKUP">PICKUP</option>
+    </select>
+
+    <div class="section-title">Items</div>
+    <div id="itemsContainer"></div>
+    <button type="button" class="add-item-btn" id="addItemBtn">+ Add Item</button>
+
+    <div>
+      <button type="submit">Place WhatsApp Order</button>
+    </div>
+  </form>
+
+  <script src="api-whatsapp.js"></script>
+  <script>
+    const itemsContainer = document.getElementById('itemsContainer');
+    let itemCounter = 0;
+
+    function addItemRow() {
+      itemCounter += 1;
+      const rowId = `wa-item-${itemCounter}`;
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      row.id = rowId;
+      row.innerHTML = `
+        <div>
+          <label>Product ID</label>
+          <input type="text" class="item-productId" placeholder="prd_001" required />
+        </div>
+        <div>
+          <label>Batch ID</label>
+          <input type="text" class="item-batchId" placeholder="bat_001" required />
+        </div>
+        <div style="max-width:80px;">
+          <label>Qty</label>
+          <input type="number" class="item-qty" min="1" step="1" value="1" required />
+        </div>
+        <div style="max-width:110px;">
+          <label>Unit Price</label>
+          <input type="number" class="item-unitPrice" min="0.01" step="0.01" value="100" required />
+        </div>
+        <div style="max-width:90px;">
+          <button type="button" class="remove-item-btn" data-row="${rowId}">Remove</button>
+        </div>
+      `;
+      itemsContainer.appendChild(row);
+      row.querySelector('.remove-item-btn').addEventListener('click', () => {
+        if (itemsContainer.children.length > 1) {
+          row.remove();
+        } else {
+          showWhatsappMessage('At least one item is required.', true);
+        }
+      });
+    }
+
+    document.getElementById('addItemBtn').addEventListener('click', addItemRow);
+    addItemRow(); // start with one row
+
+    function showWhatsappMessage(text, isError) {
+      const el = document.getElementById('message');
+      el.textContent = text;
+      el.className = isError ? 'error' : 'success';
+    }
+
+    function collectItems() {
+      const rows = Array.from(itemsContainer.querySelectorAll('.item-row'));
+      return rows.map((row) => ({
+        productId: row.querySelector('.item-productId').value.trim(),
+        batchId: row.querySelector('.item-batchId').value.trim(),
+        qty: Number(row.querySelector('.item-qty').value),
+        unitPrice: Number(row.querySelector('.item-unitPrice').value),
+      }));
+    }
+
+    document.getElementById('whatsappOrderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        buyerId: document.getElementById('buyerId').value.trim(),
+        sellerType: document.getElementById('sellerType').value,
+        fulfillingSellerId: document.getElementById('fulfillingSellerId').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        fulfillmentMode: document.getElementById('fulfillmentMode').value,
+        items: collectItems(),
+      };
+
+      try {
+        const result = await apiRequestWhatsapp('POST', '/orders/whatsapp', payload);
+        showWhatsappMessage(`Order ${result.orderId} created. Opening WhatsApp…`, false);
+        window.open(result.whatsappUrl, '_blank');
+      } catch (err) {
+        let text = err.message;
+        if (err.details && err.details.length) {
+          text += ' — ' + err.details.map((d) => `${d.path}: ${d.message}`).join('; ');
+        }
+        showWhatsappMessage(text, true);
+      }
+    });
+  </script>
+</body>
+</html>

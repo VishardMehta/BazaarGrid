@@ -1,0 +1,447 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>BazaarGrid | Search Results</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;500;600;700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#9b6f01",
+                        "on-secondary-container": "#4c6952",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#faf9f5",
+                        "surface-container": "#efeeea",
+                        "surface-container-high": "#e9e8e4",
+                        "background": "#faf9f5",
+                        "secondary-fixed-dim": "#aecfb3",
+                        "surface-variant": "#e3e2df",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdea7",
+                        "on-primary-fixed-variant": "#80281b",
+                        "on-tertiary-container": "#080400",
+                        "secondary-fixed": "#caebce",
+                        "on-surface-variant": "#56423e",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#ffb4a7",
+                        "surface-tint": "#a03f30",
+                        "primary-fixed-dim": "#ffb4a7",
+                        "outline": "#89726d",
+                        "on-secondary-fixed": "#04210f",
+                        "tertiary-fixed-dim": "#f4be55",
+                        "surface": "#faf9f5",
+                        "on-tertiary-fixed-variant": "#5e4200",
+                        "surface-container-low": "#f4f4f0",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f2f1ed",
+                        "tertiary": "#7c5800",
+                        "primary-container": "#bd5444",
+                        "primary": "#9d3d2e",
+                        "on-primary-fixed": "#400200",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#1b1c1a",
+                        "primary-fixed": "#ffdad4",
+                        "surface-container-highest": "#e3e2df",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1c1a",
+                        "inverse-surface": "#2f312e",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#48654e",
+                        "outline-variant": "#ddc0bb",
+                        "on-secondary-fixed-variant": "#304d38",
+                        "on-tertiary-fixed": "#271900",
+                        "secondary-container": "#c7e8cb",
+                        "surface-dim": "#dbdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "sm": "12px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Work Sans"],
+                        "label-md": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-lg": ["Newsreader"],
+                        "headline-md": ["Newsreader"],
+                        "headline-lg-mobile": ["Newsreader"],
+                        "label-sm": ["Work Sans"],
+                        "display-lg": ["Newsreader"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .grain-overlay {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen relative">
+<div class="grain-overlay fixed inset-0 z-[100]"></div>
+<!-- TopNavBar Shell -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<span class="text-headline-md font-headline-md font-bold text-primary">BazaarGrid</span>
+<nav class="hidden md:flex items-center gap-md ml-xl">
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="{{DATA:SCREEN:SCREEN_7}}">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_6}}">Villages</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_16}}">Become a Producer</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden lg:flex items-center">
+<input class="w-64 bg-surface-container-low border border-outline-variant rounded-full px-md py-2 text-body-md focus:ring-2 focus:ring-primary focus:outline-none outline-none" placeholder="Search heritage goods..." type="text">
+<span class="material-symbols-outlined absolute right-4 text-on-surface-variant">search</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">shopping_basket</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-secondary-container overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a friendly artisan producer wearing a modern denim apron, set against a blurred background of a sunny pottery studio. High-end lifestyle photography, warm natural lighting, soft earth tones, 4k resolution, premium corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoWpl5DnFl0psJbpfCQW_y4k9fF5aTiCDeJHDAP0rf3eoNxkOb72efd9x2RITfsvRet8M7CPyazOYiEoafvCQy2wx4IckcMo-I07jzYdgCbXdFMqs1ThlwNWwaKnJH1IGl19qztppYPn1TXcmsF8N82Q_T4cX6ViRIGPa8Ubf8qJ7fwfbfJBvnL6KE2uCqKzZGWw1jsxTAm5MbeGhP4NhLudDW4l5q97yIDbDS1QeByxhExykGh_rafhXlAUzhjq_XsRRqXCzv-UQP">
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-container-margin py-lg flex flex-col md:flex-row gap-xl">
+<!-- Left Sidebar Filters (Desktop) -->
+<aside class="hidden md:block w-64 flex-shrink-0 space-y-lg">
+<section>
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Categories</h3>
+<div class="space-y-sm">
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Artisanal Textiles</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-body-md text-on-surface transition-colors">Heritage Pottery</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Organic Oils</span>
+</label>
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox">
+<span class="text-body-md text-on-surface-variant group-hover:text-primary transition-colors">Hand-Carved Wood</span>
+</label>
+</div>
+</section>
+<section>
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Price Range</h3>
+<div class="space-y-md">
+<input class="w-full accent-primary" type="range">
+<div class="flex justify-between text-label-sm text-on-surface-variant">
+<span class="">$0</span>
+<span class="">$500+</span>
+</div>
+</div>
+</section>
+<section>
+<h3 class="font-label-md text-label-md text-on-surface mb-md">Origin Village</h3>
+<div class="relative">
+<input class="w-full text-body-md px-md py-2 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:border-primary" placeholder="Filter villages..." type="text">
+</div>
+</section>
+<section>
+<div class="p-md bg-secondary-container/30 border border-secondary-container rounded-xl">
+<h4 class="font-label-md text-label-md text-on-secondary-container mb-xs">Verified Only</h4>
+<p class="text-label-sm text-on-surface-variant mb-md">Show only products from verified heritage producers.</p>
+<button class="w-full py-2 bg-secondary text-on-secondary rounded-lg font-label-md hover:bg-on-secondary-fixed-variant transition-colors">Apply Certification</button>
+</div>
+</section>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-grow">
+<!-- Search Header & Tabs -->
+<header class="mb-lg space-y-md">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Results for "Hand-glazed Pottery"</h1>
+<p class="text-body-md text-on-surface-variant mt-xs">Showing 24 authentic items from 8 villages</p>
+</div>
+<div class="flex items-center gap-sm border border-outline-variant rounded-lg px-md py-2 bg-surface cursor-pointer hover:bg-surface-container transition-colors">
+<span class="text-label-md text-on-surface">Sort: Popularity</span>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex flex-wrap gap-sm pt-md">
+<div class="px-md py-1 bg-primary text-on-primary rounded-full flex items-center gap-xs font-label-md text-label-sm">
+                        Pottery <span class="material-symbols-outlined text-[16px] cursor-pointer">close</span>
+</div>
+<div class="px-md py-1 bg-surface-container-high text-on-surface rounded-full flex items-center gap-xs font-label-md text-label-sm hover:bg-surface-container-highest cursor-pointer">
+                        Under $200 <span class="material-symbols-outlined text-[16px]">close</span>
+</div>
+<div class="px-md py-1 bg-surface-container-high text-on-surface rounded-full flex items-center gap-xs font-label-md text-label-sm hover:bg-surface-container-highest cursor-pointer">
+                        Mediterranean Village <span class="material-symbols-outlined text-[16px]">close</span>
+</div>
+<button class="text-primary font-label-md text-label-sm hover:underline ml-xs">Clear All</button>
+</div>
+<!-- Result Type Tabs -->
+<nav class="flex border-b border-outline-variant gap-lg pt-lg">
+<button class="pb-md border-b-2 border-primary text-primary font-label-md text-label-md">Products (24)</button>
+<button class="pb-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors">Villages (8)</button>
+<button class="pb-md text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" onclick="window.location.href='{{DATA:SCREEN:SCREEN_16}}'">Producers (12)</button>
+</nav>
+</header>
+<!-- Results Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group cursor-pointer bg-surface rounded-xl border border-outline-variant overflow-hidden hover:shadow-[0_8px_24px_rgba(72,101,78,0.08)] hover:border-primary transition-all duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A close-up shot of a rustic hand-glazed terracotta bowl with deep cobalt blue and creamy white swirl patterns. The lighting is soft and directional, highlighting the tactile texture of the glaze. Shot in a minimalist, earthy studio setting with organic shadows. Modern Agrarian aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBriZIc-QNhjDgjTj1mDa2xxPVhSWzC6twnlcf7w2o8HElnsSfU23E3L3GVngam5G-sevs81zcb-JcDGclXNsAWzV65KZYGziXsUxcgVjiws1IvVpgjpRwW3D3pUiwJTbTY4wZwN4iYYJJBvhqAB9TFRJKfDvEVX1581h0GHIcziH2oaBQqlXnptpgqexXg_YK2PwEqyOOa4IBNKMCCsa6ppbFx8xpL5l5OxZiuWC1677AjMs2JH6esBOMrq4Xw38IWmu5xLXBNCTUn">
+<div class="absolute top-4 right-4 px-3 py-1 bg-secondary text-on-secondary rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-sm">Verified</span>
+</div>
+</div>
+<div class="p-md space-y-xs">
+<div class="flex justify-between items-start">
+<p class="text-label-sm text-on-surface-variant">L'Olive Village, Italy</p>
+<p class="font-label-md text-label-md text-primary">$124.00</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Oceanic Swirl Serving Bowl</h3>
+<div class="flex items-center gap-xs pt-base">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm text-on-surface">4.9 (82 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group cursor-pointer bg-surface rounded-xl border border-outline-variant overflow-hidden hover:shadow-[0_8px_24px_rgba(72,101,78,0.08)] hover:border-primary transition-all duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A set of four minimalist ceramic espresso cups in muted sage green and slate grey tones, displayed on a weathered wooden table. Soft morning light streams through a window creating long, elegant shadows. High-end architectural photography, sophisticated textures, premium brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDU8hQia33LuSWFr1xw3OVBiwj1qxqbiWKiKla7_YgZ9UeEdB3BJduYiTbgYlfzlSMA0qFKN5cGH22Ln1TWknpdRRggzeVtOTMoDwN1h6W8zyTCnigiedZnEJZGKKIxh_cnd56nwAG55AvOCIPZvi2UBbt8wEDs-0F5VgIcPoovhAALzN37ygE1DVqKfl4-3T597WyAK8gLyR6YvLEb2PaeEO3HycsqtPYQ1fG5vmglawkbUXfZIb4PB3wunbMevNdb9_oQv5fXN47p">
+</div>
+<div class="p-md space-y-xs">
+<div class="flex justify-between items-start">
+<p class="text-label-sm text-on-surface-variant">Pueblo Sol, Spain</p>
+<p class="font-label-md text-label-md text-primary">$88.00</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Minimalist Earth Cup Set</h3>
+<div class="flex items-center gap-xs pt-base">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm text-on-surface">5.0 (34 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Featured Village Card (Bento Twist) -->
+<div class="lg:col-span-1 group cursor-pointer bg-primary-container text-on-primary-container rounded-xl overflow-hidden relative p-md flex flex-col justify-end min-h-[350px]" onclick="window.location.href='{{DATA:SCREEN:SCREEN_6}}'">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-700" data-alt="Panoramic aerial view of a small Mediterranean hillside village at sunset, with terracotta roofs and winding cobblestone streets. The light is warm and golden, casting long shadows. Atmospheric, serene, and evocative of heritage and tradition. High-resolution travel photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCke9__Yv38VkYJY7x3kZ-FIG1kyCaOF0iRfIaBzvWdMlHwOdm_awi28zkX_F6wMjF5hzFFdURgx_P-VD5gQgxLj4uNALKIoaFmNaJi1u3NzEy1vhpXWnMJyWDMD1qGC-7EShDdBXR-0dsSOpl40gE3fkJTzgxNNCDyzkBe-8PuqU_NyHWPYOwnC92MDB-gT0SZH9nzJh1uNHItW5ezMzz3fKZWgvAcPXKT19cHb1AJrTmPs0BVHsWDxa4vMSQEtjW-A_zxWTvcHk0u">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10 space-y-sm">
+<span class="px-3 py-1 bg-on-primary-container text-primary rounded-full text-label-sm font-label-md inline-block">Featured Village</span>
+<h3 class="font-headline-lg text-headline-lg">L'Olive Craft District</h3>
+<p class="text-body-md opacity-90 line-clamp-2">Famous for 400 years of unique hand-glazing techniques found nowhere else in the world.</p>
+<button class="flex items-center gap-sm font-label-md text-label-md group/btn">
+                            Explore Village Heritage
+                            <span class="material-symbols-outlined group-hover/btn:translate-x-2 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group cursor-pointer bg-surface rounded-xl border border-outline-variant overflow-hidden hover:shadow-[0_8px_24px_rgba(72,101,78,0.08)] hover:border-primary transition-all duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A tall, slender artisan vase with an irregular, hand-pinched texture in a matte charcoal finish. A single dried wildflower is placed inside. Minimalist composition against a neutral beige wall. Dramatic side lighting highlighting the three-dimensional form. Editorial product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWRHNGBBevz3hAIq9D23QxcY_nW1PMyT63kwDBtisjKVv0x3PhlsWl7hEyjsZc5ZJzRfWWoFcfap0VtV-FXATQeMUYRzKj_KukzatIGZUhHzmBICRsaWJN78wPNR01J-5_wO9we9esECEjh6Ku7lVMAUp6qL-i8Snm6QNbVtwRDPGLtJUMF0F7xBG3TDZuIYvoSzbiKij2IPkapTuFU0-IgVPkcEZalzonxWy2Vf19MlpXWphB91hYuTCe7dTyEaQ_2KX1iGC-HFw5">
+</div>
+<div class="p-md space-y-xs">
+<div class="flex justify-between items-start">
+<p class="text-label-sm text-on-surface-variant">Kyoto Suburbs, Japan</p>
+<p class="font-label-md text-label-md text-primary">$210.00</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Wabi-Sabi Charcoal Vase</h3>
+<div class="flex items-center gap-xs pt-base">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm text-on-surface">4.8 (12 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Product Card 4 -->
+<div class="group cursor-pointer bg-surface rounded-xl border border-outline-variant overflow-hidden hover:shadow-[0_8px_24px_rgba(72,101,78,0.08)] hover:border-primary transition-all duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Detailed close-up of hand-woven linen napkins with intricate embroidery patterns in earth tones. The fabric texture is crisp and tactile. Soft, natural diffused light. High-end interior design aesthetic, focus on craftsmanship and detail. Modern Agrarian color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs61BB4NQi63bvmyRLTkjZjZnWXoGoo0Y4VKaOOrHBK9_6DOCI-gvZepk4ACZ71sWok1nKcSgw62Dq25AeQYT8e3j7Vl_okcTSzyCykHlD-UCBytAFrVnv27ikwMMIs4epH0IVIPafS0RK5UNvvz5jqF5QsModx-EBFwQoy505dcGa2EqqfDtGyUE5zs4MSRSdxu2vCE-eSCliVPK_G-b_mCj59XbJgcvAFjrhbhdwX7vrzunqE_kFXWRhURRPSmGI-1JQlwrjpjOr">
+<div class="absolute top-4 right-4 px-3 py-1 bg-secondary text-on-secondary rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-sm">Verified</span>
+</div>
+</div>
+<div class="p-md space-y-xs">
+<div class="flex justify-between items-start">
+<p class="text-label-sm text-on-surface-variant">Epirus Peaks, Greece</p>
+<p class="font-label-md text-label-md text-primary">$65.00</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Hand-Woven Linen Set</h3>
+<div class="flex items-center gap-xs pt-base">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm text-on-surface">4.9 (45 reviews)</span>
+</div>
+</div>
+</div>
+<!-- Product Card 5 -->
+<div class="group cursor-pointer bg-surface rounded-xl border border-outline-variant overflow-hidden hover:shadow-[0_8px_24px_rgba(72,101,78,0.08)] hover:border-primary transition-all duration-300" onclick="window.location.href='{{DATA:SCREEN:SCREEN_7}}'">
+<div class="aspect-[4/5] relative overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A heavy stoneware pitcher with a unique thumb-print handle design in a warm sand-colored matte finish. Poured milk creates a dynamic splash. Contemporary rustic style, high-speed photography, sophisticated lighting, premium artisanal feel. 4k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Uw3cCy1EuIJJZ3BL6aEArrTM5vqQAKXLlrS9vQoZrP9c12nROXp013zHP6Zp2XIw0KBHVAmT2RDZe7QIKkYcKVaSbKHnXQHx5UGB750zYL9_oN1IL3duJ8pdKgIavw3s8iJw6GGXpBntEveB24vf9zjWbVhgw5xrkJTe6uZKBkGc66XkX69M0pe8BcULYlg8S_2c41VgL579SJcbmAOxbQXhqw_fn1xKXiNKrCXFwlpF7j1c2KCreSpS7z1QStCTDKc2DHDmb105">
+</div>
+<div class="p-md space-y-xs">
+<div class="flex justify-between items-start">
+<p class="text-label-sm text-on-surface-variant">Ardennes Forest, Belgium</p>
+<p class="font-label-md text-label-md text-primary">$145.00</p>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Stoneware Milk Pitcher</h3>
+<div class="flex items-center gap-xs pt-base">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-label-sm text-on-surface">4.7 (28 reviews)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-xl flex justify-center items-center gap-md">
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex items-center gap-sm">
+<button class="w-12 h-12 rounded-full bg-primary text-on-primary font-label-md">1</button>
+<button class="w-12 h-12 rounded-full hover:bg-surface-container text-on-surface font-label-md transition-colors">2</button>
+<button class="w-12 h-12 rounded-full hover:bg-surface-container text-on-surface font-label-md transition-colors">3</button>
+<span class="text-on-surface-variant">...</span>
+<button class="w-12 h-12 rounded-full hover:bg-surface-container text-on-surface font-label-md transition-colors">8</button>
+</div>
+<button class="w-12 h-12 rounded-full border border-outline-variant flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Empty State Logic (Hidden by default, used for search with no results) -->
+<div class="hidden max-w-2xl mx-auto py-xl text-center px-container-margin" id="empty-state">
+<div class="w-24 h-24 bg-surface-container mx-auto rounded-full flex items-center justify-center mb-lg">
+<span class="material-symbols-outlined text-outline text-[48px]">search_off</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-md">We couldn't find any results</h2>
+<p class="text-body-lg text-on-surface-variant mb-xl">Your search for "Authentic Martian Pottery" didn't match any heritage goods in our current catalog. Try adjusting your filters or search terms.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-md">
+<button class="px-xl py-md bg-primary text-on-primary rounded-lg font-label-md hover:opacity-90 transition-opacity">Clear All Filters</button>
+<button class="px-xl py-md border-2 border-secondary text-secondary rounded-lg font-label-md hover:bg-secondary-container/20 transition-colors">Back to Home</button>
+</div>
+</div>
+<!-- Footer Shell -->
+<footer class="w-full bg-surface-container-highest py-xl px-container-margin border-t border-outline-variant mt-xl">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="col-span-1 lg:col-span-2">
+<span class="font-headline-md text-headline-md text-primary block mb-md">BazaarGrid</span>
+<p class="text-body-md text-on-surface-variant mb-lg">Connecting heritage craftsmanship with modern precision. Our platform empowers local artisans to reach a global market while preserving centuries of tradition.</p>
+</div>
+<div class="col-span-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-md">Company</h4>
+<ul class="space-y-sm text-label-sm text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">About BazaarGrid</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Sustainability Report</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Partner Portals</a></li>
+</ul>
+</div>
+<div class="col-span-1">
+<h4 class="font-label-md text-label-md text-on-surface mb-md">Support</h4>
+<ul class="space-y-sm text-label-sm text-on-surface-variant">
+<li class=""><a class="hover:text-primary transition-colors" href="#">Help Center</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li class=""><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div class="col-span-1 lg:col-span-2">
+<h4 class="font-label-md text-label-md text-on-surface mb-md">Join the Journey</h4>
+<p class="text-label-sm text-on-surface-variant mb-md">Subscribe to get stories from the villages and early access to drops.</p>
+<div class="flex gap-xs">
+<input class="flex-grow bg-surface border border-outline-variant rounded-lg px-md py-2 focus:ring-1 focus:ring-primary focus:outline-none" placeholder="email@address.com" type="email">
+<button class="bg-primary text-on-primary px-md py-2 rounded-lg font-label-md">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto mt-xl pt-lg border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md">
+<p class="text-label-sm text-on-surface-variant">© 2024 BazaarGrid. Connecting heritage craftsmanship with modern precision.</p>
+<div class="flex gap-lg">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">language</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary">share</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar Shell (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md shadow-[0_-4px_12px_rgba(72,101,78,0.08)] border-t border-outline-variant rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for filter chips
+        document.querySelectorAll('.material-symbols-outlined').forEach(icon => {
+            if(icon.innerText === 'close') {
+                icon.addEventListener('click', (e) => {
+                    e.currentTarget.parentElement.style.display = 'none';
+                });
+            }
+        });
+
+        // Hover scale effects for cards logic (handled by Tailwind, but JS can add subtle tilt)
+        const cards = document.querySelectorAll('.group');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Potential for subtle JS animations here
+            });
+        });
+    </script>
+
+
+</body></html>

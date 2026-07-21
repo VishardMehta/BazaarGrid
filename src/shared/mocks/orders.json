@@ -1,0 +1,207 @@
+[
+  {
+    "id": "ORD-8401",
+    "buyerId": "buy_elena_vance",
+    "channel": "APP",
+    "status": "FULFILLED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_green_valley",
+    "items": [
+      {
+        "productId": "prod_forest_honey",
+        "sellerId": "sel_green_valley",
+        "name": "Wildflower Forest Honey (500g)",
+        "unit": "500g jar",
+        "quantity": 2,
+        "price": 12.5,
+        "traceable": true,
+        "batchId": "BG-2024-AFH-082"
+      },
+      {
+        "productId": "prod_olive_oil",
+        "sellerId": "sel_old_oak_mill",
+        "name": "Hand-Pressed Cold Olive Oil",
+        "unit": "750ml bottle",
+        "quantity": 1,
+        "price": 24.0,
+        "traceable": true,
+        "batchId": "BG-2024-OO-191"
+      }
+    ],
+    "subtotal": 49.0,
+    "deliveryFee": 0,
+    "rewardsDiscount": 6.5,
+    "total": 42.5,
+    "fulfillment": "DELIVERY",
+    "address": {
+      "line1": "528 Artisan Way",
+      "city": "Hill Country",
+      "region": "TX",
+      "postalCode": "78701",
+      "country": "USA"
+    },
+    "payment": "CARD",
+    "placedAt": "2024-10-24",
+    "primarySellerId": "sel_green_valley",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-24T04:30:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-24T08:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-10-25T06:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2024-10-26T10:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ORD-8392",
+    "buyerId": "buy_elena_vance",
+    "channel": "APP",
+    "status": "COMPLETED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_green_valley",
+    "items": [
+      {
+        "productId": "prod_heritage_ghee",
+        "sellerId": "sel_green_valley",
+        "name": "Sun-Dried Heritage Ghee",
+        "unit": "250g jar",
+        "quantity": 2,
+        "price": 18.0,
+        "traceable": true,
+        "batchId": "BG-2024-GHE-061"
+      },
+      {
+        "productId": "prod_arabica_beans",
+        "sellerId": "sel_old_oak_mill",
+        "name": "High-Altitude Arabica Beans",
+        "unit": "340g bag",
+        "quantity": 1,
+        "price": 16.5,
+        "traceable": true,
+        "batchId": "BG-2024-AC-099"
+      }
+    ],
+    "subtotal": 52.5,
+    "deliveryFee": 4.0,
+    "rewardsDiscount": 0,
+    "total": 56.5,
+    "fulfillment": "DELIVERY",
+    "payment": "DIGITAL_WALLET",
+    "placedAt": "2024-09-18",
+    "primarySellerId": "sel_green_valley",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-09-18T04:30:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-09-18T08:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-09-19T06:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2024-09-20T10:00:00.000Z" },
+      { "status": "COMPLETED", "at": "2024-09-22T14:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ORD-8377",
+    "buyerId": "buy_marco_valente",
+    "channel": "WHATSAPP",
+    "status": "CONFIRMED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
+    "items": [
+      {
+        "productId": "prod_swirl_bowl",
+        "sellerId": "sel_coast_artisans",
+        "name": "Oceanic Swirl Serving Bowl",
+        "unit": "each",
+        "quantity": 1,
+        "price": 32.0,
+        "traceable": true,
+        "batchId": "BG-2024-OSB-044"
+      }
+    ],
+    "subtotal": 32.0,
+    "deliveryFee": 0,
+    "total": 32.0,
+    "fulfillment": "PICKUP",
+    "payment": "COD",
+    "placedAt": "2024-10-20",
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-20T09:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-20T10:30:00.000Z" }
+    ]
+  },
+  {
+    "id": "ORD-8350",
+    "buyerId": "buy_marco_valente",
+    "channel": "WHATSAPP",
+    "status": "PLACED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
+    "items": [
+      {
+        "productId": "prod_linen_set",
+        "sellerId": "sel_coast_artisans",
+        "name": "Hand-Woven Linen Set",
+        "unit": "set of 2",
+        "quantity": 1,
+        "price": 38.0,
+        "traceable": true,
+        "batchId": "BG-2024-LIN-077"
+      },
+      {
+        "productId": "prod_earth_cups",
+        "sellerId": "sel_coast_artisans",
+        "name": "Miniature Earth Cup Set",
+        "unit": "set of 4",
+        "quantity": 1,
+        "price": 28.0,
+        "traceable": false,
+        "batchId": "batch-prod_earth_cups"
+      }
+    ],
+    "subtotal": 66.0,
+    "deliveryFee": 5.0,
+    "total": 71.0,
+    "fulfillment": "DELIVERY",
+    "payment": "COD",
+    "placedAt": "2024-08-30",
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-08-30T05:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ORD-8311",
+    "buyerId": "buy_elena_vance",
+    "channel": "APP",
+    "status": "PACKED",
+    "orderType": "CUSTOMER_ORDER",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "sel_coast_artisans",
+    "items": [
+      {
+        "productId": "prod_charcoal_vase",
+        "sellerId": "sel_coast_artisans",
+        "name": "Wabi-Sabi Charcoal Vase",
+        "unit": "each",
+        "quantity": 1,
+        "price": 45.0,
+        "traceable": false,
+        "batchId": "batch-prod_charcoal_vase"
+      }
+    ],
+    "subtotal": 45.0,
+    "deliveryFee": 0,
+    "rewardsDiscount": 5.0,
+    "total": 40.0,
+    "fulfillment": "PICKUP",
+    "payment": "CARD",
+    "placedAt": "2024-10-22",
+    "primarySellerId": "sel_coast_artisans",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2024-10-22T04:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2024-10-22T07:00:00.000Z" },
+      { "status": "PACKED", "at": "2024-10-23T08:00:00.000Z" }
+    ]
+  }
+]

@@ -1,0 +1,221 @@
+[
+  {
+    "id": "ord-0001",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-101",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-201",
+    "items": [
+      { "productId": "prd-aata-5kg", "batchId": "batch-aata-2026-06-01", "title": "Wheat Flour 5kg", "qty": 2, "unitPrice": 220 },
+      { "productId": "prd-toor-1kg", "batchId": "batch-toor-2026-06-02", "title": "Toor Dal 1kg", "qty": 1, "unitPrice": 145 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "PLACED",
+    "total": 585,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-15T04:30:00.000Z",
+    "updatedAt": "2026-06-15T04:30:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-15T04:30:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0002",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-102",
+    "sellerType": "LOCAL_STORE",
+    "fulfillingSellerId": "store-301",
+    "items": [
+      { "productId": "prd-rice-10kg", "batchId": "batch-rice-2026-05-20", "title": "Basmati Rice 10kg", "qty": 1, "unitPrice": 950 }
+    ],
+    "channel": "WHATSAPP",
+    "fulfillmentMode": "PICKUP",
+    "status": "CONFIRMED",
+    "total": 950,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-16T09:10:00.000Z",
+    "updatedAt": "2026-06-16T10:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-16T09:10:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-16T10:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0003",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-103",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-202",
+    "items": [
+      { "productId": "prd-mustard-oil-1l", "batchId": "batch-oil-2026-05-28", "title": "Mustard Oil 1L", "qty": 3, "unitPrice": 180 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "PACKED",
+    "total": 540,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-17T03:00:00.000Z",
+    "updatedAt": "2026-06-18T06:45:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-17T03:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-17T07:00:00.000Z" },
+      { "status": "PACKED", "at": "2026-06-18T06:45:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0004",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-104",
+    "sellerType": "LOCAL_STORE",
+    "fulfillingSellerId": "store-302",
+    "items": [
+      { "productId": "prd-sugar-1kg", "batchId": "batch-sugar-2026-06-05", "title": "Sugar 1kg", "qty": 4, "unitPrice": 48 },
+      { "productId": "prd-tea-250g", "batchId": "batch-tea-2026-06-05", "title": "Tea Leaves 250g", "qty": 2, "unitPrice": 95 }
+    ],
+    "channel": "WHATSAPP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "FULFILLED",
+    "total": 382,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-10T05:00:00.000Z",
+    "updatedAt": "2026-06-12T11:20:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-10T05:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-10T08:00:00.000Z" },
+      { "status": "PACKED", "at": "2026-06-11T07:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2026-06-12T11:20:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0005",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-105",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-203",
+    "items": [
+      { "productId": "prd-jaggery-1kg", "batchId": "batch-jaggery-2026-05-10", "title": "Jaggery 1kg", "qty": 2, "unitPrice": 90 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "PICKUP",
+    "status": "COMPLETED",
+    "total": 180,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-01T02:00:00.000Z",
+    "updatedAt": "2026-06-05T09:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-01T02:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-01T05:00:00.000Z" },
+      { "status": "PACKED", "at": "2026-06-02T06:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2026-06-03T07:00:00.000Z" },
+      { "status": "COMPLETED", "at": "2026-06-05T09:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0006",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-106",
+    "sellerType": "LOCAL_STORE",
+    "fulfillingSellerId": "store-301",
+    "items": [
+      { "productId": "prd-salt-1kg", "batchId": "batch-salt-2026-04-15", "title": "Iodized Salt 1kg", "qty": 1, "unitPrice": 22 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "CANCELLED",
+    "total": 22,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-08T03:30:00.000Z",
+    "updatedAt": "2026-06-08T04:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-08T03:30:00.000Z" },
+      { "status": "CANCELLED", "at": "2026-06-08T04:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0007",
+    "orderType": "RESTOCK_ORDER",
+    "buyerId": "store-301",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-201",
+    "items": [
+      { "productId": "prd-aata-5kg", "batchId": "batch-aata-2026-06-10", "title": "Wheat Flour 5kg", "qty": 50, "unitPrice": 200 },
+      { "productId": "prd-toor-1kg", "batchId": "batch-toor-2026-06-10", "title": "Toor Dal 1kg", "qty": 30, "unitPrice": 130 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "PLACED",
+    "total": 13900,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-19T02:00:00.000Z",
+    "updatedAt": "2026-06-19T02:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-19T02:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0008",
+    "orderType": "RESTOCK_ORDER",
+    "buyerId": "store-302",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-202",
+    "items": [
+      { "productId": "prd-mustard-oil-1l", "batchId": "batch-oil-2026-06-08", "title": "Mustard Oil 1L", "qty": 100, "unitPrice": 160 }
+    ],
+    "channel": "WHATSAPP",
+    "fulfillmentMode": "PICKUP",
+    "status": "FULFILLED",
+    "total": 16000,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-11T01:00:00.000Z",
+    "updatedAt": "2026-06-14T10:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-11T01:00:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-11T06:00:00.000Z" },
+      { "status": "PACKED", "at": "2026-06-12T07:00:00.000Z" },
+      { "status": "FULFILLED", "at": "2026-06-14T10:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0009",
+    "orderType": "CUSTOMER_ORDER",
+    "buyerId": "cust-107",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-203",
+    "items": [
+      { "productId": "prd-jaggery-1kg", "batchId": "batch-jaggery-2026-06-12", "title": "Jaggery 1kg", "qty": 1, "unitPrice": 95 }
+    ],
+    "channel": "WHATSAPP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "CONFIRMED",
+    "total": 95,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-20T05:15:00.000Z",
+    "updatedAt": "2026-06-20T06:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-20T05:15:00.000Z" },
+      { "status": "CONFIRMED", "at": "2026-06-20T06:00:00.000Z" }
+    ]
+  },
+  {
+    "id": "ord-0010",
+    "orderType": "RESTOCK_ORDER",
+    "buyerId": "store-303",
+    "sellerType": "PRODUCER",
+    "fulfillingSellerId": "prod-201",
+    "items": [
+      { "productId": "prd-aata-5kg", "batchId": "batch-aata-2026-06-18", "title": "Wheat Flour 5kg", "qty": 20, "unitPrice": 205 }
+    ],
+    "channel": "APP",
+    "fulfillmentMode": "DELIVERY",
+    "status": "CANCELLED",
+    "total": 4100,
+    "hasQualityIssue": false,
+    "createdAt": "2026-06-21T02:00:00.000Z",
+    "updatedAt": "2026-06-21T03:00:00.000Z",
+    "statusHistory": [
+      { "status": "PLACED", "at": "2026-06-21T02:00:00.000Z" },
+      { "status": "CANCELLED", "at": "2026-06-21T03:00:00.000Z" }
+    ]
+  }
+]

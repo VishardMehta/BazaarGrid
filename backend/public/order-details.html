@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BazaarGrid — Order Details</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Order Details</h1>
+  <p class="subtitle" id="orderIdSubtitle"></p>
+
+  <nav>
+    <a href="index.html">Orders List</a>
+    <a href="create-order.html">Create Order</a>
+    <a href="whatsapp-order.html">WhatsApp Order</a>
+  </nav>
+
+  <div id="message"></div>
+
+  <div id="content">
+    <p class="muted">Loading order…</p>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    const orderId = getQueryParam('id');
+    const content = document.getElementById('content');
+    const orderIdSubtitle = document.getElementById('orderIdSubtitle');
+
+    const ALL_STATUSES = ['PLACED', 'CONFIRMED', 'PACKED', 'FULFILLED', 'COMPLETED', 'CANCELLED'];
+
+    function renderOrder(order) {
+      orderIdSubtitle.textContent = `Order ${order.id}`;
+
+      const itemsRows = order.items
+        .map(
+          (item) => `
+          <tr>
+            <td>${item.productId}</td>
+            <td>${item.batchId}</td>
+            <td>${item.title}</td>
+            <td>${item.qty}</td>
+            <td>${formatMoney(item.unitPrice)}</td>
+            <td>${formatMoney(item.qty * item.unitPrice)}</td>
+          </tr>`
+        )
+        .join('');
+
+      const statusOptions = ALL_STATUSES
+        .map((s) => `<option value="${s}" ${s === order.status ? 'selected' : ''}>${s}</option>`)
+        .join('');
+
+      const isCancelled = order.status === 'CANCELLED';
+      const isCompleted = order.status === 'COMPLETED';
+
+      content.innerHTML = `
+        <div class="detail-grid">
+          <div class="label">Order ID</div><div>${order.id}</div>
+          <div class="label">Order Type</div><div>${order.orderType}</div>
+          <div class="label">Buyer ID</div><div>${order.buyerId}</div>
+          <div class="label">Seller Type</div><div>${order.sellerType}</div>
+          <div class="label">Fulfilling Seller ID</div><div>${order.fulfillingSellerId}</div>
+          <div class="label">Channel</div><div>${order.channel}</div>
+          <div class="label">Fulfillment Mode</div><div>${order.fulfillmentMode}</div>
+          <div class="label">Status</div><div><span class="badge badge-${order.status}">${order.status}</span></div>
+          <div class="label">Total</div><div>${formatMoney(order.total)}</div>
+          <div class="label">Has Quality Issue</div><div>${order.hasQualityIssue}</div>
+          <div class="label">Created At</div><div>${order.createdAt}</div>
+          <div class="label">Updated At</div><div>${order.updatedAt}</div>
+        </div>
+
+        <div class="section-title">Items</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Product ID</th><th>Batch ID</th><th>Title</th><th>Qty</th><th>Unit Price</th><th>Line Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemsRows}</tbody>
+        </table>
+
+        <div class="section-title">Status History</div>
+        <table>
+          <thead><tr><th>Status</th><th>At</th></tr></thead>
+          <tbody>
+            ${order.statusHistory.map((h) => `<tr><td>${h.status}</td><td>${h.at}</td></tr>`).join('')}
+          </tbody>
+        </table>
+
+        <div class="section-title">Update Status</div>
+        <div class="actions-row">
+          <select id="statusSelect" ${isCancelled ? 'disabled' : ''}>
+            ${statusOptions}
+          </select>
+          <button id="updateStatusBtn" ${isCancelled ? 'disabled' : ''}>Update Status</button>
+          <button id="cancelBtn" class="danger" ${isCancelled || isCompleted ? 'disabled' : ''}>Cancel Order</button>
+        </div>
+        ${isCancelled ? '<p class="muted">This order is cancelled. It remains visible for record-keeping; no further transitions are possible.</p>' : ''}
+      `;
+
+      document.getElementById('updateStatusBtn').addEventListener('click', async () => {
+        const newStatus = document.getElementById('statusSelect').value;
+        try {
+          await apiRequest('PATCH', `/orders/${encodeURIComponent(order.id)}/status`, { status: newStatus });
+          showMessage('message', `Status updated to ${newStatus}.`, false);
+          loadOrder();
+        } catch (err) {
+          showMessage('message', err.message, true);
+        }
+      });
+
+      document.getElementById('cancelBtn').addEventListener('click', async () => {
+        if (!confirm('Cancel this order? This cannot be undone.')) return;
+        try {
+          await apiRequest('PATCH', `/orders/${encodeURIComponent(order.id)}/cancel`, {});
+          showMessage('message', 'Order cancelled.', false);
+          loadOrder();
+        } catch (err) {
+          showMessage('message', err.message, true);
+        }
+      });
+    }
+
+    async function loadOrder() {
+      if (!orderId) {
+        content.innerHTML = '<p class="muted">No order id provided in the URL (?id=...).</p>';
+        return;
+      }
+      try {
+        const result = await apiRequest('GET', `/orders/${encodeURIComponent(orderId)}`);
+        renderOrder(result.data);
+      } catch (err) {
+        content.innerHTML = `<p class="muted">Failed to load order: ${err.message}</p>`;
+      }
+    }
+
+    loadOrder();
+  </script>
+</body>
+</html>

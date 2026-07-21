@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BazaarGrid — Orders</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>BazaarGrid Order Management</h1>
+  <p class="subtitle">Internal test UI for the Order Management API.</p>
+
+  <nav>
+    <a href="index.html">Orders List</a>
+    <a href="create-order.html">Create Order</a>
+    <a href="whatsapp-order.html">WhatsApp Order</a>
+  </nav>
+
+  <div>
+    <label for="filterSellerType" style="display:inline-block;width:auto;margin-right:6px;">Seller type:</label>
+    <select id="filterSellerType" style="display:inline-block;width:auto;margin-right:16px;">
+      <option value="">All</option>
+      <option value="PRODUCER">PRODUCER</option>
+      <option value="LOCAL_STORE">LOCAL_STORE</option>
+    </select>
+
+    <label for="filterOrderType" style="display:inline-block;width:auto;margin-right:6px;">Order type:</label>
+    <select id="filterOrderType" style="display:inline-block;width:auto;margin-right:16px;">
+      <option value="">All</option>
+      <option value="CUSTOMER_ORDER">CUSTOMER_ORDER</option>
+      <option value="RESTOCK_ORDER">RESTOCK_ORDER</option>
+    </select>
+
+    <label for="filterStatus" style="display:inline-block;width:auto;margin-right:6px;">Status:</label>
+    <select id="filterStatus" style="display:inline-block;width:auto;">
+      <option value="">All</option>
+      <option value="PLACED">PLACED</option>
+      <option value="CONFIRMED">CONFIRMED</option>
+      <option value="PACKED">PACKED</option>
+      <option value="FULFILLED">FULFILLED</option>
+      <option value="COMPLETED">COMPLETED</option>
+      <option value="CANCELLED">CANCELLED</option>
+    </select>
+  </div>
+
+  <p class="muted" id="countLabel" style="margin-top:12px;"></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Buyer ID</th>
+        <th>Seller Type</th>
+        <th>Seller ID</th>
+        <th>Status</th>
+        <th>Total</th>
+        <th>Channel</th>
+      </tr>
+    </thead>
+    <tbody id="ordersBody">
+      <tr><td colspan="7" class="muted">Loading orders…</td></tr>
+    </tbody>
+  </table>
+
+  <script src="api.js"></script>
+  <script>
+    const filterSellerType = document.getElementById('filterSellerType');
+    const filterOrderType = document.getElementById('filterOrderType');
+    const filterStatus = document.getElementById('filterStatus');
+    const ordersBody = document.getElementById('ordersBody');
+    const countLabel = document.getElementById('countLabel');
+
+    function buildQuery() {
+      const params = new URLSearchParams();
+      if (filterSellerType.value) params.set('sellerType', filterSellerType.value);
+      if (filterOrderType.value) params.set('orderType', filterOrderType.value);
+      if (filterStatus.value) params.set('status', filterStatus.value);
+      const qs = params.toString();
+      return qs ? `/orders?${qs}` : '/orders';
+    }
+
+    async function loadOrders() {
+      ordersBody.innerHTML = '<tr><td colspan="7" class="muted">Loading orders…</td></tr>';
+      try {
+        const result = await apiRequest('GET', buildQuery());
+        countLabel.textContent = `${result.count} order(s)`;
+        if (result.data.length === 0) {
+          ordersBody.innerHTML = '<tr><td colspan="7" class="muted">No orders match these filters.</td></tr>';
+          return;
+        }
+        ordersBody.innerHTML = result.data
+          .map(
+            (o) => `
+            <tr>
+              <td><a class="row-link" href="order-details.html?id=${encodeURIComponent(o.id)}">${o.id}</a></td>
+              <td>${o.buyerId}</td>
+              <td>${o.sellerType}</td>
+              <td>${o.fulfillingSellerId}</td>
+              <td><span class="badge badge-${o.status}">${o.status}</span></td>
+              <td>${formatMoney(o.total)}</td>
+              <td>${o.channel}</td>
+            </tr>`
+          )
+          .join('');
+      } catch (err) {
+        ordersBody.innerHTML = `<tr><td colspan="7" class="muted">Failed to load orders: ${err.message}</td></tr>`;
+      }
+    }
+
+    filterSellerType.addEventListener('change', loadOrders);
+    filterOrderType.addEventListener('change', loadOrders);
+    filterStatus.addEventListener('change', loadOrders);
+
+    loadOrders();
+  </script>
+</body>
+</html>

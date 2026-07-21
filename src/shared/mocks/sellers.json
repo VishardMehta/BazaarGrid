@@ -1,0 +1,133 @@
+[
+  {
+    "id": "sel_green_valley",
+    "type": "VILLAGE_PRODUCER",
+    "name": "Green Valley Farm",
+    "tagline": "Wildflower honey & cold-pressed oils",
+    "village": "Green Valley",
+    "region": "Northern Highlands",
+    "story": "For four generations, the Vance family has tended the wildflower meadows above Green Valley. Every jar is small-batch, raw and traceable from hive to home — a direct line between our hills and your table.",
+    "phone": "15551234001",
+    "email": "hello@greenvalley.example",
+    "verified": true,
+    "traceabilityScore": 98,
+    "rating": 4.8,
+    "reviewCount": 214,
+    "memberSince": "2022-03-01",
+    "certifications": [
+      { "id": "c1", "label": "Verified Producer", "icon": "verified" },
+      { "id": "c2", "label": "QR-Traceable", "icon": "qr_code_2" },
+      { "id": "c3", "label": "Organic Certified", "icon": "eco" }
+    ],
+    "brandAccents": ["#9d3d2e", "#48654e", "#7c5800"],
+    "productCount": 12
+  },
+  {
+    "id": "sel_old_oak_mill",
+    "type": "VILLAGE_PRODUCER",
+    "name": "Old Oak Mill",
+    "tagline": "Stone-milled grains & heritage olive oil",
+    "village": "Val di Sole",
+    "region": "Heritage Valley",
+    "story": "Old Oak Mill still turns on water and patience. We stone-mill ancient grains and cold-press olives within hours of harvest, preserving flavour the way our grandparents did.",
+    "phone": "15551234002",
+    "email": "mill@oldoak.example",
+    "verified": true,
+    "traceabilityScore": 95,
+    "rating": 4.7,
+    "reviewCount": 156,
+    "memberSince": "2021-09-14",
+    "certifications": [
+      { "id": "c1", "label": "Verified Producer", "icon": "verified" },
+      { "id": "c2", "label": "QR-Traceable", "icon": "qr_code_2" }
+    ],
+    "brandAccents": ["#7c5800", "#48654e", "#9d3d2e"],
+    "productCount": 9
+  },
+  {
+    "id": "sel_coast_artisans",
+    "type": "VILLAGE_PRODUCER",
+    "name": "Coast Artisans Collective",
+    "tagline": "Hand-thrown pottery & woven textiles",
+    "village": "Coast Village",
+    "region": "Saltmarsh Coast",
+    "story": "A collective of twelve makers working clay, loom and dye by hand. Each piece carries the fingerprint of its maker and the colour of our coastline.",
+    "phone": "15551234003",
+    "email": "studio@coastartisans.example",
+    "verified": true,
+    "traceabilityScore": 91,
+    "rating": 4.9,
+    "reviewCount": 98,
+    "memberSince": "2023-01-20",
+    "certifications": [
+      { "id": "c1", "label": "Verified Producer", "icon": "verified" },
+      { "id": "c4", "label": "Handmade", "icon": "back_hand" }
+    ],
+    "brandAccents": ["#48654e", "#9d3d2e", "#7c5800"],
+    "productCount": 15
+  },
+  {
+    "id": "sel_sana_kirana",
+    "type": "KIRANA_STORE",
+    "name": "Sana's Kirana Store",
+    "tagline": "Your neighbourhood pantry, now online",
+    "village": "Green Valley",
+    "region": "Northern Highlands",
+    "story": "A trusted corner store stocking the best of nearby villages — honey, oils, grains and daily essentials, curated by Sana and delivered to your door or ready for pickup.",
+    "phone": "15551234004",
+    "email": "sana@kirana.example",
+    "verified": true,
+    "traceabilityScore": 82,
+    "rating": 4.5,
+    "reviewCount": 320,
+    "memberSince": "2022-11-05",
+    "certifications": [
+      { "id": "c1", "label": "Verified Store", "icon": "storefront" }
+    ],
+    "brandAccents": ["#9d3d2e", "#48654e"],
+    "productCount": 48
+  },
+  {
+    "id": "sel_hilltop_general",
+    "type": "KIRANA_STORE",
+    "name": "Hilltop General Store",
+    "tagline": "Everyday essentials from local makers",
+    "village": "Val di Sole",
+    "region": "Heritage Valley",
+    "story": "Family-run since 1998. We bridge village producers and busy households — if it's made well nearby, you'll find it on our shelves.",
+    "phone": "15551234005",
+    "email": "shop@hilltop.example",
+    "verified": false,
+    "traceabilityScore": 74,
+    "rating": 4.3,
+    "reviewCount": 188,
+    "memberSince": "2023-06-18",
+    "certifications": [
+      { "id": "c1", "label": "Verified Store", "icon": "storefront" }
+    ],
+    "brandAccents": ["#7c5800", "#9d3d2e"],
+    "productCount": 36
+  },
+  {
+    "id": "sel_borgo_provisions",
+    "type": "KIRANA_STORE",
+    "name": "Borgo Provisions",
+    "tagline": "Heritage groceries & gifting",
+    "village": "Coast Village",
+    "region": "Saltmarsh Coast",
+    "story": "We hand-pick provisions and gift boxes from coastal artisans and inland farms, with full origin traceability on every order.",
+    "phone": "15551234006",
+    "email": "ciao@borgo.example",
+    "verified": true,
+    "traceabilityScore": 88,
+    "rating": 4.6,
+    "reviewCount": 142,
+    "memberSince": "2023-02-11",
+    "certifications": [
+      { "id": "c1", "label": "Verified Store", "icon": "storefront" },
+      { "id": "c2", "label": "QR-Traceable", "icon": "qr_code_2" }
+    ],
+    "brandAccents": ["#48654e", "#7c5800", "#9d3d2e"],
+    "productCount": 41
+  }
+]

@@ -1,0 +1,380 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Institutional Bulk Inquiries | BazaarGrid</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#9b6f01",
+                        "on-secondary-container": "#4c6952",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#faf9f5",
+                        "surface-container": "#efeeea",
+                        "surface-container-high": "#e9e8e4",
+                        "background": "#faf9f5",
+                        "secondary-fixed-dim": "#aecfb3",
+                        "surface-variant": "#e3e2df",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdea7",
+                        "on-primary-fixed-variant": "#80281b",
+                        "on-tertiary-container": "#080400",
+                        "secondary-fixed": "#caebce",
+                        "on-surface-variant": "#56423e",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#ffb4a7",
+                        "surface-tint": "#a03f30",
+                        "primary-fixed-dim": "#ffb4a7",
+                        "outline": "#89726d",
+                        "on-secondary-fixed": "#04210f",
+                        "tertiary-fixed-dim": "#f4be55",
+                        "surface": "#faf9f5",
+                        "on-tertiary-fixed-variant": "#5e4200",
+                        "surface-container-low": "#f4f4f0",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f2f1ed",
+                        "tertiary": "#7c5800",
+                        "primary-container": "#bd5444",
+                        "primary": "#9d3d2e",
+                        "on-primary-fixed": "#400200",
+                        "on-primary-container": "#fffbff",
+                        "on-surface": "#1b1c1a",
+                        "primary-fixed": "#ffdad4",
+                        "surface-container-highest": "#e3e2df",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1c1a",
+                        "inverse-surface": "#2f312e",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#48654e",
+                        "outline-variant": "#ddc0bb",
+                        "on-secondary-fixed-variant": "#304d38",
+                        "on-tertiary-fixed": "#271900",
+                        "secondary-container": "#c7e8cb",
+                        "surface-dim": "#dbdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "xl": "80px",
+                        "gutter": "24px",
+                        "container-margin": "32px",
+                        "sm": "12px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Work Sans"],
+                        "label-md": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-lg": ["Newsreader"],
+                        "headline-md": ["Newsreader"],
+                        "label-sm": ["Work Sans"],
+                        "display-lg": ["Newsreader"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background-color: #faf9f5;
+        }
+        h1, h2, h3 {
+            font-family: 'Newsreader', serif;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .form-input {
+            @apply w-full bg-surface-container-lowest border-outline-variant rounded-lg p-3 text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="sticky top-0 w-full z-50 flex justify-between items-center px-container-margin h-20 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
+<div class="font-headline-md text-headline-md font-bold text-primary">BazaarGrid</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_14}}">Shop</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="{{DATA:SCREEN:SCREEN_4}}">Villages</a>
+<a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1" href="{{DATA:SCREEN:SCREEN_15}}">Become a Producer</a>
+</nav>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">shopping_basket</button>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a business procurement officer, wearing a neutral-toned linen shirt, standing in a brightly lit, modern architectural space with warm wood accents and soft morning light. The style is clean, editorial, and conveys reliability and sophisticated taste, matching the modern agrarian brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqMY2xXj4cgN5WYD1TWFGMG-vmZ8wzErsmH5kQbqG6ItjhOE7U1jYDjtp2SB84eL3uShv_fTaMvrPg6dw8XfF4phvaUMSztuPAHlasMDIR_nL7aBEjhP46sRr22vRvtt_ri_STC4LvIpd_Ku3SiZCXvE-qTQsAzJ0sogSmg9aomX2OI38rJ-s1iMO248GADsf6y2tfZhCTNKW2oon5Pj-ia1DJMpXHxLjrA6jMrZtWKEiTq0rE9eInLEDn1Uz5pYC0QR1LkhvWPxWU">
+</div>
+</div>
+</header>
+<main class="max-w-[1280px] mx-auto px-container-margin py-xl">
+<!-- Intro Header -->
+<section class="mb-xl text-center max-w-3xl mx-auto">
+<span class="font-label-md text-label-md text-tertiary uppercase tracking-widest mb-4 block">Institutional Partnerships</span>
+<h1 class="font-display-lg text-display-lg text-on-background mb-md">Direct-from-Source Precision for Global Hospitality</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                BazaarGrid bridges the gap between artisanal heritage and institutional demand. Secure predictable, high-volume supply chains with full traceability for your restaurant, hotel, or boutique collective.
+            </p>
+</section>
+<div class="bento-grid">
+<!-- Inquiry Form Container -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-low rounded-xl p-md lg:p-lg border border-outline-variant relative overflow-hidden">
+<div class="absolute top-0 right-0 p-8 opacity-5">
+<span class="material-symbols-outlined text-[120px]">architecture</span>
+</div>
+<h2 class="font-headline-md text-headline-md mb-lg text-on-surface">Bulk Inquiry Request</h2>
+<form class="space-y-6 relative z-10" id="bulkInquiryForm">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Institution Name</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="e.g. Green Valley Resorts" required="" type="text">
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Contact Person</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Full Name" required="" type="text">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Product Category</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" onchange="window.location.href='{{DATA:SCREEN:SCREEN_14}}'">
+<option>Artisanal Textiles</option>
+<option>Heirloom Grains</option>
+<option>Organic Ceramics</option>
+<option>Cold-Pressed Oils</option>
+<option>Handcrafted Furniture</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Quantity (Units/KG)</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Min. 50" required="" type="number">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Preferred Village/Region</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" onchange="window.location.href='{{DATA:SCREEN:SCREEN_14}}'">
+<option>No preference (Global)</option>
+<option>Oaxaca Valley, Mexico</option>
+<option>Kyoto Highlands, Japan</option>
+<option>Provence Plateau, France</option>
+<option>Tuscany Hills, Italy</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Delivery Frequency</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-3 focus:ring-2 focus:ring-primary focus:outline-none" onchange="window.location.href='{{DATA:SCREEN:SCREEN_14}}'">
+<option>One-time Shipment</option>
+<option>Monthly Recurring</option>
+<option>Quarterly Batch</option>
+<option>Custom Schedule</option>
+</select>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full md:w-auto px-xl py-4 bg-primary text-on-primary font-label-md text-label-md rounded-lg hover:bg-surface-tint transition-all active:scale-95 shadow-md" id="submitBtn" type="submit" onclick="event.preventDefault(); window.location.href='{{DATA:SCREEN:SCREEN_15}}'">
+                            Submit Institutional Inquiry
+                        </button>
+</div>
+</form>
+<!-- Confirmation State (Hidden by default) -->
+<div class="hidden absolute inset-0 bg-surface-container-low flex flex-col items-center justify-center text-center p-md z-20" id="confirmationState">
+<div class="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Inquiry Received</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm mb-lg">Your procurement request has been logged. A regional logistics coordinator will contact you within 24 business hours to finalize specifications.</p>
+<button class="text-primary font-label-md text-label-md hover:underline" onclick="resetForm()">Submit another inquiry</button>
+</div>
+</div>
+<!-- Supporting Information / Image Bento -->
+<div class="col-span-12 lg:col-span-5 grid grid-cols-1 gap-gutter">
+<div class="bg-primary-container text-on-primary-container rounded-xl p-md flex flex-col justify-between overflow-hidden relative min-h-[240px]">
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-2">Heritage Verification</h3>
+<p class="font-body-md text-body-md opacity-90">Every bulk order includes QR-traceable provenance data and artisan certification for your marketing transparency.</p>
+</div>
+<div class="absolute bottom-[-20%] right-[-10%] opacity-20">
+<span class="material-symbols-outlined text-[160px]">verified</span>
+</div>
+</div>
+<div class="rounded-xl overflow-hidden h-full min-h-[300px] border border-outline-variant relative group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="A high-angle, wide-lens shot of an expansive, modern, and clean warehouse facility where traditional woven textiles and handcrafted ceramics are being meticulously packaged for shipping. The lighting is bright and natural, coming from large skylights, casting soft shadows. The aesthetic is organized, sophisticated, and earthy, emphasizing high-end logistics and craftsmanship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFPlPNVPqzOyNStufxNCWYuOXrhIZqvs_2DG5xVOMg24HUiSJvb8SLf6QbKypdVOY712GgbAukgRnbTtm7cT8LBVcj0DkSQYh9HQswcbtLTe4lfd-kd0sXHZs2lZoyddZtycuVgLx9swAtNlTbltpqPUTApPxVHhLJp_9vs8bNUtQbu2m0q_xVroAeAkpOFxtvTtn1gB-cgMT0-oR9VeND8uYmNdJw4R3YVjsyZuVMvVIK4kLoxO267DTSHKAh-Fk1m1NCPqVYqwna">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-md">
+<p class="text-white font-label-md text-label-md">Global Logistics Network</p>
+<p class="text-white/80 text-sm font-body-md">Climate-controlled fulfillment from 12 regional hubs.</p>
+</div>
+</div>
+</div>
+<!-- Past Inquiries Table -->
+<div class="col-span-12 bg-surface-container-lowest rounded-xl p-md lg:p-lg border border-outline-variant">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface">Recent Inquiry Status</h2>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-sm font-label-sm rounded-full">All Requests</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-label-sm font-label-sm rounded-full">3 Active</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Reference</th>
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Product</th>
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Quantity</th>
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Frequency</th>
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Status</th>
+<th class="py-4 font-label-md text-label-md text-on-surface-variant">Expected Delivery</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors group cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_4}}'">
+<td class="py-4 font-bold">#BQ-29401</td>
+<td class="py-4">High-Altitude Arabica Beans</td>
+<td class="py-4">250 KG</td>
+<td class="py-4">Monthly</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-tertiary">
+<span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+                                        Logistics Review
+                                    </span>
+</td>
+<td class="py-4 text-on-surface-variant">Oct 12, 2024</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_4}}'">
+<td class="py-4 font-bold">#BQ-28952</td>
+<td class="py-4">Hand-Thrown Ceramic Plates</td>
+<td class="py-4">120 Units</td>
+<td class="py-4">One-time</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-on-secondary-container">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                        In Production
+                                    </span>
+</td>
+<td class="py-4 text-on-surface-variant">Sep 28, 2024</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors cursor-pointer" onclick="window.location.href='{{DATA:SCREEN:SCREEN_4}}'">
+<td class="py-4 font-bold">#BQ-28410</td>
+<td class="py-4">Linen Table Runners (Natural)</td>
+<td class="py-4">80 Units</td>
+<td class="py-4">One-time</td>
+<td class="py-4">
+<span class="flex items-center gap-2 text-on-surface-variant opacity-60">
+<span class="w-2 h-2 rounded-full bg-on-surface-variant"></span>
+                                        Delivered
+                                    </span>
+</td>
+<td class="py-4 text-on-surface-variant">Aug 15, 2024</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-highest border-t border-outline-variant py-xl px-container-margin mt-xl">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-gutter">
+<div class="col-span-1 md:col-span-2 lg:col-span-2">
+<div class="font-headline-md text-headline-md text-primary mb-md">BazaarGrid</div>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 BazaarGrid. Connecting heritage craftsmanship with modern precision.</p>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">Company</h4>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">About BazaarGrid</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Sustainability Report</a>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">Producers</h4>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Partner Portals</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Villages</a>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">Legal</h4>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-sm">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">Contact</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">institutional@bazaargrid.com</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">+1 (800) BAZAAR-G</p>
+</div>
+</div>
+</footer>
+<!-- Bottom Nav for Mobile -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 lg:hidden bg-surface/98 backdrop-blur-md border-t border-outline-variant shadow-[0_-4px_12px_rgba(72,101,78,0.08)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">storefront</span>
+<span class="font-label-sm text-label-sm">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">location_city</span>
+<span class="font-label-sm text-label-sm">Villages</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        const form = document.getElementById('bulkInquiryForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const confirmationState = document.getElementById('confirmationState');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate API call
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span>';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                confirmationState.classList.remove('hidden');
+                confirmationState.classList.add('flex');
+            }, 1200);
+        });
+
+        function resetForm() {
+            form.reset();
+            submitBtn.innerHTML = 'Submit Institutional Inquiry';
+            submitBtn.disabled = false;
+            confirmationState.classList.add('hidden');
+            confirmationState.classList.remove('flex');
+        }
+
+        // Simple parallax effect for images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroImage = document.querySelector('img[data-alt*="warehouse"]');
+            if(heroImage) {
+                heroImage.style.transform = `translateY(${scrolled * 0.05}px) scale(1.05)`;
+            }
+        });
+    </script>
+
+
+</body></html>
